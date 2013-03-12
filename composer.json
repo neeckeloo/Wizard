@@ -1,0 +1,28 @@
+{
+    "name": "neeckeloo/wizard",
+    "description": "Wizard module for Zend Framework 2",
+    "type": "library",
+    "keywords": [
+        "zf2", "wizard"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/neeckeloo/Wizard",
+    "authors": [
+        {
+            "name": "Nicolas Eeckeloo",
+            "email": "neeckeloo@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Wizard": "src/"
+        },
+        "classmap": [
+            "./"
+        ]
+    }
+}
