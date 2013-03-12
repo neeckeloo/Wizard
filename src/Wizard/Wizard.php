@@ -8,6 +8,11 @@ use Zend\Session\Container as SessionContainer;
 class Wizard implements WizardInterface
 {
     /**
+     * @var string
+     */
+    protected $uid;
+
+    /**
      * @var SessionContainer
      */
     protected $sessionContainer;
@@ -23,22 +28,31 @@ class Wizard implements WizardInterface
     protected $steps;
 
     /**
-     * Generates a token to be used for saving
+     * @param  RouteMatch $routeMatch
      */
-    public function __construct()
+    public function __construct(RouteMatch $routeMatch)
     {
-        $this->sessionContainer = new SessionContainer(__CLASS__);
+        $this->routeMatch = $routeMatch;
+
+        if ($this->routeMatch->getParam('wizard')) {
+            $this->uid = $this->routeMatch->getParam('wizard');
+        } else {
+            $this->uid = md5(uniqid(rand(), true));
+        }
+        
         $this->steps = new StepCollection();
     }
 
     /**
-     * @param  RouteMatch $routeMatch
-     * @return Wizard
+     * @return SessionContainer
      */
-    public function setRouteMatch(RouteMatch $routeMatch)
+    public function getSessionContainer()
     {
-        $this->routeMatch = $routeMatch;
-        return $this;
+        if (!$this->sessionContainer) {
+            $this->sessionContainer = new SessionContainer($this->uid);
+        }
+
+        return $this->sessionContainer;
     }
 
     /**

@@ -16,8 +16,8 @@ class WizardFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         //$configuration = new Configuration($config['wizard']);
 
-        $wizard = new Wizard();
+        $routeMatch = $serviceLocator->get('Application')->getMvcEvent()->getRouteMatch();
 
-        return $wizard;
+        return new Wizard($routeMatch);
     }
 }
