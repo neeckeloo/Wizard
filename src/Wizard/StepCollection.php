@@ -67,6 +67,96 @@ class StepCollection implements \IteratorAggregate, \Countable
     }
 
     /**
+     * @return StepInterface
+     */
+    public function getFirst()
+    {
+        if (!$this->steps) {
+            return null;
+        }
+
+        $values = array_values($this->steps);
+
+        return array_shift($values);
+    }
+
+    /**
+     * @param  string|StepInterface $identitier
+     * @return bool
+     */
+    public function isFirst($identifier)
+    {
+        if ($identifier instanceof StepInterface) {
+            $identifier = $identifier->getName();
+        }
+
+        $firstStep = $this->getFirst();
+
+        return $identifier === $firstStep->getName();
+    }
+
+    /**
+     * @return StepInterface
+     */
+    public function getLast()
+    {
+        if (!$this->steps) {
+            return null;
+        }
+
+        $values = array_values($this->steps);
+
+        return array_pop($values);
+    }
+
+    /**
+     * @param  string|StepInterface $identitier
+     * @return bool
+     */
+    public function isLast($identifier)
+    {
+        if ($identifier instanceof StepInterface) {
+            $identifier = $identifier->getName();
+        }
+
+        $lastStep = $this->getLast();
+
+        return $identifier === $lastStep->getName();
+    }
+
+    /**
+     * @param  string|StepInterface $identifier
+     * @return StepInterface
+     */
+    public function getPrevious($identifier)
+    {
+        if ($identifier instanceof StepInterface) {
+            $identifier = $identifier->getName();
+        }
+
+        $steps = array_keys($this->steps);
+        $position = array_search($identifier, $steps) - 1;
+
+        return isset($steps[$position]) ? $this->get($steps[$position]) : null;
+    }
+
+    /**
+     * @param  string|StepInterface $identifier
+     * @return StepInterface
+     */
+    public function getNext($identifier)
+    {
+        if ($identifier instanceof StepInterface) {
+            $identifier = $identifier->getName();
+        }
+
+        $steps = array_keys($this->steps);
+        $position = array_search($identifier, $steps) + 1;
+
+        return isset($steps[$position]) ? $this->get($steps[$position]) : null;
+    }
+
+    /**
      * @see IteratorAggregate
      * @return ArrayIterator
      */
