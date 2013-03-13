@@ -4,6 +4,7 @@ namespace Wizard\Service;
 use Wizard\Wizard;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\SessionManager;
 
 class WizardFactory implements FactoryInterface
 {
@@ -16,8 +17,15 @@ class WizardFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         //$configuration = new Configuration($config['wizard']);
 
-        $routeMatch = $serviceLocator->get('Application')->getMvcEvent()->getRouteMatch();
+        $application = $serviceLocator->get('Application');
 
-        return new Wizard($routeMatch);
+        $request = $application->getRequest();
+        $response = $application->getResponse();
+        $routeMatch = $application->getMvcEvent()->getRouteMatch();
+
+        $sessionStorage = $serviceLocator->get('session');
+        $sessionManager = new SessionManager(null, $sessionStorage);
+
+        return new Wizard($request, $response, $routeMatch, $sessionManager);
     }
 }
