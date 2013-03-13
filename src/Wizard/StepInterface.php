@@ -1,6 +1,8 @@
 <?php
 namespace Wizard;
 
+use Zend\Form\Form;
+
 interface StepInterface
 {
     /**
@@ -20,13 +22,19 @@ interface StepInterface
     public function getTitle();
 
     /**
-     * @return void
+     * @param  Form $form
+     * @return StepInterface
      */
-    public function process();
+    public function setForm(Form $form);
+
+    /**
+     * @return Form
+     */
+    public function getForm();
 
     /**
      * @param  array $data
-     * @return bool
+     * @return void
      */
-    public function isValid($data);
+    public function process(array $data);
 }

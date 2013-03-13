@@ -1,12 +1,19 @@
 <?php
 namespace Wizard;
 
+use Zend\Form\Form;
+
 abstract class AbstractStep implements StepInterface
 {
     /**
      * @var string
      */
     protected $title;
+
+    /**
+     * @var Form
+     */
+    protected $form;
 
     /**
      * {@inheritDoc}
@@ -40,16 +47,25 @@ abstract class AbstractStep implements StepInterface
     /**
      * {@inheritDoc}
      */
-    public function process()
+    public function setForm(Form $form)
     {
-
+        $this->form = $form;
+        return $this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function isValid(array $data)
+    public function getForm()
     {
-        return false;
+        return $this->form;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function process(array $data)
+    {
+
     }
 }
