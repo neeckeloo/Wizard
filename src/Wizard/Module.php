@@ -1,8 +1,10 @@
 <?php
 namespace Wizard;
 
+use Wizard\Service\WizardInitializer;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\ServiceProviderInterface;
 
 class Module implements
     ConfigProviderInterface,
@@ -20,6 +22,15 @@ class Module implements
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
+            ),
+        );
+    }
+
+    public function getServiceConfig()
+    {
+        return array(
+            'initializers' => array(
+                'wizard' => new WizardInitializer(),
             ),
         );
     }
