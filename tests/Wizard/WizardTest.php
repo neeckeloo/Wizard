@@ -31,11 +31,14 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $sessionStorage = new SessionStorage;
         $sessionManager = new SessionManager(null, $sessionStorage);
 
-        $this->wizard = $this->getMock(
-            'Wizard\Wizard',
-            array('getSessionContainer'),
-            array($request, $response, $routeMatch, $sessionManager)
+        $this->wizard = $this->getMockForAbstractClass(
+            'Wizard\AbstractWizard', array(), '', true, true, true, array('getSessionContainer')
         );
+        $this->wizard
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouteMatch($routeMatch)
+            ->setSessionManager($sessionManager);
 
         $this->sessionContainer = new SessionContainer('foo', $sessionManager);
 

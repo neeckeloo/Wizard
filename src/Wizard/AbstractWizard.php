@@ -10,7 +10,7 @@ use Zend\Mvc\Router\RouteMatch;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\ManagerInterface as SessionManager;
 
-class Wizard implements WizardInterface
+abstract class AbstractWizard implements WizardInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
@@ -56,18 +56,43 @@ class Wizard implements WizardInterface
     protected $form;
 
     /**
-     * @param Request $request
-     * @param Response $response
-     * @param RouteMatch $routeMatch
-     * @param SessionManager $manager
+     * @param  Request $request
+     * @return Wizard
      */
-    public function __construct(Request $request, Response $response,
-                                RouteMatch $routeMatch, SessionManager $sessionManager = null)
+    public function setRequest(Request $request)
     {
         $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * @param  Response $response
+     * @return Wizard
+     */
+    public function setResponse(Response $response)
+    {
         $this->response = $response;
+        return $this;
+    }
+
+    /**
+     * @param  RouteMatch $routeMatch
+     * @return Wizard
+     */
+    public function setRouteMatch(RouteMatch $routeMatch)
+    {
         $this->routeMatch = $routeMatch;
+        return $this;
+    }
+
+    /**
+     * @param  SessionManager $sessionManager
+     * @return Wizard
+     */
+    public function setSessionManager(SessionManager $sessionManager)
+    {
         $this->sessionManager = $sessionManager;
+        return $this;
     }
 
     /**
