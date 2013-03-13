@@ -9,6 +9,20 @@ class StepCollection implements \IteratorAggregate, \Countable
     protected $steps = array();
 
     /**
+     * @param  StepInterface $step
+     * @return StepCollection
+     */
+    public function add(StepInterface $step)
+    {
+        if ($this->has($step)) {
+            return $this;
+        }
+
+        $this->steps[$step->getName()] = $step;
+        return $this;
+    }
+
+    /**
      * @param  string|StepInterface $identifier
      * @return StepCollection
      */
@@ -23,20 +37,6 @@ class StepCollection implements \IteratorAggregate, \Countable
         }
 
         unset($this->steps[$identifier]);
-        return $this;
-    }
-
-    /**
-     * @param  StepInterface $step
-     * @return StepCollection
-     */
-    public function add(StepInterface $step)
-    {
-        if ($this->has($step)) {
-            return $this;
-        }
-
-        $this->steps[$step->getName()] = $step;
         return $this;
     }
 
