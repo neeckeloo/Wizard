@@ -34,7 +34,29 @@ interface StepInterface
 
     /**
      * @param  array $data
+     * @return StepInterface
+     */
+    public function setData(array $data);
+
+    /**
+     * @return array
+     */
+    public function getData();
+
+    /**
+     * @param  array $data
      * @return void
      */
     public function process(array $data);
+
+    /**
+     * @param  bool $complete
+     * @return StepInterface
+     */
+    public function setComplete($complete = true);
+
+    /**
+     * @return bool
+     */
+    public function isComplete();
 }

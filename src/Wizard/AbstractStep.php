@@ -16,6 +16,16 @@ abstract class AbstractStep implements StepInterface
     protected $form;
 
     /**
+     * @var array
+     */
+    protected $data = array();
+
+    /**
+     * @var bool
+     */
+    protected $complete = false;
+
+    /**
      * {@inheritDoc}
      */
     public function getName()
@@ -64,8 +74,42 @@ abstract class AbstractStep implements StepInterface
     /**
      * {@inheritDoc}
      */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function process(array $data)
     {
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setComplete($complete = true)
+    {
+        $this->complete = (bool) $complete;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isComplete()
+    {
+        return $this->complete;
     }
 }
