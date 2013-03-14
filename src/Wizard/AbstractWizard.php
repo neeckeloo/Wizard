@@ -2,6 +2,9 @@
 namespace Wizard;
 
 use Wizard\Exception;
+use Wizard\Form\Element\Button\Previous as PreviousButton;
+use Wizard\Form\Element\Button\Next as NextButton;
+use Wizard\Form\Element\Button\Valid as ValidButton;
 use Zend\Form\Form;
 use Zend\Form\Element;
 use Zend\Http\Request;
@@ -210,25 +213,15 @@ abstract class AbstractWizard implements WizardInterface
         $buttons = array();
 
         if ($this->getSteps()->getPrevious($step)) {
-            $previousButton = new Element\Button('previous');
-            $previousButton->setAttributes(array(
-                'type'  => 'submit',
-            ));
-            $previousButton->setLabel('Précédent');
-            $buttons[] = $previousButton;
+            $buttons[] = new PreviousButton();
         }
-
-        $submitButton = new Element\Button('submit');
-        $submitButton->setAttributes(array(
-            'type'  => 'submit',
-        ));
 
         if ($this->getSteps()->getNext($step)) {
-            $submitButton->setLabel('Suivant');
+            $submitButton = new NextButton();
         } else {
-            $submitButton->setLabel('Valider');
+            $submitButton = new ValidButton();
         }
-        
+
         $buttons[] = $submitButton;
 
         return $buttons;
@@ -249,7 +242,12 @@ abstract class AbstractWizard implements WizardInterface
     public function getSteps()
     {
         if (null === $this->steps) {
-            $this->setSteps(new StepCollection());
+            $sessionContainer = $this->getSessionContainer();
+            if (isset($sessionContainer->steps)) {
+                $this->setSteps($sessionContainer->steps);
+            } else {
+                $this->setSteps(new StepCollection());
+            }
         }
 
         return $this->steps;
@@ -276,7 +274,7 @@ abstract class AbstractWizard implements WizardInterface
 
         $steps = $this->getSteps();
         $currentStep = $this->getCurrentStep();
-        
+
         $post = $this->request->getPost();
         if (isset($post['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
