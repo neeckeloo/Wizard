@@ -124,6 +124,17 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Valider', $submitButton->getLabel());
     }
 
+    public function testFormActionAttribute()
+    {
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+
+        $form = $this->wizard->getForm();
+        $action = $form->getAttribute('action');
+
+        $this->assertStringMatchesFormat('?%s=%s', $action);
+    }
+
     public function testSetAndGetStepCollection()
     {
         $this->assertInstanceOf('Wizard\StepCollection', $this->wizard->getSteps());

@@ -16,6 +16,7 @@ abstract class AbstractWizard implements WizardInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
+    const TOKEN_PARAM_NAME = 'uid';
 
     /**
      * @var string
@@ -126,8 +127,8 @@ abstract class AbstractWizard implements WizardInterface
     protected function getUniqueid()
     {
         if (null === $this->uid) {
-            if ($this->routeMatch->getParam('wizard')) {
-                $this->uid = $this->routeMatch->getParam('wizard');
+            if ($this->request->getQuery(self::TOKEN_PARAM_NAME)) {
+                $this->uid = $this->request->getQuery(self::TOKEN_PARAM_NAME);
             } else {
                 $this->uid = md5(uniqid(rand(), true));
             }
@@ -180,6 +181,11 @@ abstract class AbstractWizard implements WizardInterface
     {
         if (null === $this->form) {
             $this->form = new Form();
+            $this->form->setAttribute('action', sprintf(
+                '?%s=%s',
+                self::TOKEN_PARAM_NAME,
+                $this->getUniqueid()
+            ));
 
             $currentStep = $this->getCurrentStep();
             if (!$currentStep) {
