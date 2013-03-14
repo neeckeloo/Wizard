@@ -2,6 +2,7 @@
 namespace Wizard\Service;
 
 use Wizard\WizardInterface;
+use Zend\Session\SessionManager;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -15,7 +16,7 @@ class WizardInitializer implements InitializerInterface
     public function initialize($instance, ServiceLocatorInterface $serviceLocator)
     {
         if ($instance instanceof WizardInterface) {
-            $config = $serviceLocator->get('Config');
+            //$config = $serviceLocator->get('Config');
             //$configuration = new Configuration($config['wizard']);
 
             $application = $serviceLocator->get('Application');
