@@ -5,7 +5,7 @@ use Zend\Session\Container as SessionContainer;
 use Zend\Session\SessionManager;
 use Zend\Session\Storage\ArrayStorage as SessionStorage;
 
-class WizardTest extends \PHPUnit_Framework_TestCase
+class AbstractWizardTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Wizard
