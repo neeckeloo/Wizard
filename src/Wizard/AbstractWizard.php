@@ -8,11 +8,12 @@ use Wizard\Form\Element\Button\Valid as ValidButton;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\Mvc\Router\RouteMatch;
+use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Zend\ServiceManager\ServiceManager;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\ManagerInterface as SessionManager;
 
-abstract class AbstractWizard implements WizardInterface
+abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
@@ -34,6 +35,11 @@ abstract class AbstractWizard implements WizardInterface
     protected $sessionContainer;
 
     /**
+     * @var ServiceManager
+     */
+    protected $serviceManager;
+
+    /**
      * @var Request
      */
     protected $request;
@@ -44,11 +50,6 @@ abstract class AbstractWizard implements WizardInterface
     protected $response;
 
     /**
-     * @var RouteMatch
-     */
-    protected $routeMatch;
-
-    /**
      * @var StepCollection
      */
     protected $steps;
@@ -57,6 +58,15 @@ abstract class AbstractWizard implements WizardInterface
      * @var Form
      */
     protected $form;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setServiceManager(ServiceManager $serviceManager)
+    {
+        $this->serviceManager = $serviceManager;
+        return $this;
+    }
 
     /**
      * {@inheritDoc}
@@ -73,15 +83,6 @@ abstract class AbstractWizard implements WizardInterface
     public function setResponse(Response $response)
     {
         $this->response = $response;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setRouteMatch(RouteMatch $routeMatch)
-    {
-        $this->routeMatch = $routeMatch;
         return $this;
     }
 
@@ -176,17 +177,17 @@ abstract class AbstractWizard implements WizardInterface
     public function getForm()
     {
         if (null === $this->form) {
-            $this->form = new Form();
+            $currentStep = $this->getCurrentStep();
+            if (!$currentStep) {
+                return null;
+            }
+
+            $this->form = $this->serviceManager->get('Wizard\Form');
             $this->form->setAttribute('action', sprintf(
                 '?%s=%s',
                 self::TOKEN_PARAM_NAME,
                 $this->getUniqueid()
             ));
-
-            $currentStep = $this->getCurrentStep();
-            if (!$currentStep) {
-                return null;
-            }
 
             $stepForm = $currentStep->getForm();
             if ($stepForm instanceof Form) {
@@ -194,38 +195,16 @@ abstract class AbstractWizard implements WizardInterface
                 $this->form->add($stepForm);
             }
 
-            $buttons = $this->getFormButtons($currentStep);
-            foreach ($buttons as $button) {
-                $this->form->add($button, array(
-                    'priority' => -100,
-                ));
+            if (!$this->getSteps()->getPrevious($currentStep)) {
+                $this->form->remove('previous');
+            }
+
+            if (!$this->getSteps()->getNext($currentStep)) {
+                $this->form->get('next')->setLabel('Valider');
             }
         }
 
         return $this->form;
-    }
-
-    /**
-     * @param  StepInterface $step
-     * @return array
-     */
-    protected function getFormButtons($step)
-    {
-        $buttons = array();
-
-        if ($this->getSteps()->getPrevious($step)) {
-            $buttons[] = new PreviousButton();
-        }
-
-        if ($this->getSteps()->getNext($step)) {
-            $submitButton = new NextButton();
-        } else {
-            $submitButton = new ValidButton();
-        }
-
-        $buttons[] = $submitButton;
-
-        return $buttons;
     }
 
     /**

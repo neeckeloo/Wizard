@@ -4,7 +4,6 @@ namespace Wizard;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\Mvc\Router\RouteMatch;
 use Zend\Session\ManagerInterface as SessionManager;
 
 interface WizardInterface
@@ -20,12 +19,6 @@ interface WizardInterface
      * @return Wizard
      */
     public function setResponse(Response $response);
-
-    /**
-     * @param  RouteMatch $routeMatch
-     * @return Wizard
-     */
-    public function setRouteMatch(RouteMatch $routeMatch);
 
     /**
      * @param  SessionManager $sessionManager

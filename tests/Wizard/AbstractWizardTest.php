@@ -19,25 +19,15 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $request = $this->getMock('Zend\Http\Request');
-        $response = $this->getMock('Zend\Http\Response');
-
-        $routeMatch = $this->getMock('Zend\Mvc\Router\RouteMatch', array(), array(), '', false);
-        $routeMatch
-            ->expects($this->any())
-            ->method('getParam')
-            ->will($this->returnValue('foo'));
-
-        $sessionStorage = new SessionStorage;
-        $sessionManager = new SessionManager(null, $sessionStorage);
+        $sessionManager = $this->getSessionManager();
 
         $this->wizard = $this->getMockForAbstractClass(
             'Wizard\AbstractWizard', array(), '', true, true, true, array('getSessionContainer')
         );
         $this->wizard
-            ->setRequest($request)
-            ->setResponse($response)
-            ->setRouteMatch($routeMatch)
+            ->setServiceManager($this->getServiceManagerMock())
+            ->setRequest($this->getMock('Zend\Http\Request'))
+            ->setResponse($this->getMock('Zend\Http\Response'))
             ->setSessionManager($sessionManager);
 
         $this->sessionContainer = new SessionContainer('foo', $sessionManager);
@@ -81,9 +71,9 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $form);
 
         $this->assertFalse($form->has('previous'));
-        $this->assertTrue($form->has('submit'));
+        $this->assertTrue($form->has('next'));
 
-        $submitButton = $form->get('submit');
+        $submitButton = $form->get('next');
         $this->assertEquals('Suivant', $submitButton->getLabel());
     }
 
@@ -100,9 +90,9 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $form);
 
         $this->assertTrue($form->has('previous'));
-        $this->assertTrue($form->has('submit'));
+        $this->assertTrue($form->has('next'));
 
-        $submitButton = $form->get('submit');
+        $submitButton = $form->get('next');
         $this->assertEquals('Suivant', $submitButton->getLabel());
     }
 
@@ -118,9 +108,9 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $form);
 
         $this->assertTrue($form->has('previous'));
-        $this->assertTrue($form->has('submit'));
+        $this->assertTrue($form->has('next'));
 
-        $submitButton = $form->get('submit');
+        $submitButton = $form->get('next');
         $this->assertEquals('Valider', $submitButton->getLabel());
     }
 
@@ -153,5 +143,35 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($name));
 
         return $mock;
+    }
+
+    /**
+     * @return \Zend\ServiceManager\ServiceManager
+     */
+    public function getServiceManagerMock()
+    {
+        $form = new \Zend\Form\Form();
+        $form
+            ->add(new \Wizard\Form\Element\Button\Previous())
+            ->add(new \Wizard\Form\Element\Button\Next());
+
+        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManager
+            ->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($form));
+
+        return $serviceManager;
+    }
+
+    /**
+     * @return \Zend\Session\SessionManager
+     */
+    public function getSessionManager()
+    {
+        $sessionStorage = new SessionStorage;
+        $sessionManager = new SessionManager(null, $sessionStorage);
+
+        return $sessionManager;
     }
 }

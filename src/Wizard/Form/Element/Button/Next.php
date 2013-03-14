@@ -1,8 +1,18 @@
 <?php
 namespace Wizard\Form\Element\Button;
 
-class Next extends Submit
+use Zend\Form\Element\Button as BaseButton;
+
+class Next extends BaseButton
 {
+    /**
+     * @var array
+     */
+    protected $attributes = array(
+        'name' => 'next',
+        'type' => 'submit',
+    );
+    
     /**
      * @var string
      */
