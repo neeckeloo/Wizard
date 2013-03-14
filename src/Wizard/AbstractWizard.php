@@ -59,8 +59,7 @@ abstract class AbstractWizard implements WizardInterface
     protected $form;
 
     /**
-     * @param  Request $request
-     * @return Wizard
+     * {@inheritDoc}
      */
     public function setRequest(Request $request)
     {
@@ -69,8 +68,7 @@ abstract class AbstractWizard implements WizardInterface
     }
 
     /**
-     * @param  Response $response
-     * @return Wizard
+     * {@inheritDoc}
      */
     public function setResponse(Response $response)
     {
@@ -79,8 +77,7 @@ abstract class AbstractWizard implements WizardInterface
     }
 
     /**
-     * @param  RouteMatch $routeMatch
-     * @return Wizard
+     * {@inheritDoc}
      */
     public function setRouteMatch(RouteMatch $routeMatch)
     {
@@ -89,8 +86,7 @@ abstract class AbstractWizard implements WizardInterface
     }
 
     /**
-     * @param  SessionManager $sessionManager
-     * @return Wizard
+     * {@inheritDoc}
      */
     public function setSessionManager(SessionManager $sessionManager)
     {
