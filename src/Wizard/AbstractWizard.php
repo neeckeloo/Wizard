@@ -6,7 +6,6 @@ use Wizard\Form\Element\Button\Previous as PreviousButton;
 use Wizard\Form\Element\Button\Next as NextButton;
 use Wizard\Form\Element\Button\Valid as ValidButton;
 use Zend\Form\Form;
-use Zend\Form\Element;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\Router\RouteMatch;
