@@ -11,7 +11,7 @@ use Zend\ServiceManager\ServiceManager;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\ManagerInterface as SessionManager;
 
-abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInterface
+class Wizard implements WizardInterface, ServiceManagerAwareInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';

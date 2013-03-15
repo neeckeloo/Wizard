@@ -7,7 +7,7 @@ use Zend\Session\Container as SessionContainer;
 use Zend\Session\SessionManager;
 use Zend\Session\Storage\ArrayStorage as SessionStorage;
 
-class AbstractWizardTest extends \PHPUnit_Framework_TestCase
+class WizardTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Wizard
@@ -36,9 +36,7 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         
         $sessionManager = $this->getSessionManager();
 
-        $this->wizard = $this->getMockForAbstractClass(
-            'Wizard\AbstractWizard', array(), '', true, true, true, array('getSessionContainer')
-        );
+        $this->wizard = $this->getMock('Wizard\Wizard', array('getSessionContainer'));
         $this->wizard
             ->setServiceManager($this->getServiceManagerMock())
             ->setRequest($this->request)
