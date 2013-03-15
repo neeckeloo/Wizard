@@ -103,7 +103,7 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
     }
 
     /**
-     * @return EventManager
+     * {@inheritDoc}
      */
     public function getEventManager()
     {

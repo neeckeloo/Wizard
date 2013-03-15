@@ -1,6 +1,7 @@
 <?php
 namespace Wizard;
 
+use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
@@ -25,6 +26,11 @@ interface WizardInterface
      * @return Wizard
      */
     public function setSessionManager(SessionManager $sessionManager);
+
+    /**
+     * @return EventManager
+     */
+    public function getEventManager();
 
     /**
      * @return StepInterface
