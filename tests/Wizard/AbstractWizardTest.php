@@ -174,7 +174,7 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $fooStep = $this->getStepMock('foo');
         $fooStep
             ->expects($this->any())
-            ->method('process')
+            ->method('isComplete')
             ->will($this->returnValue(true));
 
         $steps = $this->wizard->getSteps();

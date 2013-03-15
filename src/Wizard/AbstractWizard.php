@@ -2,6 +2,7 @@
 namespace Wizard;
 
 use Wizard\Exception;
+use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
@@ -15,6 +16,10 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
     const TOKEN_PARAM_NAME = 'uid';
+
+    const EVENT_COMPLETE = 'wizard-complete';
+    const EVENT_PRE_PROCESS_STEP = 'step-pre-process';
+    const EVENT_POST_PROCESS_STEP = 'step-post-process';
 
     /**
      * @var string
@@ -45,6 +50,11 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
      * @var Response
      */
     protected $response;
+
+    /**
+     * @var EventManager
+     */
+    protected $eventManager;
 
     /**
      * @var StepCollection
@@ -90,6 +100,19 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
     {
         $this->sessionManager = $sessionManager;
         return $this;
+    }
+
+    /**
+     * @return EventManager
+     */
+    public function getEventManager()
+    {
+        if (null === $this->eventManager) {
+            $this->eventManager = new EventManager();
+            $this->eventManager->attach(self::EVENT_COMPLETE, array($this, 'complete'));
+        }
+
+        return $this->eventManager;
     }
 
     /**
@@ -263,10 +286,22 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
                 throw new Exception\RuntimeException('No data found according to the current step form.');
             }
 
-            $complete = $currentStep->process($post[self::STEP_FORM_NAME]);
-            if ($complete) {
+            $values = $post[self::STEP_FORM_NAME];
+
+            $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
+                'values' => $values,
+            ));
+
+            $complete = $currentStep->process($values);
+            if (null !== $complete) {
+                $currentStep->setComplete($complete);
+            }
+
+            $this->getEventManager()->trigger(self::EVENT_POST_PROCESS_STEP, $currentStep);
+
+            if ($currentStep->isComplete()) {
                 if ($steps->isLast($currentStep)) {
-                    $this->complete();
+                    $this->getEventManager()->trigger(self::EVENT_COMPLETE, $this);
                 } else {
                     $nextStep = $steps->getNext($currentStep);
                     $this->setCurrentStep($nextStep);
@@ -278,7 +313,7 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
     /**
      * @return void
      */
-    protected function complete()
+    public function complete()
     {
 
     }

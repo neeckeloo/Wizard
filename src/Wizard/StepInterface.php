@@ -45,7 +45,7 @@ interface StepInterface
 
     /**
      * @param  array $data
-     * @return void
+     * @return void|bool
      */
     public function process(array $data);
 
