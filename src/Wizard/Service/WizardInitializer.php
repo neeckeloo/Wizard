@@ -23,15 +23,14 @@ class WizardInitializer implements InitializerInterface
 
             $request = $application->getRequest();
             $response = $application->getResponse();
-            $routeMatch = $application->getMvcEvent()->getRouteMatch();
 
             $sessionStorage = $serviceLocator->get('session');
             $sessionManager = new SessionManager(null, $sessionStorage);
 
             $instance
+                ->setServiceManager($serviceLocator)
                 ->setRequest($request)
                 ->setResponse($response)
-                ->setRouteMatch($routeMatch)
                 ->setSessionManager($sessionManager);
         }
     }
