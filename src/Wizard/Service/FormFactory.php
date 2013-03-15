@@ -12,7 +12,7 @@ class FormFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $form = new Zend\Form\Form();
+        $form = new \Zend\Form\Form();
 
         $form
             ->add($serviceLocator->get('Wizard\Form\Element\Button\Previous'))
