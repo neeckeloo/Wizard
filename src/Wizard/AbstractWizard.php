@@ -2,9 +2,6 @@
 namespace Wizard;
 
 use Wizard\Exception;
-use Wizard\Form\Element\Button\Previous as PreviousButton;
-use Wizard\Form\Element\Button\Next as NextButton;
-use Wizard\Form\Element\Button\Valid as ValidButton;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
@@ -200,7 +197,9 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
             }
 
             if (!$this->getSteps()->getNext($currentStep)) {
-                $this->form->get('next')->setLabel('Valider');
+                $this->form->remove('next');
+            } else {
+                $this->form->remove('valid');
             }
         }
 
@@ -248,7 +247,7 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
      */
     public function process()
     {
-        if ($this->request->isPost()) {
+        if (!$this->request->isPost()) {
             return;
         }
 
@@ -260,6 +259,10 @@ abstract class AbstractWizard implements WizardInterface, ServiceManagerAwareInt
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
         } else {
+            if (!isset($post[self::STEP_FORM_NAME])) {
+                throw new Exception\RuntimeException('No data found according to the current step form.');
+            }
+
             $complete = $currentStep->process($post[self::STEP_FORM_NAME]);
             if ($complete) {
                 if ($steps->isLast($currentStep)) {

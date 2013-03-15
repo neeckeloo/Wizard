@@ -1,6 +1,8 @@
 <?php
 namespace Wizard;
 
+use Zend\Http\Request;
+use Zend\Http\Response;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\SessionManager;
 use Zend\Session\Storage\ArrayStorage as SessionStorage;
@@ -17,8 +19,21 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
      */
     protected $sessionContainer;
 
+    /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * @var Response
+     */
+    protected $response;
+
     public function setUp()
     {
+        $this->request = $this->getMock('Zend\Http\Request');
+        $this->response = $this->getMock('Zend\Http\Response');
+        
         $sessionManager = $this->getSessionManager();
 
         $this->wizard = $this->getMockForAbstractClass(
@@ -26,8 +41,8 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         );
         $this->wizard
             ->setServiceManager($this->getServiceManagerMock())
-            ->setRequest($this->getMock('Zend\Http\Request'))
-            ->setResponse($this->getMock('Zend\Http\Response'))
+            ->setRequest($this->request)
+            ->setResponse($this->response)
             ->setSessionManager($sessionManager);
 
         $this->sessionContainer = new SessionContainer('foo', $sessionManager);
@@ -72,9 +87,7 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($form->has('previous'));
         $this->assertTrue($form->has('next'));
-
-        $submitButton = $form->get('next');
-        $this->assertEquals('Suivant', $submitButton->getLabel());
+        $this->assertFalse($form->has('valid'));
     }
 
     public function testGetFormOfMiddleStep()
@@ -91,9 +104,7 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($form->has('previous'));
         $this->assertTrue($form->has('next'));
-
-        $submitButton = $form->get('next');
-        $this->assertEquals('Suivant', $submitButton->getLabel());
+        $this->assertFalse($form->has('valid'));
     }
 
     public function testGetFormOfLastStep()
@@ -108,10 +119,8 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $form);
 
         $this->assertTrue($form->has('previous'));
-        $this->assertTrue($form->has('next'));
-
-        $submitButton = $form->get('next');
-        $this->assertEquals('Valider', $submitButton->getLabel());
+        $this->assertFalse($form->has('next'));
+        $this->assertTrue($form->has('valid'));
     }
 
     public function testFormActionAttribute()
@@ -123,6 +132,58 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $action = $form->getAttribute('action');
 
         $this->assertStringMatchesFormat('?%s=%s', $action);
+    }
+
+    public function testWizardCanGoToPreviousStep()
+    {
+        $this->request
+            ->expects($this->any())
+            ->method('isPost')
+            ->will($this->returnValue(true));
+
+        $this->request
+            ->expects($this->any())
+            ->method('getPost')
+            ->will($this->returnValue(array('previous' => true)));
+
+        $this->sessionContainer->currentStep = 'bar';
+
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+
+        $this->wizard->process();
+
+        $this->assertEquals('foo', $this->sessionContainer->currentStep);
+    }
+
+    public function testWizardCanGoToNextStep()
+    {
+        $this->request
+            ->expects($this->any())
+            ->method('isPost')
+            ->will($this->returnValue(true));
+
+        $this->request
+            ->expects($this->any())
+            ->method('getPost')
+            ->will($this->returnValue(array('step' => array())));
+
+        $this->sessionContainer->currentStep = 'foo';
+
+        $fooStep = $this->getStepMock('foo');
+        $fooStep
+            ->expects($this->any())
+            ->method('process')
+            ->will($this->returnValue(true));
+
+        $steps = $this->wizard->getSteps();
+        $steps->add($fooStep);
+        $steps->add($this->getStepMock('bar'));
+
+        $this->wizard->process();
+
+        $this->assertEquals('bar', $this->sessionContainer->currentStep);
     }
 
     public function testSetAndGetStepCollection()
@@ -153,7 +214,8 @@ class AbstractWizardTest extends \PHPUnit_Framework_TestCase
         $form = new \Zend\Form\Form();
         $form
             ->add(new \Wizard\Form\Element\Button\Previous())
-            ->add(new \Wizard\Form\Element\Button\Next());
+            ->add(new \Wizard\Form\Element\Button\Next())
+            ->add(new \Wizard\Form\Element\Button\Valid());
 
         $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
         $serviceManager

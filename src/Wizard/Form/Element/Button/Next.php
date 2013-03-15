@@ -16,5 +16,5 @@ class Next extends BaseButton
     /**
      * @var string
      */
-    protected $label = 'Suivant';
+    protected $label = 'Next';
 }

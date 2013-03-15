@@ -3,18 +3,18 @@ namespace Wizard\Form\Element\Button;
 
 use Zend\Form\Element\Button as BaseButton;
 
-class Previous extends BaseButton
+class Valid extends BaseButton
 {
     /**
-     * @var array 
+     * @var array
      */
     protected $attributes = array(
-        'name' => 'previous',
+        'name' => 'valid',
         'type' => 'submit',
     );
-
+    
     /**
      * @var string
      */
-    protected $label = 'Previous';
+    protected $label = 'Valid';
 }
