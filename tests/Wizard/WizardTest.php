@@ -184,6 +184,21 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->sessionContainer->currentStep);
     }
 
+    public function testCurrentStepNumber()
+    {
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+        
+        $number = $this->wizard->getCurrentStepNumber();
+        $this->assertEquals(1, $number);
+
+        $this->sessionContainer->currentStep = 'bar';
+
+        $number = $this->wizard->getCurrentStepNumber();
+        $this->assertEquals(2, $number);
+    }
+
     public function testSetAndGetStepCollection()
     {
         $this->assertInstanceOf('Wizard\StepCollection', $this->wizard->getSteps());

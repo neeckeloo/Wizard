@@ -192,6 +192,25 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
+     * @return int
+     */
+    public function getCurrentStepNumber()
+    {
+        $currentStep = $this->getCurrentStep();
+        $steps = $this->getSteps();
+
+        $i = 1;
+        foreach ($steps as $step) {
+            if ($step->getName() == $currentStep->getName()) {
+                break;
+            }
+            $i++;
+        }
+
+        return $i;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getForm()
