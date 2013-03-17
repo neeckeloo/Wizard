@@ -112,4 +112,9 @@ abstract class AbstractStep implements StepInterface
     {
         return $this->complete;
     }
+
+    public function __sleep()
+    {
+        return array('title', 'data', 'complete');
+    }
 }

@@ -67,6 +67,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $form;
 
     /**
+     * @var string
+     */
+    protected $redirectUrl;
+
+    /**
      * {@inheritDoc}
      */
     public function setServiceManager(ServiceManager $serviceManager)
@@ -122,9 +127,12 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     {
         if (null === $this->sessionContainer) {
             $this->sessionContainer = new SessionContainer(
-                $this->getSessionContainerName(),
-                $this->sessionManager
+                $this->getSessionContainerName()
             );
+
+            if (empty($this->sessionContainer->steps)) {
+                $this->sessionContainer->steps = $this->getSteps();
+            }
         }
 
         return $this->sessionContainer;
@@ -167,7 +175,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         if (!$this->getSteps()->has($step)) {
             return $this;
         }
-
+        
         $this->getSessionContainer()->currentStep = $step;
 
         return $this;
@@ -231,6 +239,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             $stepForm = $currentStep->getForm();
             if ($stepForm instanceof Form) {
                 $stepForm->setName(self::STEP_FORM_NAME);
+                $stepForm->populateValues($currentStep->getData());
                 $this->form->add($stepForm);
             }
 
@@ -275,12 +284,24 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function setRedirectUrl($url)
+    {
+        $this->redirectUrl = (string) $url;
+        return $this;
+    }
+
+    /**
      * @return void
      */
     protected function doRedirect()
     {
-        $url = $this->request->getUri()->toString();
-        $this->response->getHeaders()->addHeaderLine('Location', $url);
+        if (null === $this->redirectUrl) {
+            throw new Exception\RuntimeException('You must provide url to redirect when wizard is complete.');
+        }
+
+        $this->response->getHeaders()->addHeaderLine('Location', $this->redirectUrl);
         $this->response->setStatusCode(302);
     }
 
@@ -301,11 +322,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
         } else {
-            if (!isset($post[self::STEP_FORM_NAME])) {
-                throw new Exception\RuntimeException('No data found according to the current step form.');
-            }
-
-            $values = $post[self::STEP_FORM_NAME];
+            $values = isset($post[self::STEP_FORM_NAME]) ? $post[self::STEP_FORM_NAME] : array();
 
             $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,
@@ -319,8 +336,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             $this->getEventManager()->trigger(self::EVENT_POST_PROCESS_STEP, $currentStep);
 
             if ($currentStep->isComplete()) {
+                $currentStep->setData($values);
+
                 if ($steps->isLast($currentStep)) {
                     $this->getEventManager()->trigger(self::EVENT_COMPLETE, $this);
+                    $this->doRedirect();
                 } else {
                     $nextStep = $steps->getNext($currentStep);
                     $this->setCurrentStep($nextStep);

@@ -52,7 +52,13 @@ interface WizardInterface
      * @return StepCollection
      */
     public function getSteps();
-    
+
+    /**
+     * @param  string $url
+     * @return WizardInterface
+     */
+    public function setRedirectUrl($url);
+
     /**
      * @return void
      */
