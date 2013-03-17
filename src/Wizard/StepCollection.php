@@ -15,6 +15,8 @@ class StepCollection implements \IteratorAggregate, \Countable
     public function add(StepInterface $step)
     {
         if ($this->has($step)) {
+            $form = $step->getForm();
+            $this->get($step)->setForm($form);
             return $this;
         }
 
