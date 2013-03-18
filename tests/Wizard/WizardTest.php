@@ -31,8 +31,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->request = $this->getMock('Zend\Http\Request');
-        $this->response = $this->getMock('Zend\Http\Response');
+        $this->request = new Request;
+        $this->response = new Response;
         
         $sessionManager = $this->getSessionManager();
 
@@ -132,17 +132,43 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertStringMatchesFormat('?%s=%s', $action);
     }
 
-    public function testWizardCanGoToPreviousStep()
+    public function testSetStepDataDuringProcess()
     {
+        $params = new \Zend\Stdlib\Parameters(array(
+            'step' => array(
+                'foo' => 123,
+                'bar' => 456,
+            ),
+        ));
         $this->request
+            ->setMethod(Request::METHOD_POST)
+            ->setPost($params);
+        
+        $this->sessionContainer->currentStep = 'foo';
+
+        $fooStep = $this->getStepMock('foo');
+        $fooStep
             ->expects($this->any())
-            ->method('isPost')
+            ->method('isComplete')
             ->will($this->returnValue(true));
 
+        $steps = $this->wizard->getSteps();
+        $steps->add($fooStep);
+        $steps->add($this->getStepMock('bar'));
+
+        $this->wizard->process();
+
+        $stepData = $fooStep->getData();
+        $this->assertArrayHasKey('foo', $stepData);
+        $this->assertArrayHasKey('bar', $stepData);
+    }
+
+    public function testCanGoToPreviousStep()
+    {
+        $params = new \Zend\Stdlib\Parameters(array('previous' => true));
         $this->request
-            ->expects($this->any())
-            ->method('getPost')
-            ->will($this->returnValue(array('previous' => true)));
+            ->setMethod(Request::METHOD_POST)
+            ->setPost($params);
 
         $this->sessionContainer->currentStep = 'bar';
 
@@ -155,17 +181,12 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $this->sessionContainer->currentStep);
     }
 
-    public function testWizardCanGoToNextStep()
+    public function testCanGoToNextStep()
     {
+        $params = new \Zend\Stdlib\Parameters(array('step' => array()));
         $this->request
-            ->expects($this->any())
-            ->method('isPost')
-            ->will($this->returnValue(true));
-
-        $this->request
-            ->expects($this->any())
-            ->method('getPost')
-            ->will($this->returnValue(array('step' => array())));
+            ->setMethod(Request::METHOD_POST)
+            ->setPost($params);
 
         $this->sessionContainer->currentStep = 'foo';
 
@@ -184,19 +205,45 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->sessionContainer->currentStep);
     }
 
+    public function testCanRedirectAfterLastStep()
+    {
+        $params = new \Zend\Stdlib\Parameters(array('step' => array()));
+        $this->request
+            ->setMethod(Request::METHOD_POST)
+            ->setPost($params);
+
+        $uri = '/foo';
+        $this->wizard->setRedirectUrl($uri);
+
+        $fooStep = $this->getStepMock('foo');
+        $fooStep
+            ->expects($this->any())
+            ->method('isComplete')
+            ->will($this->returnValue(true));
+
+        $steps = $this->wizard->getSteps();
+        $steps->add($fooStep);
+
+        $this->wizard->process();
+
+        $this->assertEquals(302, $this->response->getStatusCode());
+
+        $headers = $this->response->getHeaders();
+        /* @var $locationHeader \Zend\Http\Header\Location */
+        $locationHeader = $headers->get('Location');
+
+        $this->assertEquals($uri, $locationHeader->getUri());
+    }
+
     public function testCurrentStepNumber()
     {
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
-        
-        $number = $this->wizard->getCurrentStepNumber();
-        $this->assertEquals(1, $number);
+        $steps->add($this->getStepMock('bar'));        
+        $this->assertEquals(1, $this->wizard->getCurrentStepNumber());
 
         $this->sessionContainer->currentStep = 'bar';
-
-        $number = $this->wizard->getCurrentStepNumber();
-        $this->assertEquals(2, $number);
+        $this->assertEquals(2, $this->wizard->getCurrentStepNumber());
     }
 
     public function testSetAndGetStepCollection()
@@ -210,7 +257,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
      */
     protected function getStepMock($name)
     {
-        $mock = $this->getMock('Wizard\StepInterface');
+        $mock = $this->getMockForAbstractClass('Wizard\AbstractStep', array(), '', true, true, true, array('getName', 'isComplete'));
         $mock
             ->expects($this->any())
             ->method('getName')

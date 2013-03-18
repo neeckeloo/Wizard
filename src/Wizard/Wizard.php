@@ -127,7 +127,8 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     {
         if (null === $this->sessionContainer) {
             $this->sessionContainer = new SessionContainer(
-                $this->getSessionContainerName()
+                $this->getSessionContainerName(),
+                $this->sessionManager
             );
 
             if (empty($this->sessionContainer->steps)) {

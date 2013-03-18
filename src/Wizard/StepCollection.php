@@ -1,6 +1,8 @@
 <?php
 namespace Wizard;
 
+use Zend\Form\Form;
+
 class StepCollection implements \IteratorAggregate, \Countable
 {
     /**
@@ -16,7 +18,9 @@ class StepCollection implements \IteratorAggregate, \Countable
     {
         if ($this->has($step)) {
             $form = $step->getForm();
-            $this->get($step)->setForm($form);
+            if ($form instanceof Form) {
+                $this->get($step)->setForm($form);
+            }
             return $this;
         }
 
