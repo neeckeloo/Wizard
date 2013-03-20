@@ -2,6 +2,7 @@
 namespace Wizard;
 
 use Zend\Form\Form;
+use Traversable;
 
 abstract class AbstractStep implements StepInterface
 {
@@ -114,8 +115,49 @@ abstract class AbstractStep implements StepInterface
         return $this->complete;
     }
 
-    public function __sleep()
+    /**
+     * @param  array|Traversable $options
+     * @throws Exception\InvalidArgumentException
+     * @return AbstractStep
+     */
+    public function setFromArray($options)
     {
-        return array('title', 'data', 'complete');
+        if (!is_array($options) && !$options instanceof Traversable) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Parameter provided to %s must be an array or Traversable',
+                __METHOD__
+            ));
+        }
+
+        foreach ($options as $key => $value) {
+            $filter = new \Zend\Filter\Word\UnderscoreToCamelCase();
+            $method = 'set' . ucfirst($filter->filter($key));
+            if (!method_exists($this, $method)) {
+                continue;
+            }
+
+            $this->$method($value);
+        }
+        
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $vars = get_object_vars($this);
+
+        $options = array();
+        foreach ($vars as $key => $value) {
+            if ($key == 'form') {
+                continue;
+            }
+
+            $options[$key] = $value;
+        }
+
+        return $options;
     }
 }

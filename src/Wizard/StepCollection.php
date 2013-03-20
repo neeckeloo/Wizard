@@ -1,12 +1,33 @@
 <?php
 namespace Wizard;
 
+use Zend\EventManager\EventManager;
+
 class StepCollection implements \IteratorAggregate, \Countable
 {
+    const EVENT_ADD_STEP = 'add-step';
+
     /**
      * @var array
      */
     protected $steps = array();
+    
+    /**
+     * @var EventManager
+     */
+    protected $eventManager;
+
+    /**
+     * @return EventManager
+     */
+    public function getEventManager()
+    {
+        if (null === $this->eventManager) {
+            $this->eventManager = new EventManager();
+        }
+
+        return $this->eventManager;
+    }
 
     /**
      * @param  StepInterface $step
@@ -15,10 +36,10 @@ class StepCollection implements \IteratorAggregate, \Countable
     public function add(StepInterface $step)
     {
         if ($this->has($step)) {
-            $form = $step->getForm();
-            $this->get($step)->setForm($form);
             return $this;
         }
+
+        $this->getEventManager()->trigger(self::EVENT_ADD_STEP, $step);
 
         $this->steps[$step->getName()] = $step;
         return $this;
