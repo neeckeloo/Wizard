@@ -57,4 +57,33 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
         $this->step->setComplete();
         $this->assertTrue($this->step->isComplete());
     }
+
+    public function testSetFromArray()
+    {
+        $this->step->setFromArray(array(
+            'complete' => true,
+            'data'        => array(
+                'foo' => 132,
+            ),
+        ));
+
+        $this->assertTrue($this->step->isComplete());
+        $this->assertCount(1, $this->step->getData());
+    }
+
+    public function testToArray()
+    {
+        $this->step
+            ->setTitle('foo');
+
+        $options = $this->step->toArray();
+
+        $this->assertArrayHasKey('title', $options);
+        $this->assertEquals('foo', $options['title']);
+
+        $this->assertArrayHasKey('complete', $options);
+        $this->assertFalse($options['complete']);
+
+        $this->assertArrayNotHasKey('form', $options);
+    }
 }

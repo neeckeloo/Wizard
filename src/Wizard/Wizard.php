@@ -3,6 +3,7 @@ namespace Wizard;
 
 use Wizard\Exception;
 use Zend\EventManager\EventManager;
+use Zend\EventManager\Event;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
@@ -130,10 +131,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
                 $this->getSessionContainerName(),
                 $this->sessionManager
             );
-
-            if (empty($this->sessionContainer->steps)) {
-                $this->sessionContainer->steps = $this->getSteps();
-            }
         }
 
         return $this->sessionContainer;
@@ -273,12 +270,22 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function getSteps()
     {
         if (null === $this->steps) {
+            $this->setSteps(new StepCollection());
+
             $sessionContainer = $this->getSessionContainer();
-            if (isset($sessionContainer->steps)) {
-                $this->setSteps($sessionContainer->steps);
-            } else {
-                $this->setSteps(new StepCollection());
-            }
+            $this->steps->getEventManager()->attach(StepCollection::EVENT_ADD_STEP, function(Event $e) use ($sessionContainer) {
+                if (!isset($sessionContainer->steps)) {
+                    return;
+                }
+
+                $step = $e->getTarget();
+                $stepName = $step->getName();
+                if (!isset($sessionContainer->steps->{$stepName})) {
+                    return;
+                }
+
+                $step->setFromArray($sessionContainer->steps->{$stepName});
+            });
         }
 
         return $this->steps;
@@ -356,5 +363,17 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function complete()
     {
 
+    }
+
+    public function __destruct()
+    {
+        if (empty($this->sessionContainer->steps)) {
+            $this->sessionContainer->steps = array();
+        }
+
+        $steps = $this->getSteps();
+        foreach ($steps as $step) {
+            $this->sessionContainer->steps[$step->getName()] = $step->toArray();
+        }
     }
 }
