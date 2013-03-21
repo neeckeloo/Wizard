@@ -5,7 +5,8 @@ return array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'Wizard\Form' => 'Wizard\Service\FormFactory',
+            'Wizard\Form'           => 'Wizard\Service\FormFactory',
+            'Wizard\WizardRenderer' => 'Wizard\Service\WizardRendererFactory',
         ),
         'invokables' => array(
             'Zend\Session\Storage'                => 'Zend\Session\Storage\SessionStorage',
@@ -15,6 +16,16 @@ return array(
         ),
         'aliases' => array(
             'session' => 'Zend\Session\Storage',
+        ),
+    ),
+
+    'view_manager' => array(
+        'template_map' => array(
+            'layout'        => __DIR__ . '/../view/wizard/layout.phtml',
+            'wizard/header' => __DIR__ . '/../view/wizard/header.phtml',
+        ),
+        'template_path_stack' => array(
+            __DIR__ . '/../view',
         ),
     ),
 );

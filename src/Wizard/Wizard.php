@@ -11,6 +11,7 @@ use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\ManagerInterface as SessionManager;
+use Zend\View\Renderer\RendererInterface as Renderer;
 
 class Wizard implements WizardInterface, ServiceManagerAwareInterface
 {
@@ -53,6 +54,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $response;
 
     /**
+     * @var Renderer
+     */
+    protected $renderer;
+
+    /**
      * @var EventManager
      */
     protected $eventManager;
@@ -84,6 +90,14 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * {@inheritDoc}
      */
+    public function getServiceManager()
+    {
+        return $this->serviceManager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setRequest(Request $request)
     {
         $this->request = $request;
@@ -105,6 +119,15 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function setSessionManager(SessionManager $sessionManager)
     {
         $this->sessionManager = $sessionManager;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setRenderer(WizardRenderer $renderer)
+    {
+        $this->renderer = $renderer;
         return $this;
     }
 
@@ -304,7 +327,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @return void
      */
     protected function doRedirect()
-    {
+    {        
         if (null === $this->redirectUrl) {
             throw new Exception\RuntimeException('You must provide url to redirect when wizard is complete.');
         }
@@ -363,6 +386,17 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function complete()
     {
 
+    }
+
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        $model = new ViewModel(array(
+            'wizard' => $this,
+        ));
+        return $this->renderer->render($model);
     }
 
     public function __destruct()

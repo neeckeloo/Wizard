@@ -5,6 +5,7 @@ use Wizard\WizardInterface;
 use Zend\Session\SessionManager;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\View\Renderer\PhpRenderer;
 
 class WizardInitializer implements InitializerInterface
 {
@@ -32,6 +33,10 @@ class WizardInitializer implements InitializerInterface
                 ->setRequest($request)
                 ->setResponse($response)
                 ->setSessionManager($sessionManager);
+
+            $renderer = new PhpRenderer;
+            $renderer->setResolver($serviceLocator->get('ViewResolver'));
+            $instance->setRenderer($renderer);
         }
     }
 }
