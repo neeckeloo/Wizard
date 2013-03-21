@@ -9,7 +9,7 @@ class FormFactory implements FactoryInterface
 {
     /**
      * @param  ServiceLocatorInterface $serviceLocator
-     * @return Client
+     * @return Form
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
