@@ -125,7 +125,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function setRenderer(WizardRenderer $renderer)
+    public function setRenderer(Renderer $renderer)
     {
         $this->renderer = $renderer;
         return $this;
