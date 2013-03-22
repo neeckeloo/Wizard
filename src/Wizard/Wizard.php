@@ -324,6 +324,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
+     * @throws Exception\RuntimeException
      * @return void
      */
     protected function doRedirect()
