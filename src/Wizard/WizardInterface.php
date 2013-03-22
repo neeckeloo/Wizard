@@ -12,31 +12,37 @@ use Zend\View\Renderer\RendererInterface as Renderer;
 interface WizardInterface
 {
     /**
+     * @param  ServiceManager $serviceManager
+     * @return WizardInterface
+     */
+    public function setServiceManager(ServiceManager $serviceManager);
+
+    /**
      * @return ServiceManager
      */
     public function getServiceManager();
 
     /**
      * @param  Request $request
-     * @return Wizard
+     * @return WizardInterface
      */
     public function setRequest(Request $request);
 
     /**
      * @param  Response $response
-     * @return Wizard
+     * @return WizardInterface
      */
     public function setResponse(Response $response);
 
     /**
      * @param  SessionManager $sessionManager
-     * @return Wizard
+     * @return WizardInterface
      */
     public function setSessionManager(SessionManager $sessionManager);
 
     /**
      * @param  Renderer $renderer
-     * @return Wizard
+     * @return WizardInterface
      */
     public function setRenderer(Renderer $renderer);
 
@@ -49,6 +55,11 @@ interface WizardInterface
      * @return StepInterface
      */
     public function getCurrentStep();
+
+    /**
+     * @return int
+     */
+    public function getCurrentStepNumber();
 
     /**
      * @return Form
@@ -76,4 +87,14 @@ interface WizardInterface
      * @return void
      */
     public function process();
+
+    /**
+     * @return void
+     */
+    public function complete();
+
+    /**
+     * @return string
+     */
+    public function render();
 }

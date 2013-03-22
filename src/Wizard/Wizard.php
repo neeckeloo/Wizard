@@ -221,7 +221,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function getCurrentStepNumber()
     {
@@ -372,7 +372,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function complete()
     {
@@ -380,7 +380,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function render()
     {
