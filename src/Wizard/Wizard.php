@@ -284,6 +284,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function setSteps(StepCollection $steps)
     {
         $this->steps = $steps;
+
+        $sessionContainer = $this->getSessionContainer();
+        $stepListener = new StepListener($sessionContainer);
+        $this->steps->getEventManager()->attachAggregate($stepListener);
+
         return $this;
     }
 
@@ -294,21 +299,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     {
         if (null === $this->steps) {
             $this->setSteps(new StepCollection());
-
-            $sessionContainer = $this->getSessionContainer();
-            $this->steps->getEventManager()->attach(StepCollection::EVENT_ADD_STEP, function(Event $e) use ($sessionContainer) {
-                if (!isset($sessionContainer->steps)) {
-                    return;
-                }
-
-                $step = $e->getTarget();
-                $stepName = $step->getName();
-                if (!isset($sessionContainer->steps->{$stepName})) {
-                    return;
-                }
-
-                $step->setFromArray($sessionContainer->steps->{$stepName});
-            });
         }
 
         return $this->steps;

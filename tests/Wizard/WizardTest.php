@@ -251,13 +251,40 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Wizard\StepCollection', $this->wizard->getSteps());
     }
 
+    public function testGetCollectionWithRestoredSteps()
+    {
+        $this->sessionContainer->steps = array(
+            'foo' => array(
+                'title' => 'Foo',
+                'data'  => array(
+                    'foo' => 123,
+                    'bar' => 456,
+                ),
+            ),
+        );
+        
+        $stepCollection = $this->wizard->getSteps();
+
+        $step = $this->getStepMock('foo');
+        $step
+            ->expects($this->any())
+            ->method('getForm')
+            ->will($this->returnValue(new \Zend\Form\Form));
+        $stepCollection->add($step);
+
+        $this->assertEquals('Foo', $step->getTitle());
+        $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
+    }
+
     /**
      * @param  string $name
      * @return StepInterface
      */
     protected function getStepMock($name)
     {
-        $mock = $this->getMockForAbstractClass('Wizard\AbstractStep', array(), '', true, true, true, array('getName', 'isComplete'));
+        $mock = $this->getMockForAbstractClass(
+            'Wizard\AbstractStep', array(), '', true, true, true, array('getName', 'getForm', 'isComplete')
+        );
         $mock
             ->expects($this->any())
             ->method('getName')
