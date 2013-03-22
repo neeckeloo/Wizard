@@ -195,9 +195,4 @@ class StepCollection implements \IteratorAggregate, \Countable
     {
         return count($this->steps);
     }
-
-    public function __sleep()
-    {
-        return array('steps');
-    }
 }
