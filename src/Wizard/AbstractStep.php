@@ -45,6 +45,7 @@ abstract class AbstractStep implements StepInterface
     public function setTitle($title)
     {
         $this->title = (string) $title;
+        return $this;
     }
 
     /**
