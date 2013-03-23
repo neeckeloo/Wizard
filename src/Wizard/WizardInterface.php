@@ -12,12 +12,6 @@ use Zend\View\Renderer\RendererInterface as Renderer;
 interface WizardInterface
 {
     /**
-     * @param  ServiceManager $serviceManager
-     * @return WizardInterface
-     */
-    public function setServiceManager(ServiceManager $serviceManager);
-
-    /**
      * @return ServiceManager
      */
     public function getServiceManager();
