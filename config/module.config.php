@@ -21,8 +21,9 @@ return array(
 
     'view_manager' => array(
         'template_map' => array(
-            'layout'        => __DIR__ . '/../view/wizard/layout.phtml',
-            'wizard/header' => __DIR__ . '/../view/wizard/header.phtml',
+            'wizard/layout'  => __DIR__ . '/../view/wizard/layout.phtml',
+            'wizard/header'  => __DIR__ . '/../view/wizard/header.phtml',
+            'wizard/buttons' => __DIR__ . '/../view/wizard/buttons.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',

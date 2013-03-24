@@ -7,6 +7,7 @@ use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Session\ManagerInterface as SessionManager;
+use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface as Renderer;
 
 interface WizardInterface
@@ -86,6 +87,11 @@ interface WizardInterface
      * @return void
      */
     public function complete();
+
+    /**
+     * @return ViewModel
+     */
+    public function getViewModel();
 
     /**
      * @return string

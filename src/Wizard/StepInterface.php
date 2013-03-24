@@ -33,6 +33,17 @@ interface StepInterface
     public function getForm();
 
     /**
+     * @param  string $template
+     * @return StepInterface
+     */
+    public function setViewTemplate($template);
+
+    /**
+     * @return string
+     */
+    public function getViewTemplate();
+
+    /**
      * @param  array $data
      * @return StepInterface
      */

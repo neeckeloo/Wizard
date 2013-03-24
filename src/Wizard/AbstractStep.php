@@ -17,6 +17,11 @@ abstract class AbstractStep implements StepInterface
     protected $form;
 
     /**
+     * @var string
+     */
+    protected $viewTemplate;
+
+    /**
      * @var array
      */
     protected $data = array();
@@ -71,6 +76,23 @@ abstract class AbstractStep implements StepInterface
     public function getForm()
     {
         return $this->form;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setViewTemplate($template)
+    {
+        $this->viewTemplate = (string) $template;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getViewTemplate()
+    {
+        return $this->viewTemplate;
     }
 
     /**

@@ -3,7 +3,6 @@ namespace Wizard;
 
 use Wizard\Exception;
 use Zend\EventManager\EventManager;
-use Zend\EventManager\Event;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
@@ -11,6 +10,7 @@ use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\ManagerInterface as SessionManager;
+use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface as Renderer;
 
 class Wizard implements WizardInterface, ServiceManagerAwareInterface
@@ -198,6 +198,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
         
         $this->getSessionContainer()->currentStep = $step;
+        $this->resetForm();
 
         return $this;
     }
@@ -276,6 +277,14 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
 
         return $this->form;
+    }
+
+    /**
+     * return void
+     */
+    protected function resetForm()
+    {
+        $this->form = null;
     }
 
     /**
@@ -369,6 +378,15 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
                 }
             }
         }
+        
+        if (empty($this->sessionContainer->steps)) {
+            $this->sessionContainer->steps = array();
+        }
+
+        $steps = $this->getSteps();
+        foreach ($steps as $step) {
+            $this->sessionContainer->steps[$step->getName()] = $step->toArray();
+        }
     }
 
     /**
@@ -382,23 +400,24 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function render()
+    public function getViewModel()
     {
-        $model = new ViewModel(array(
-            'wizard' => $this,
-        ));
-        return $this->renderer->render($model);
+        $model = new ViewModel();
+        $model
+            ->setTemplate('wizard/layout')
+            ->setVariables(array(
+                'wizard' => $this,
+            ));
+
+        return $model;
     }
 
-    public function __destruct()
+    /**
+     * {@inheritDoc}
+     */
+    public function render()
     {
-        if (empty($this->sessionContainer->steps)) {
-            $this->sessionContainer->steps = array();
-        }
-
-        $steps = $this->getSteps();
-        foreach ($steps as $step) {
-            $this->sessionContainer->steps[$step->getName()] = $step->toArray();
-        }
+        $model = $this->getViewModel();
+        return $this->renderer->render($model);
     }
 }

@@ -6,6 +6,8 @@ use Zend\Http\Response;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\SessionManager;
 use Zend\Session\Storage\ArrayStorage as SessionStorage;
+use Zend\View\Renderer\PhpRenderer;
+use Zend\View\Resolver\TemplateMapResolver;
 
 class WizardTest extends \PHPUnit_Framework_TestCase
 {
@@ -276,6 +278,37 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
     }
 
+    public function testRender()
+    {
+        $renderer = new PhpRenderer;
+        $this->wizard->setRenderer($renderer);
+
+        $resolver = new TemplateMapResolver(array(
+            'wizard/layout'   => __DIR__ . '/_files/layout.phtml',
+            'wizard/header'   => __DIR__ . '/_files/header.phtml',
+            'wizard/buttons'  => __DIR__ . '/_files/buttons.phtml',
+            'wizard/step/foo' => __DIR__ . '/_files/steps/foo.phtml',
+        ));
+        $renderer->setResolver($resolver);
+        
+        $stepCollection = $this->wizard->getSteps();
+        
+        $step = $this->getStepMock('foo');
+        $step
+            ->expects($this->any())
+            ->method('getForm')
+            ->will($this->returnValue(new \Zend\Form\Form));
+        $step
+            ->expects($this->any())
+            ->method('getViewTemplate')
+            ->will($this->returnValue('wizard/step/foo'));
+        $stepCollection->add($step);
+        
+        $output = $this->wizard->render();
+
+        $this->assertRegExp('/foo-step/', $output);
+    }
+
     /**
      * @param  string $name
      * @return StepInterface
@@ -283,7 +316,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     protected function getStepMock($name)
     {
         $mock = $this->getMockForAbstractClass(
-            'Wizard\AbstractStep', array(), '', true, true, true, array('getName', 'getForm', 'isComplete')
+            'Wizard\AbstractStep', array(), '', true, true, true, array(
+                'getName', 'getForm', 'getViewTemplate', 'isComplete'
+            )
         );
         $mock
             ->expects($this->any())

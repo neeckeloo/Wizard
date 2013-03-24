@@ -31,6 +31,14 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $this->step->getForm());
     }
 
+    public function testSetAndGetViewTemplate()
+    {
+        $this->assertNull($this->step->getViewTemplate());
+
+        $this->step->setViewTemplate('foo');
+        $this->assertEquals('foo', $this->step->getViewTemplate());
+    }
+
     public function testSetAndGetData()
     {
         $this->assertCount(0, $this->step->getData());
