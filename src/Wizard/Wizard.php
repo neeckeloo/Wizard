@@ -266,6 +266,10 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
 
         $stepForm = $currentStep->getForm();
         if ($stepForm instanceof Form) {
+            if ($this->form->has(self::STEP_FORM_NAME)) {
+                $this->form->remove(self::STEP_FORM_NAME);
+            }
+
             $stepForm->setName(self::STEP_FORM_NAME);
             $stepForm->populateValues($currentStep->getData());
             $this->form->add($stepForm);
