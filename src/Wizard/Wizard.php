@@ -79,6 +79,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $redirectUrl;
 
     /**
+     * @var bool
+     */
+    protected $processed = false;
+
+    /**
      * {@inheritDoc}
      */
     public function setServiceManager(ServiceManager $serviceManager)
@@ -245,35 +250,35 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      */
     public function getForm()
     {
-        if (null === $this->form) {
-            $currentStep = $this->getCurrentStep();
-            if (!$currentStep) {
-                return null;
-            }
+        $currentStep = $this->getCurrentStep();
+        if (!$currentStep) {
+            return null;
+        }
 
+        if (null === $this->form) {
             $this->form = $this->serviceManager->get('Wizard\Form');
             $this->form->setAttribute('action', sprintf(
                 '?%s=%s',
                 self::TOKEN_PARAM_NAME,
                 $this->getUniqueid()
             ));
+        }
 
-            $stepForm = $currentStep->getForm();
-            if ($stepForm instanceof Form) {
-                $stepForm->setName(self::STEP_FORM_NAME);
-                $stepForm->populateValues($currentStep->getData());
-                $this->form->add($stepForm);
-            }
+        $stepForm = $currentStep->getForm();
+        if ($stepForm instanceof Form) {
+            $stepForm->setName(self::STEP_FORM_NAME);
+            $stepForm->populateValues($currentStep->getData());
+            $this->form->add($stepForm);
+        }
 
-            if (!$this->getSteps()->getPrevious($currentStep)) {
-                $this->form->remove('previous');
-            }
+        if (!$this->getSteps()->getPrevious($currentStep)) {
+            $this->form->remove('previous');
+        }
 
-            if (!$this->getSteps()->getNext($currentStep)) {
-                $this->form->remove('next');
-            } else {
-                $this->form->remove('valid');
-            }
+        if (!$this->getSteps()->getNext($currentStep)) {
+            $this->form->remove('next');
+        } else {
+            $this->form->remove('valid');
         }
 
         return $this->form;
@@ -341,7 +346,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      */
     public function process()
     {
-        if (!$this->request->isPost()) {
+        if ($this->processed || !$this->request->isPost()) {
             return;
         }
 
@@ -378,12 +383,13 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
                 }
             }
         }
+
+        $this->processed = true;
         
         if (empty($this->sessionContainer->steps)) {
             $this->sessionContainer->steps = array();
         }
 
-        $steps = $this->getSteps();
         foreach ($steps as $step) {
             $this->sessionContainer->steps[$step->getName()] = $step->toArray();
         }
