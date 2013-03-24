@@ -389,13 +389,14 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
 
         $this->processed = true;
-        
-        if (empty($this->sessionContainer->steps)) {
-            $this->sessionContainer->steps = array();
+
+        $sessionContainer = $this->getSessionContainer();
+        if (empty($sessionContainer->steps)) {
+            $sessionContainer->steps = array();
         }
 
         foreach ($steps as $step) {
-            $this->sessionContainer->steps[$step->getName()] = $step->toArray();
+            $sessionContainer->steps[$step->getName()] = $step->toArray();
         }
     }
 
