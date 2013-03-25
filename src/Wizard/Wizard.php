@@ -169,13 +169,13 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      */
     protected function getSessionContainerName()
     {
-        return sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueid());
+        return sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueId());
     }
 
     /**
      * @return string
      */
-    protected function getUniqueid()
+    protected function getUniqueId()
     {
         if (null === $this->uid) {
             if ($this->request->getQuery(self::TOKEN_PARAM_NAME)) {
@@ -260,7 +260,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             $this->form->setAttribute('action', sprintf(
                 '?%s=%s',
                 self::TOKEN_PARAM_NAME,
-                $this->getUniqueid()
+                $this->getUniqueId()
             ));
         }
 
