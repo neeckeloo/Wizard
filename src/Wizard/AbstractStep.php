@@ -138,9 +138,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @param  array|Traversable $options
-     * @throws Exception\InvalidArgumentException
-     * @return AbstractStep
+     * {@inheritDoc}
      */
     public function setFromArray($options)
     {
@@ -165,7 +163,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
     public function toArray()
     {

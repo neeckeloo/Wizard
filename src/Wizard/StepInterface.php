@@ -2,6 +2,7 @@
 namespace Wizard;
 
 use Zend\Form\Form;
+use Traversable;
 
 interface StepInterface
 {
@@ -70,4 +71,16 @@ interface StepInterface
      * @return bool
      */
     public function isComplete();
+
+    /**
+     * @param  array|Traversable $options
+     * @throws Exception\InvalidArgumentException
+     * @return StepInterface
+     */
+    public function setFromArray($options);
+
+    /**
+     * @return array
+     */
+    public function toArray();
 }
