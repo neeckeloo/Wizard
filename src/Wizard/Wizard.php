@@ -64,6 +64,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $eventManager;
 
     /**
+     * @var WizardOptionsInterface
+     */
+    protected $options;
+
+    /**
      * @var StepCollection
      */
     protected $steps;
@@ -72,11 +77,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @var Form
      */
     protected $form;
-
-    /**
-     * @var string
-     */
-    protected $redirectUrl;
 
     /**
      * @var bool
@@ -186,6 +186,27 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
 
         return $this->uid;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptions(WizardOptionsInterface $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOptions()
+    {
+        if (!isset($this->options)) {
+            $this->setOptions(new WizardOptions());
+        }
+
+        return $this->options;
     }
 
     /**
@@ -323,25 +344,17 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function setRedirectUrl($url)
-    {
-        $this->redirectUrl = (string) $url;
-        return $this;
-    }
-
-    /**
      * @throws Exception\RuntimeException
      * @return void
      */
     protected function doRedirect()
-    {        
-        if (null === $this->redirectUrl) {
+    {
+        $redirectUrl = $this->getOptions()->getRedirectUrl();
+        if (null === $redirectUrl) {
             throw new Exception\RuntimeException('You must provide url to redirect when wizard is complete.');
         }
 
-        $this->response->getHeaders()->addHeaderLine('Location', $this->redirectUrl);
+        $this->response->getHeaders()->addHeaderLine('Location', $redirectUrl);
         $this->response->setStatusCode(302);
     }
 
@@ -412,9 +425,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      */
     public function getViewModel()
     {
+        $template = $this->getOptions()->getLayoutTemplate();
+
         $model = new ViewModel();
         $model
-            ->setTemplate('wizard/layout')
+            ->setTemplate($template)
             ->setVariables(array(
                 'wizard' => $this,
             ));

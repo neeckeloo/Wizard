@@ -47,6 +47,17 @@ interface WizardInterface
     public function getEventManager();
 
     /**
+     * @param  WizardOptionsInterface $options
+     * @return WizardInterface
+     */
+    public function setOptions(WizardOptionsInterface $options);
+
+    /**
+     * @return WizardOptionsInterface
+     */
+    public function getOptions();
+
+    /**
      * @return StepInterface
      */
     public function getCurrentStep();
@@ -71,12 +82,6 @@ interface WizardInterface
      * @return StepCollection
      */
     public function getSteps();
-
-    /**
-     * @param  string $url
-     * @return WizardInterface
-     */
-    public function setRedirectUrl($url);
 
     /**
      * @return void

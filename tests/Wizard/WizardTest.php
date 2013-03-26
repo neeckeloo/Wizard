@@ -53,6 +53,15 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->sessionContainer));
     }
 
+    public function testSetAndGetOptions()
+    {
+        $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
+
+        $options = $this->getMock('Wizard\WizardOptions', array(), array(), 'MockOptions');
+        $this->wizard->setOptions($options);
+        $this->assertInstanceOf('MockOptions', $this->wizard->getOptions());
+    }
+
     public function testGetCurrentStep()
     {
         $this->assertNull($this->wizard->getCurrentStep());
@@ -215,7 +224,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->setPost($params);
 
         $uri = '/foo';
-        $this->wizard->setRedirectUrl($uri);
+        $this->wizard->getOptions()->setRedirectUrl($uri);
 
         $fooStep = $this->getStepMock('foo');
         $fooStep
