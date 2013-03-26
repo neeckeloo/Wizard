@@ -47,7 +47,7 @@ class StepListener implements ListenerAggregateInterface
     }
 
     /**
-     * @param EventInterface $e
+     * @param  EventInterface $e
      * @return string
      */
     public function restore(EventInterface $e)
