@@ -1,5 +1,7 @@
 <?php
-namespace Wizard;
+namespace WizardTest;
+
+use Wizard\WizardOptions;
 
 class WizardOptionsTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,7 +25,7 @@ class WizardOptionsTest extends \PHPUnit_Framework_TestCase
 
     public function testSetAndGetLayoutTemplate()
     {
-        $this->assertEquals('wizard/layout', $this->options->getLayoutTemplate());
+        $this->assertNull($this->options->getLayoutTemplate());
 
         $this->options->setLayoutTemplate('foo');
         $this->assertEquals('foo', $this->options->getLayoutTemplate());

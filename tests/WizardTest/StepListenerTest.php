@@ -1,6 +1,7 @@
 <?php
-namespace Wizard;
+namespace WizardTest;
 
+use Wizard\StepListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\SessionManager;

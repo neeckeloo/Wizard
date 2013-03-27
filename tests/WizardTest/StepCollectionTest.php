@@ -1,5 +1,7 @@
 <?php
-namespace Wizard;
+namespace WizardTest;
+
+use Wizard\StepCollection;
 
 class StepCollectionTest extends \PHPUnit_Framework_TestCase
 {

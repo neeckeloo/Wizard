@@ -1,5 +1,5 @@
 <?php
-namespace Wizard;
+namespace WizardTest;
 
 use Zend\Form\Form;
 

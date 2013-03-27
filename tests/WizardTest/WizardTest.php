@@ -1,5 +1,5 @@
 <?php
-namespace Wizard;
+namespace WizardTest;
 
 use Zend\Http\Request;
 use Zend\Http\Response;
@@ -312,6 +312,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->method('getViewTemplate')
             ->will($this->returnValue('wizard/step/foo'));
         $stepCollection->add($step);
+
+        $this->wizard->getOptions()->setLayoutTemplate('wizard/layout');
         
         $output = $this->wizard->render();
 
