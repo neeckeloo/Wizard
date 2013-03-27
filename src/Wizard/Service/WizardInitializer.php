@@ -17,9 +17,6 @@ class WizardInitializer implements InitializerInterface
     public function initialize($instance, ServiceLocatorInterface $serviceLocator)
     {
         if ($instance instanceof WizardInterface) {
-            //$config = $serviceLocator->get('Config');
-            //$configuration = new Configuration($config['wizard']);
-
             $application = $serviceLocator->get('Application');
 
             $request = $application->getRequest();

@@ -178,7 +178,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected function getUniqueId()
     {
         if (null === $this->uid) {
-            if ($this->request->getQuery(self::TOKEN_PARAM_NAME)) {
+            if (isset($this->request) && $this->request->getQuery(self::TOKEN_PARAM_NAME)) {
                 $this->uid = $this->request->getQuery(self::TOKEN_PARAM_NAME);
             } else {
                 $this->uid = md5(uniqid(rand(), true));

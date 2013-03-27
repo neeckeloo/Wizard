@@ -13,7 +13,7 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     /**
      * @var string
      */
-    protected $layoutTemplate = 'wizard/layout';
+    protected $layoutTemplate;
 
     /**
      * {@inheritDoc}

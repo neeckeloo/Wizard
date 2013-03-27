@@ -31,7 +31,14 @@ class Module implements
     {
         return array(
             'initializers' => array(
-                'wizard' => new WizardInitializer(),
+                new WizardInitializer(),
+            ),
+            'factories' => array(
+                'Wizard\Factory' => function($sm) {
+                    $initializer = new WizardInitializer();
+                    $factory = new WizardFactory($sm, $initializer);
+                    return $factory;
+                },
             ),
         );
     }
