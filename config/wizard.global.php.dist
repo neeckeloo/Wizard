@@ -1,0 +1,28 @@
+<?php
+/**
+ * Wizard configuration
+ *
+ * If you have a ./configs/autoload/ directory set up for your project, you can
+ * drop this config file in it and change the values as you wish.
+ */
+$wizard = array(
+    /**
+     * Default layout template of the wizard
+     */
+    'default_layout_template' => 'wizard/layout',
+
+    /**
+     * Default wizard class
+     */
+    'default_class' => 'Wizard\Wizard',
+
+    /**
+     * Wizard list
+     */
+    'wizards' => array(),
+);
+
+/**
+ * You do not need to edit below this line
+ */
+return array('wizard' => $wizard);

@@ -4,6 +4,7 @@ return array(
         'default_layout_template' => 'wizard/layout',
         'default_class'           => 'Wizard\Wizard',
     ),
+
     'service_manager' => array(
         'factories' => array(
             'Wizard\Form'           => 'Wizard\Service\FormFactory',
