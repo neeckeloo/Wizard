@@ -86,6 +86,35 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('wizard/baz', $bazStep->getViewTemplate());
     }
 
+    public function testCreateWizardWithDefaultOptions()
+    {
+        $config = array(
+            'wizard' => array(
+                'default_layout_template' => 'wizard/layout',
+                'default_class'           => 'Wizard\Wizard',
+                'wizards' => array(
+                    'foo' => array(
+                        'class' => 'WizardTest\TestAsset\Foo',
+                    ),
+                ),
+            )
+        );
+
+        $this->serviceLocator
+            ->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($config));
+        $this->initializer
+            ->expects($this->once())
+            ->method('initialize');
+
+        $wizardFactory = new WizardFactory($this->serviceLocator, $this->initializer);
+
+        $wizard = $wizardFactory->create('foo');
+        $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
+        $this->assertEquals('wizard/layout', $wizard->getOptions()->getLayoutTemplate());
+    }
+
     /**
      * @expectedException \Wizard\Exception\RuntimeException
      */

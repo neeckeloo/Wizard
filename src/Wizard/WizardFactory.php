@@ -54,7 +54,7 @@ class WizardFactory
         if (isset($config['class']) && class_exists($config['class'])) {
             $class = $config['class'];
         } else {
-            $class = $config['default_class'];
+            $class = $this->config['default_class'];
         }
 
         /* @var $wizard \Wizard\WizardInterface */
@@ -64,7 +64,7 @@ class WizardFactory
         if (isset($config['layout_template'])) {
             $layoutTemplate = $config['layout_template'];
         } else {
-            $layoutTemplate = $config['default_layout_template'];
+            $layoutTemplate = $this->config['default_layout_template'];
         }
         $wizard->getOptions()->setLayoutTemplate($layoutTemplate);
         
