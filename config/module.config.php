@@ -19,6 +19,9 @@ return array(
         'aliases' => array(
             'session' => 'Zend\Session\Storage',
         ),
+        'shared' => array(
+            'Wizard\Form' => false,
+        ),
     ),
 
     'view_manager' => array(

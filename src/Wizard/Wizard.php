@@ -283,27 +283,27 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
                 self::TOKEN_PARAM_NAME,
                 $this->getUniqueId()
             ));
-        }
 
-        $stepForm = $currentStep->getForm();
-        if ($stepForm instanceof Form) {
-            if ($this->form->has(self::STEP_FORM_NAME)) {
-                $this->form->remove(self::STEP_FORM_NAME);
+            $stepForm = $currentStep->getForm();
+            if ($stepForm instanceof Form) {
+                if ($this->form->has(self::STEP_FORM_NAME)) {
+                    $this->form->remove(self::STEP_FORM_NAME);
+                }
+
+                $stepForm->setName(self::STEP_FORM_NAME);
+                $stepForm->populateValues($currentStep->getData());
+                $this->form->add($stepForm);
             }
 
-            $stepForm->setName(self::STEP_FORM_NAME);
-            $stepForm->populateValues($currentStep->getData());
-            $this->form->add($stepForm);
-        }
+            if (!$this->getSteps()->getPrevious($currentStep)) {
+                $this->form->remove('previous');
+            }
 
-        if (!$this->getSteps()->getPrevious($currentStep)) {
-            $this->form->remove('previous');
-        }
-
-        if (!$this->getSteps()->getNext($currentStep)) {
-            $this->form->remove('next');
-        } else {
-            $this->form->remove('valid');
+            if (!$this->getSteps()->getNext($currentStep)) {
+                $this->form->remove('next');
+            } else {
+                $this->form->remove('valid');
+            }
         }
 
         return $this->form;
