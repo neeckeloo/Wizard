@@ -22,7 +22,7 @@ class WizardRendererFactoryTest extends \PHPUnit_Framework_TestCase
         $this->wizardRendererFactory = new WizardRendererFactory();
     }
 
-    public function testCreateWizard()
+    public function testCreateRenderer()
     {
         $resolver = $this->getMock('Zend\View\Resolver\ResolverInterface');
 
