@@ -146,10 +146,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     public function testSetStepDataDuringProcess()
     {
         $params = new \Zend\Stdlib\Parameters(array(
-            'step' => array(
-                'foo' => 123,
-                'bar' => 456,
-            ),
+            'foo' => 123,
+            'bar' => 456,
         ));
         $this->request
             ->setMethod(Request::METHOD_POST)

@@ -284,17 +284,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
                 $this->getUniqueId()
             ));
 
-            $stepForm = $currentStep->getForm();
-            if ($stepForm instanceof Form) {
-                if ($this->form->has(self::STEP_FORM_NAME)) {
-                    $this->form->remove(self::STEP_FORM_NAME);
-                }
-
-                $stepForm->setName(self::STEP_FORM_NAME);
-                $stepForm->populateValues($currentStep->getData());
-                $this->form->add($stepForm);
-            }
-
             if (!$this->getSteps()->getPrevious($currentStep)) {
                 $this->form->remove('previous');
             }
@@ -304,6 +293,17 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             } else {
                 $this->form->remove('valid');
             }
+        }
+
+        $stepForm = $currentStep->getForm();
+        if ($stepForm instanceof Form) {
+            if ($this->form->has(self::STEP_FORM_NAME)) {
+                $this->form->remove(self::STEP_FORM_NAME);
+            }
+
+            $stepForm->setName(self::STEP_FORM_NAME);
+            $stepForm->populateValues($currentStep->getData());
+            $this->form->add($stepForm);
         }
 
         return $this->form;
@@ -371,12 +371,12 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         $currentStep = $this->getCurrentStep();
 
         $post = $this->request->getPost();
-        if (isset($post['previous']) && !$steps->isFirst($currentStep)) {
+        $values = $post->getArrayCopy();
+        
+        if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
         } else {
-            $values = isset($post[self::STEP_FORM_NAME]) ? $post[self::STEP_FORM_NAME] : array();
-
             $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,
             ));
