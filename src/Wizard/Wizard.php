@@ -364,7 +364,30 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             throw new Exception\RuntimeException('You must provide url to redirect when wizard is complete.');
         }
 
-        $this->response->getHeaders()->addHeaderLine('Location', $redirectUrl);
+        $this->redirect($redirectUrl);
+    }
+
+    /**
+     * @throws Exception\RuntimeException
+     * @return void
+     */
+    protected function doCancel()
+    {
+        $cancelUrl = $this->getOptions()->getCancelUrl();
+        if (null === $cancelUrl) {
+            throw new Exception\RuntimeException('You must provide url to cancel wizard process.');
+        }
+
+        $this->redirect($cancelUrl);
+    }
+
+    /**
+     * @param  string $url
+     * @return void
+     */
+    protected function redirect($url)
+    {
+        $this->response->getHeaders()->addHeaderLine('Location', $url);
         $this->response->setStatusCode(302);
     }
 
@@ -386,6 +409,8 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
+        } else if (isset($values['cancel'])) {
+            $this->doCancel();
         } else {
             $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,

@@ -97,6 +97,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($form->has('previous'));
         $this->assertTrue($form->has('next'));
         $this->assertFalse($form->has('valid'));
+        $this->assertTrue($form->has('cancel'));
     }
 
     public function testGetFormOfMiddleStep()
@@ -114,6 +115,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($form->has('previous'));
         $this->assertTrue($form->has('next'));
         $this->assertFalse($form->has('valid'));
+        $this->assertTrue($form->has('cancel'));
     }
 
     public function testGetFormOfLastStep()
@@ -130,6 +132,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($form->has('previous'));
         $this->assertFalse($form->has('next'));
         $this->assertTrue($form->has('valid'));
+        $this->assertTrue($form->has('cancel'));
     }
 
     public function testFormActionAttribute()
@@ -365,7 +368,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $form
             ->add(new \Wizard\Form\Element\Button\Previous())
             ->add(new \Wizard\Form\Element\Button\Next())
-            ->add(new \Wizard\Form\Element\Button\Valid());
+            ->add(new \Wizard\Form\Element\Button\Valid())
+            ->add(new \Wizard\Form\Element\Button\Cancel());
 
         $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
         $serviceManager

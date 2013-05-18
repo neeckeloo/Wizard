@@ -17,7 +17,8 @@ class FormFactory implements FactoryInterface
         $form
             ->add($serviceLocator->get('Wizard\Form\Element\Button\Previous'))
             ->add($serviceLocator->get('Wizard\Form\Element\Button\Next'))
-            ->add($serviceLocator->get('Wizard\Form\Element\Button\Valid'));
+            ->add($serviceLocator->get('Wizard\Form\Element\Button\Valid'))
+            ->add($serviceLocator->get('Wizard\Form\Element\Button\Cancel'));
 
         return $form;
     }

@@ -32,24 +32,31 @@ class FormFactoryTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('Wizard\Form\Element\Button\Previous'))
             ->will($this->returnValue($previousButton));
 
-        $nextButton = new ButtonElement\Previous('next');
+        $nextButton = new ButtonElement\Next('next');
         $this->serviceLocator
             ->expects($this->at(1))
             ->method('get')
             ->with($this->equalTo('Wizard\Form\Element\Button\Next'))
             ->will($this->returnValue($nextButton));
 
-        $validButton = new ButtonElement\Previous('valid');
+        $validButton = new ButtonElement\Valid('valid');
         $this->serviceLocator
             ->expects($this->at(2))
             ->method('get')
             ->with($this->equalTo('Wizard\Form\Element\Button\Valid'))
             ->will($this->returnValue($validButton));
 
+        $cancelButton = new ButtonElement\Cancel('cancel');
+        $this->serviceLocator
+            ->expects($this->at(3))
+            ->method('get')
+            ->with($this->equalTo('Wizard\Form\Element\Button\Cancel'))
+            ->will($this->returnValue($cancelButton));
+
         /* @var $form \Zend\Form\Form */
         $form = $this->formFactory->createService($this->serviceLocator);
         $this->assertInstanceOf('Zend\Form\Form', $form);
 
-        $this->assertCount(3, $form->getElements());
+        $this->assertCount(4, $form->getElements());
     }
 }

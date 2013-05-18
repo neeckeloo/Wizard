@@ -15,6 +15,7 @@ return array(
             'Wizard\Form\Element\Button\Previous' => 'Wizard\Form\Element\Button\Previous',
             'Wizard\Form\Element\Button\Next'     => 'Wizard\Form\Element\Button\Next',
             'Wizard\Form\Element\Button\Valid'    => 'Wizard\Form\Element\Button\Valid',
+            'Wizard\Form\Element\Button\Cancel'   => 'Wizard\Form\Element\Button\Cancel',
         ),
         'aliases' => array(
             'session' => 'Zend\Session\Storage',

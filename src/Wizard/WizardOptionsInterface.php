@@ -17,6 +17,17 @@ interface WizardOptionsInterface
     /**
      * @return string
      */
+    public function getCancelUrl();
+
+    /**
+     * @param  string $url
+     * @return WizardOptionsInterface
+     */
+    public function setCancelUrl($url);
+
+    /**
+     * @return string
+     */
     public function getLayoutTemplate();
 
     /**

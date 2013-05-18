@@ -13,6 +13,11 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     /**
      * @var string
      */
+    protected $cancelUrl;
+
+    /**
+     * @var string
+     */
     protected $layoutTemplate;
 
     /**
@@ -29,6 +34,23 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     public function setRedirectUrl($url)
     {
         $this->redirectUrl = (string) $url;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCancelUrl()
+    {
+        return $this->cancelUrl;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setCancelUrl($url)
+    {
+        $this->cancelUrl = (string) $url;
         return $this;
     }
 
