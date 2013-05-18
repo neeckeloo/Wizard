@@ -317,6 +317,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $stepCollection->add($step);
 
         $this->wizard->getOptions()->setLayoutTemplate('wizard/layout');
+
+        $viewModel = $this->wizard->getViewModel();
+        $this->assertNotEmpty($viewModel->getTemplate());
         
         $output = $this->wizard->render();
 

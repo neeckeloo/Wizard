@@ -461,8 +461,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      */
     protected function initViewModel()
     {
-        $viewModel = $this->getViewModel();
-        $viewModel->setVariables(array(
+        if (!$this->viewModel) {
+            return;
+        }
+
+        $this->viewModel->setVariables(array(
             'wizard' => $this,
         ), true);
     }
@@ -477,6 +480,9 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             $this->initViewModel();
         }
 
+        $template = $this->getOptions()->getLayoutTemplate();
+        $this->viewModel->setTemplate($template);
+
         return $this->viewModel;
     }
 
@@ -486,10 +492,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function render()
     {
         $model = $this->getViewModel();
-
-        $template = $this->getOptions()->getLayoutTemplate();
-        $model->setTemplate($template);
-
         return $this->renderer->render($model);
     }
 }
