@@ -79,6 +79,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $form;
 
     /**
+     * @var ViewModel
+     */
+    protected $viewModel;
+
+    /**
      * @var bool
      */
     protected $processed = false;
@@ -213,7 +218,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @param  string|StepInterface $step
      * @return Wizard
      */
-    protected function setCurrentStep($step)
+    public function setCurrentStep($step)
     {
         if ($step instanceof StepInterface) {
             $step = $step->getName();
@@ -224,6 +229,8 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
         
         $this->getSessionContainer()->currentStep = $step;
+
+        $this->initViewModel();
         $this->resetForm();
 
         return $this;
@@ -421,20 +428,27 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
+     * @return void
+     */
+    protected function initViewModel()
+    {
+        $viewModel = $this->getViewModel();
+        $viewModel->setVariables(array(
+            'wizard' => $this,
+        ), true);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getViewModel()
     {
-        $template = $this->getOptions()->getLayoutTemplate();
+        if (!$this->viewModel) {
+            $this->viewModel = new ViewModel();
+            $this->initViewModel();
+        }
 
-        $model = new ViewModel();
-        $model
-            ->setTemplate($template)
-            ->setVariables(array(
-                'wizard' => $this,
-            ));
-
-        return $model;
+        return $this->viewModel;
     }
 
     /**
@@ -443,6 +457,10 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function render()
     {
         $model = $this->getViewModel();
+
+        $template = $this->getOptions()->getLayoutTemplate();
+        $model->setTemplate($template);
+
         return $this->renderer->render($model);
     }
 }

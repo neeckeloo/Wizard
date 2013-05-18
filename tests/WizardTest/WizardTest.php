@@ -12,7 +12,7 @@ use Zend\View\Resolver\TemplateMapResolver;
 class WizardTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Wizard
+     * @var \Wizard\Wizard
      */
     protected $wizard;
 
@@ -316,6 +316,25 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $output = $this->wizard->render();
 
         $this->assertRegExp('/foo-step/', $output);
+    }
+
+    public function testInitViewModelWhenChangeCurrentStep()
+    {
+        $this->sessionContainer->currentStep = 'foo';
+
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+
+        $viewModel = $this->wizard->getViewModel();
+
+        $viewModel->setVariable('foo', 123);
+        $this->assertNotNull($viewModel->getVariable('wizard'));
+        $this->assertEquals(123, $viewModel->getVariable('foo'));
+
+        $this->wizard->setCurrentStep('bar');
+        $this->assertNotNull($viewModel->getVariable('wizard'));
+        $this->assertNull($viewModel->getVariable('foo', null));
     }
 
     /**
