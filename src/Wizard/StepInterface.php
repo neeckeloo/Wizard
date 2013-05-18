@@ -1,11 +1,17 @@
 <?php
 namespace Wizard;
 
+use Wizard\Wizard;
 use Zend\Form\Form;
 use Traversable;
 
 interface StepInterface
 {
+    /**
+     * @void
+     */
+    public function init();
+
     /**
      * @return string
      */
@@ -21,6 +27,17 @@ interface StepInterface
      * @return string
      */
     public function getTitle();
+
+    /**
+     * @param  Wizard $wizard
+     * @return StepInterface
+     */
+    public function setWizard(Wizard $wizard);
+
+    /**
+     * @return Wizard
+     */
+    public function getWizard();
 
     /**
      * @param  Form $form

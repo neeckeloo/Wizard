@@ -1,6 +1,7 @@
 <?php
 namespace Wizard;
 
+use Wizard\Wizard;
 use Zend\Form\Form;
 use Traversable;
 
@@ -10,6 +11,11 @@ abstract class AbstractStep implements StepInterface
      * @var string
      */
     protected $title;
+
+    /**
+     * @var Wizard
+     */
+    protected $wizard;
 
     /**
      * @var Form
@@ -30,6 +36,11 @@ abstract class AbstractStep implements StepInterface
      * @var bool
      */
     protected $complete = false;
+
+    public function init()
+    {
+
+    }
 
     /**
      * {@inheritDoc}
@@ -59,6 +70,23 @@ abstract class AbstractStep implements StepInterface
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setWizard(Wizard $wizard)
+    {
+        $this->wizard = $wizard;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getWizard()
+    {
+        return $this->wizard;
     }
 
     /**
@@ -169,9 +197,11 @@ abstract class AbstractStep implements StepInterface
     {
         $vars = get_object_vars($this);
 
+        $excluded = array('form', 'wizard');
+
         $options = array();
         foreach ($vars as $key => $value) {
-            if ($key == 'form') {
+            if (in_array($key, $excluded)) {
                 continue;
             }
 

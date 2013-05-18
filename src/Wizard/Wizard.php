@@ -227,6 +227,9 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         if (!$this->getSteps()->has($step)) {
             return $this;
         }
+
+        $currentStep = $this->getSteps()->get($step);
+        $currentStep->init();
         
         $this->getSessionContainer()->currentStep = $step;
 

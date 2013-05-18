@@ -1,6 +1,7 @@
 <?php
 namespace WizardTest;
 
+use Wizard\AbstractStep;
 use Zend\Form\Form;
 
 class AbstractStepTest extends \PHPUnit_Framework_TestCase
@@ -21,6 +22,15 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
         $this->step->setTitle('foo');
         $this->assertEquals('foo', $this->step->getTitle());
+    }
+
+    public function testSetAndGetWizard()
+    {
+        $this->assertNull($this->step->getForm());
+
+        $wizard = $this->getMock('Wizard\Wizard');
+        $this->step->setWizard($wizard);
+        $this->assertInstanceOf('Wizard\Wizard', $this->step->getWizard());
     }
 
     public function testSetAndGetForm()

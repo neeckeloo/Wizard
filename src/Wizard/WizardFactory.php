@@ -88,6 +88,10 @@ class WizardFactory
                     $step->setViewTemplate($values['view_template']);
                 }
 
+                $step
+                    ->setWizard($wizard)
+                    ->init();
+
                 $wizard->getSteps()->add($step);
             }
         }
