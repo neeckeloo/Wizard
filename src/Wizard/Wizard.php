@@ -404,14 +404,15 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         $currentStep = $this->getCurrentStep();
 
         $post = $this->request->getPost();
-        $values = $post->getArrayCopy();
         
-        if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
+        if (isset($post['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
-        } else if (isset($values['cancel'])) {
+        } else if (isset($post['cancel'])) {
             $this->doCancel();
         } else {
+            $values = isset($post[self::STEP_FORM_NAME]) ? $post[self::STEP_FORM_NAME] : array();
+            
             $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,
             ));
