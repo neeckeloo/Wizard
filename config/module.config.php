@@ -18,7 +18,7 @@ return array(
             'Wizard\Form\Element\Button\Cancel'   => 'Wizard\Form\Element\Button\Cancel',
         ),
         'aliases' => array(
-            'session' => 'Zend\Session\Storage',
+            'Session\Storage' => 'Zend\Session\Storage',
         ),
         'shared' => array(
             'Wizard\Form' => false,

@@ -1,7 +1,6 @@
 <?php
 namespace Wizard;
 
-use Wizard\Service\WizardInitializer;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class WizardFactory
@@ -12,28 +11,17 @@ class WizardFactory
     protected $serviceLocator;
 
     /**
-     * @var WizardInitializer
-     */
-    protected $initializer;
-
-    /**
      * @var array
      */
     protected $config = array();
 
     /**
-     * @param WizardInitializer $initializer
+     * @param ServiceLocatorInterface $serviceLocator
      */
-    public function __construct(ServiceLocatorInterface $serviceLocator, WizardInitializer $initializer)
+    public function __construct(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
-
-        $config = $this->serviceLocator->get('Config');
-        if (isset($config['wizard'])) {
-            $this->config = $config['wizard'];
-        }
-
-        $this->initializer = $initializer;
+        $this->config = $this->serviceLocator->get('Config');
     }
 
     /**
@@ -42,29 +30,44 @@ class WizardFactory
      */
     public function create($name)
     {
-        if (!isset($this->config['wizards'][$name])) {
+        if (!isset($this->config['wizard']['wizards'][$name])) {
             throw new Exception\RuntimeException(sprintf(
                 'The wizard "%s" does not exists.',
                 $name
             ));
         }
 
-        $config = $this->config['wizards'][$name];
+        $config = $this->config['wizard']['wizards'][$name];
 
         if (isset($config['class']) && class_exists($config['class'])) {
             $class = $config['class'];
         } else {
-            $class = $this->config['default_class'];
+            $class = $this->config['wizard']['default_class'];
         }
 
         /* @var $wizard \Wizard\WizardInterface */
         $wizard = new $class();
-        $this->initializer->initialize($wizard, $this->serviceLocator);
+
+        $application = $this->serviceLocator->get('Application');
+
+        $request = $application->getRequest();
+        $response = $application->getResponse();
+
+        $sessionManager = $this->serviceLocator->get('Session\Manager');
+
+        $wizard
+            ->setServiceManager($this->serviceLocator)
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setSessionManager($sessionManager);
+
+        $renderer = $this->serviceLocator->get('Wizard\WizardRenderer');
+        $wizard->setRenderer($renderer);
 
         if (isset($config['layout_template'])) {
             $layoutTemplate = $config['layout_template'];
         } else {
-            $layoutTemplate = $this->config['default_layout_template'];
+            $layoutTemplate = $this->config['wizard']['default_layout_template'];
         }
         $wizard->getOptions()->setLayoutTemplate($layoutTemplate);
         
