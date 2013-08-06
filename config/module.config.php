@@ -4,7 +4,6 @@ return array(
         'default_layout_template' => 'wizard/layout',
         'default_class'           => 'Wizard\Wizard',
     ),
-
     'service_manager' => array(
         'factories' => array(
             'Wizard\Form'           => 'Wizard\Service\FormFactory',
@@ -18,7 +17,7 @@ return array(
             'Wizard\Form\Element\Button\Cancel'   => 'Wizard\Form\Element\Button\Cancel',
         ),
         'aliases' => array(
-            'Session\Storage' => 'Zend\Session\Storage',
+            'session' => 'Zend\Session\Storage',
         ),
         'shared' => array(
             'Wizard\Form' => false,

@@ -39,7 +39,7 @@ abstract class AbstractStep implements StepInterface
 
     public function init()
     {
-
+        
     }
 
     /**

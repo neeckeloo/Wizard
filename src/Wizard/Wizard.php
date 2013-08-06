@@ -161,8 +161,8 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     {
         if (null === $this->sessionContainer) {
             $this->sessionContainer = new SessionContainer(
-                $this->getSessionContainerName(),
-                $this->sessionManager
+                $this->getSessionContainerName()/*,
+                $this->sessionManager$*/
             );
         }
 
@@ -218,7 +218,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @param  string|StepInterface $step
      * @return Wizard
      */
-    public function setCurrentStep($step)
+    protected function setCurrentStep($step)
     {
         if ($step instanceof StepInterface) {
             $step = $step->getName();
@@ -230,10 +230,8 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
 
         $currentStep = $this->getSteps()->get($step);
         $currentStep->init();
-        
-        $this->getSessionContainer()->currentStep = $step;
 
-        $this->initViewModel();
+        $this->getSessionContainer()->currentStep = $step;
         $this->resetForm();
 
         return $this;
@@ -404,15 +402,13 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         $currentStep = $this->getCurrentStep();
 
         $post = $this->request->getPost();
-        
-        if (isset($post['previous']) && !$steps->isFirst($currentStep)) {
+        $values = $post->getArrayCopy();
+        if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
-        } else if (isset($post['cancel'])) {
+        } else if (isset($values['cancel'])) {
             $this->doCancel();
         } else {
-            $values = isset($post[self::STEP_FORM_NAME]) ? $post[self::STEP_FORM_NAME] : array();
-            
             $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,
             ));
