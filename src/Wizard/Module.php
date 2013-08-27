@@ -1,6 +1,7 @@
 <?php
 namespace Wizard;
 
+use Wizard\Service\WizardInitializer;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
@@ -30,9 +31,13 @@ class Module implements
     public function getServiceConfig()
     {
         return array(
+            'initializers' => array(
+                new WizardInitializer(),
+            ),
             'factories' => array(
                 'Wizard\Factory' => function($sm) {
-                    return new WizardFactory($sm);
+                    $initializer = new WizardInitializer();
+                    return new WizardFactory($sm, $initializer);
                 },
                 'Session\Manager' => function($sm) {
                     $sessionStorage = $sm->get('Session\Storage');
