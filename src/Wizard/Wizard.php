@@ -417,12 +417,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             if (null !== $complete) {
                 $currentStep->setComplete($complete);
             }
+            $currentStep->setData($values);
 
             $this->getEventManager()->trigger(self::EVENT_POST_PROCESS_STEP, $currentStep);
 
             if ($currentStep->isComplete()) {
-                $currentStep->setData($values);
-
                 if ($steps->isLast($currentStep)) {
                     $this->getEventManager()->trigger(self::EVENT_COMPLETE, $this);
                     $this->doRedirect();
