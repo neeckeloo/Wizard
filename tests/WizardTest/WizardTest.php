@@ -284,6 +284,27 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($uri, $locationHeader->getUri());
     }
 
+    public function testCanRedirectAfterCancel()
+    {
+        $params = new \Zend\Stdlib\Parameters(array('cancel' => true));
+        $this->request
+            ->setMethod(Request::METHOD_POST)
+            ->setPost($params);
+
+        $uri = '/cancel';
+        $this->wizard->getOptions()->setCancelUrl($uri);
+
+        $this->wizard->process();
+
+        $this->assertEquals(302, $this->response->getStatusCode());
+
+        $headers = $this->response->getHeaders();
+        /* @var $locationHeader \Zend\Http\Header\Location */
+        $locationHeader = $headers->get('Location');
+
+        $this->assertEquals($uri, $locationHeader->getUri());
+    }
+
     public function testCurrentStepNumber()
     {
         $steps = $this->wizard->getSteps();
