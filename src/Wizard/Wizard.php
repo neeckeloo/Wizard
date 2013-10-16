@@ -7,13 +7,11 @@ use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface as Renderer;
 
-class Wizard implements WizardInterface, ServiceManagerAwareInterface
+class Wizard implements WizardInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
@@ -32,11 +30,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @var SessionContainer
      */
     protected $sessionContainer;
-
-    /**
-     * @var ServiceManager
-     */
-    protected $serviceManager;
 
     /**
      * @var Request
@@ -87,15 +80,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @var bool
      */
     protected $processed = false;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setServiceManager(ServiceManager $serviceManager)
-    {
-        $this->serviceManager = $serviceManager;
-        return $this;
-    }
 
     /**
      * {@inheritDoc}
