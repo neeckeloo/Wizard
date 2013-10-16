@@ -1,18 +1,18 @@
 <?php
 namespace WizardTest;
 
+use Wizard\Wizard;
+use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Session\Container as SessionContainer;
-use Zend\Session\SessionManager;
-use Zend\Session\Storage\ArrayStorage as SessionStorage;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver\TemplateMapResolver;
 
 class WizardTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Wizard\Wizard
+     * @var Wizard
      */
     protected $wizard;
 
@@ -35,22 +35,47 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $this->request = new Request;
         $this->response = new Response;
-        
-        $sessionManager = $this->getSessionManager();
 
         $this->wizard = $this->getMock('Wizard\Wizard', array('getSessionContainer'));
         $this->wizard
-            ->setServiceManager($this->getServiceManagerMock())
             ->setRequest($this->request)
-            ->setResponse($this->response)
-            ->setSessionManager($sessionManager);
+            ->setResponse($this->response);
 
-        $this->sessionContainer = new SessionContainer('foo', $sessionManager);
+        $this->sessionContainer = new SessionContainer('foo');
+        $this->sessionContainer->getManager()->getStorage()->clear('foo');
 
         $this->wizard
             ->expects($this->any())
             ->method('getSessionContainer')
             ->will($this->returnValue($this->sessionContainer));
+    }
+
+    /**
+     * @return FormFactory
+     */
+    protected function getFormFactory()
+    {
+        $formFactory = $this->getMock('Wizard\Form\FormFactory');
+
+        $form = new Form();
+
+        $buttons = array(
+            'Wizard\Form\Element\Button\Previous',
+            'Wizard\Form\Element\Button\Next',
+            'Wizard\Form\Element\Button\Valid',
+            'Wizard\Form\Element\Button\Cancel',
+        );
+        foreach ($buttons as $key => $service) {
+            $button = new $service();
+            $form->add($button);
+        }
+
+        $formFactory
+            ->expects($this->any())
+            ->method('create')
+            ->will($this->returnValue($form));
+
+        return $formFactory;
     }
 
     public function testSetAndGetOptions()
@@ -87,6 +112,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormOfFirstStep()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+        
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
         $steps->add($this->getStepMock('bar'));
@@ -102,6 +130,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormOfMiddleStep()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $this->sessionContainer->currentStep = 'bar';
 
         $steps = $this->wizard->getSteps();
@@ -120,6 +151,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormOfLastStep()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $this->sessionContainer->currentStep = 'bar';
 
         $steps = $this->wizard->getSteps();
@@ -137,6 +171,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testFormActionAttribute()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
 
@@ -149,10 +186,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     public function testSetStepDataDuringProcess()
     {
         $params = new \Zend\Stdlib\Parameters(array(
-            'step' => array(
-                'foo' => 123,
-                'bar' => 456,
-            ),
+            'foo' => 123,
+            'bar' => 456,
         ));
         $this->request
             ->setMethod(Request::METHOD_POST)
@@ -253,7 +288,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));        
+        $steps->add($this->getStepMock('bar'));
         $this->assertEquals(1, $this->wizard->getCurrentStepNumber());
 
         $this->sessionContainer->currentStep = 'bar';
@@ -292,6 +327,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testRender()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $renderer = new PhpRenderer;
         $this->wizard->setRenderer($renderer);
 
@@ -362,37 +400,5 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($name));
 
         return $mock;
-    }
-
-    /**
-     * @return \Zend\ServiceManager\ServiceManager
-     */
-    public function getServiceManagerMock()
-    {
-        $form = new \Zend\Form\Form();
-        $form
-            ->add(new \Wizard\Form\Element\Button\Previous())
-            ->add(new \Wizard\Form\Element\Button\Next())
-            ->add(new \Wizard\Form\Element\Button\Valid())
-            ->add(new \Wizard\Form\Element\Button\Cancel());
-
-        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
-        $serviceManager
-            ->expects($this->any())
-            ->method('get')
-            ->will($this->returnValue($form));
-
-        return $serviceManager;
-    }
-
-    /**
-     * @return \Zend\Session\SessionManager
-     */
-    public function getSessionManager()
-    {
-        $sessionStorage = new SessionStorage;
-        $sessionManager = new SessionManager(null, $sessionStorage);
-
-        return $sessionManager;
     }
 }

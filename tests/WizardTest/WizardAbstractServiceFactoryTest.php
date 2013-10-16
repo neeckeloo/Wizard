@@ -18,33 +18,27 @@ class WizardAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
             'abstract_factories' => array('Wizard\WizardAbstractServiceFactory'),
         )));
 
-        $this->serviceManager->setService('Config', array(
-            'wizard' => array(
-                'default_class' => 'Wizard\Wizard',
-                'default_layout_template' => 'wizard/layout',
-                'wizards' => array(
-                    'Wizard\Foo' => array(),
-                    'Wizard\Bar' => array(),
-                ),
+        $this->serviceManager->setService('Wizard\Config', array(
+            'default_class' => 'Wizard\Wizard',
+            'default_layout_template' => 'wizard/layout',
+            'wizards' => array(
+                'Wizard\Foo' => array(),
+                'Wizard\Bar' => array(),
             ),
         ));
 
-        $application = $this->getMock('\Zend\Mvc\Application', array(), array(), '', false);
-        $application
-            ->expects($this->any())
-            ->method('getRequest')
-            ->will($this->returnValue($this->getMock('Zend\Http\Request')));
-        $application
-            ->expects($this->any())
-            ->method('getResponse')
-            ->will($this->returnValue($this->getMock('Zend\Http\Response')));
-        $this->serviceManager->setService('Application', $application);
+        $wizard = $this->getMock('Wizard\Wizard');
 
-        $sessionManager = $this->getMock('Zend\Session\SessionManager');
-        $this->serviceManager->setService('Session\Manager', $sessionManager);
+        $wizardFactory = $this->getMockBuilder('Wizard\WizardFactory')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $renderer = $this->getMock('Zend\View\Renderer\PhpRenderer');
-        $this->serviceManager->setService('Wizard\WizardRenderer', $renderer);
+        $wizardFactory
+            ->expects($this->any())
+            ->method('create')
+            ->will($this->returnValue($wizard));
+
+        $this->serviceManager->setService('Wizard\Factory', $wizardFactory);
     }
 
     /**
@@ -59,18 +53,6 @@ class WizardAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return array
-     */
-    public function providerInvalidWizardService()
-    {
-        return array(
-            array('Wizard\Application\Unknown'),
-            array('Wizard\Application\Frontend'),
-            array('Application\Backend\Wizard'),
-        );
-    }
-
-    /**
      * @param string $service
      * @dataProvider providerValidWizardService
      */
@@ -78,15 +60,5 @@ class WizardAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->serviceManager->get($service);
         $this->assertInstanceOf('Wizard\Wizard', $actual);
-    }
-
-    /**
-     * @param string $service
-     * @dataProvider providerInvalidWizardService
-     * @expectedException \Zend\ServiceManager\Exception\ServiceNotFoundException
-     */
-    public function testInvalidWizardService($service)
-    {
-        $actual = $this->serviceManager->get($service);
     }
 }

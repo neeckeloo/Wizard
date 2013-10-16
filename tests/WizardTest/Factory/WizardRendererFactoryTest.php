@@ -1,7 +1,7 @@
 <?php
-namespace WizardTest\Service;
+namespace WizardTest\Factory;
 
-use Wizard\Service\WizardRendererFactory;
+use Wizard\Factory\WizardRendererFactory;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class WizardRendererFactoryTest extends \PHPUnit_Framework_TestCase

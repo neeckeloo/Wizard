@@ -1,5 +1,5 @@
 <?php
-namespace Wizard\Service;
+namespace Wizard\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

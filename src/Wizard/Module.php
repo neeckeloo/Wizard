@@ -1,17 +1,27 @@
 <?php
 namespace Wizard;
 
-use Wizard\Service\WizardInitializer;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
-use Zend\ModuleManager\Feature\ServiceProviderInterface;
-use Zend\Session\SessionManager;
+use Zend\ModuleManager\ModuleManager;
 
-class Module implements
-    ConfigProviderInterface,
-    AutoloaderProviderInterface,
-    ServiceProviderInterface
+class Module implements ConfigProviderInterface, AutoloaderProviderInterface
 {
+    public function init(ModuleManager $moduleManager)
+    {
+        $serviceManager = $moduleManager->getEvent()->getParam('ServiceManager');
+
+        /* @var $serviceListener \Zend\ModuleManager\Listener\ServiceListenerInterface */
+        $serviceListener = $serviceManager->get('ServiceListener');
+
+        $serviceListener->addServiceManager(
+            'WizardStepManager',
+            'wizard_steps',
+            'Wizard\ModuleManager\Feature\WizardStepProviderInterface',
+            'getWizardStepConfig'
+        );
+    }
+
     public function getConfig()
     {
         return include __DIR__ . '/../../config/module.config.php';
@@ -24,25 +34,6 @@ class Module implements
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
-            ),
-        );
-    }
-
-    public function getServiceConfig()
-    {
-        return array(
-            'initializers' => array(
-                new WizardInitializer(),
-            ),
-            'factories' => array(
-                'Wizard\Factory' => function($sm) {
-                    $initializer = new WizardInitializer();
-                    return new WizardFactory($sm, $initializer);
-                },
-                'Session\Manager' => function($sm) {
-                    $sessionStorage = $sm->get('Session\Storage');
-                    return new SessionManager(null, $sessionStorage);
-                },
             ),
         );
     }

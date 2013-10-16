@@ -1,45 +1,40 @@
 <?php
 namespace Wizard;
-
+;
+use Wizard\Form\FormFactory;
+use Wizard\StepInterface;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Session\ManagerInterface as SessionManager;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface as Renderer;
 
 interface WizardInterface
 {
     /**
-     * @return ServiceManager
-     */
-    public function getServiceManager();
-
-    /**
      * @param  Request $request
-     * @return WizardInterface
+     * @return self
      */
     public function setRequest(Request $request);
 
     /**
      * @param  Response $response
-     * @return WizardInterface
+     * @return self
      */
     public function setResponse(Response $response);
 
     /**
-     * @param  SessionManager $sessionManager
-     * @return WizardInterface
-     */
-    public function setSessionManager(SessionManager $sessionManager);
-
-    /**
      * @param  Renderer $renderer
-     * @return WizardInterface
+     * @return self
      */
     public function setRenderer(Renderer $renderer);
+
+    /**
+     * @param  FormFactory $factory
+     * @return self
+     */
+    public function setFormFactory(FormFactory $factory);
 
     /**
      * @return EventManager
@@ -48,7 +43,7 @@ interface WizardInterface
 
     /**
      * @param  WizardOptionsInterface $options
-     * @return WizardInterface
+     * @return self
      */
     public function setOptions(WizardOptionsInterface $options);
 
@@ -56,6 +51,12 @@ interface WizardInterface
      * @return WizardOptionsInterface
      */
     public function getOptions();
+
+    /**
+     * @param  string|StepInterface $step
+     * @return self
+     */
+    public function setCurrentStep($step);
 
     /**
      * @return StepInterface
@@ -74,7 +75,7 @@ interface WizardInterface
 
     /**
      * @param  StepCollection $steps
-     * @return WizardInterface
+     * @return self
      */
     public function setSteps(StepCollection $steps);
 
@@ -87,11 +88,6 @@ interface WizardInterface
      * @return void
      */
     public function process();
-
-    /**
-     * @return void
-     */
-    public function complete();
 
     /**
      * @return ViewModel

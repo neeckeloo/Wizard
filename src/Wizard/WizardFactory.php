@@ -1,20 +1,40 @@
 <?php
 namespace Wizard;
 
-use Wizard\Service\WizardInitializer;
+use Wizard\Form\FormFactory;
+use Zend\Http\Request;
+use Zend\Http\Response;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Zend\View\Renderer\RendererInterface as Renderer;
 
-class WizardFactory
+class WizardFactory implements ServiceManagerAwareInterface
 {
     /**
      * @var ServiceLocatorInterface
      */
-    protected $serviceLocator;
+    protected $serviceManager;
 
     /**
-     * @var WizardInitializer
+     * @var Request
      */
-    protected $initializer;
+    protected $request;
+
+    /**
+     * @var Response
+     */
+    protected $response;
+
+    /**
+     * @var Renderer
+     */
+    protected $renderer;
+
+    /**
+     * @var FormFactory
+     */
+    protected $formFactory;
 
     /**
      * @var array
@@ -22,18 +42,51 @@ class WizardFactory
     protected $config = array();
 
     /**
-     * @param WizardInitializer $initializer
+     * @param array $config
      */
-    public function __construct(ServiceLocatorInterface $serviceLocator, WizardInitializer $initializer)
+    public function __construct(array $config)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->config = (array) $config;
+    }
 
-        $config = $this->serviceLocator->get('Config');
-        if (isset($config['wizard'])) {
-            $this->config = $config['wizard'];
-        }
+    /**
+     * @param ServiceManager $serviceManager
+     */
+    public function setServiceManager(ServiceManager $serviceManager)
+    {
+        $this->serviceManager = $serviceManager;
+    }
 
-        $this->initializer = $initializer;
+    /**
+     * @param Request $request
+     */
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @param Renderer $renderer
+     */
+    public function setRenderer(Renderer $renderer)
+    {
+        $this->renderer = $renderer;
+    }
+
+    /**
+     * @param FormFactory $factory
+     */
+    public function setFormFactory(FormFactory $factory)
+    {
+        $this->formFactory = $factory;
     }
 
     /**
@@ -54,17 +107,22 @@ class WizardFactory
         if (isset($config['class']) && class_exists($config['class'])) {
             $class = $config['class'];
         } else {
-            $class = $config['default_class'];
+            $class = $this->config['default_class'];
         }
 
         /* @var $wizard \Wizard\WizardInterface */
         $wizard = new $class();
-        $this->initializer->initialize($wizard, $this->serviceLocator);
+
+        $wizard
+            ->setRequest($this->request)
+            ->setResponse($this->response)
+            ->setRenderer($this->renderer)
+            ->setFormFactory($this->formFactory);
 
         if (isset($config['layout_template'])) {
             $layoutTemplate = $config['layout_template'];
         } else {
-            $layoutTemplate = $config['default_layout_template'];
+            $layoutTemplate = $this->config['default_layout_template'];
         }
         $wizard->getOptions()->setLayoutTemplate($layoutTemplate);
         
@@ -72,30 +130,55 @@ class WizardFactory
             $wizard->getOptions()->setRedirectUrl($config['redirect_url']);
         }
 
-        if (isset($config['steps'])) {
-            foreach ($config['steps'] as $key => $values) {
-                if (!class_exists($key)) {
-                    continue;
-                }
-
-                /* @var $step \Wizard\StepInterface */
-                $step = new $key();
-
-                if (isset($values['title'])) {
-                    $step->setTitle($values['title']);
-                }
-                if (isset($values['view_template'])) {
-                    $step->setViewTemplate($values['view_template']);
-                }
-
-                $step
-                    ->setWizard($wizard)
-                    ->init();
-
-                $wizard->getSteps()->add($step);
-            }
+        if (isset($config['steps']) && is_array($config['steps'])) {
+            $this->addSteps($config['steps'], $wizard);
         }
 
         return $wizard;
+    }
+
+    /**
+     * @param array $steps
+     * @param Wizard $wizard
+     */
+    protected function addSteps(array $steps, $wizard)
+    {
+        foreach ($steps as $key => $values) {
+            $step = $this->createStep($key, $values);
+            if (!$step) {
+                continue;
+            }
+
+            $step
+                ->setWizard($wizard)
+                ->init();
+
+            $wizard->getSteps()->add($step);
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     */
+    protected function createStep($name, $options)
+    {
+        if (!isset($options['service']) || !$this->serviceManager->has($options['service'])) {
+            return null;
+        }
+
+        /* @var $step \Wizard\StepInterface */
+        $step = $this->serviceManager->get($options['service']);
+
+        $step->setName($name);
+
+        if (isset($options['title'])) {
+            $step->setTitle($options['title']);
+        }
+        if (isset($options['view_template'])) {
+            $step->setViewTemplate($options['view_template']);
+        }
+
+        return $step;
     }
 }

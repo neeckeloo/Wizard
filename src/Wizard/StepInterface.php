@@ -13,13 +13,19 @@ interface StepInterface
     public function init();
 
     /**
+     * @param  string $name
+     * @return self
+     */
+    public function setName($name);
+
+    /**
      * @return string
      */
     public function getName();
 
     /**
      * @param  string $title
-     * @return StepInterface
+     * @return self
      */
     public function setTitle($title);
 
@@ -30,7 +36,7 @@ interface StepInterface
 
     /**
      * @param  Wizard $wizard
-     * @return StepInterface
+     * @return self
      */
     public function setWizard(Wizard $wizard);
 
@@ -41,7 +47,7 @@ interface StepInterface
 
     /**
      * @param  Form $form
-     * @return StepInterface
+     * @return self
      */
     public function setForm(Form $form);
 
@@ -52,7 +58,7 @@ interface StepInterface
 
     /**
      * @param  string $template
-     * @return StepInterface
+     * @return self
      */
     public function setViewTemplate($template);
 
@@ -63,7 +69,7 @@ interface StepInterface
 
     /**
      * @param  array $data
-     * @return StepInterface
+     * @return self
      */
     public function setData(array $data);
 
@@ -80,7 +86,7 @@ interface StepInterface
 
     /**
      * @param  bool $complete
-     * @return StepInterface
+     * @return self
      */
     public function setComplete($complete = true);
 
@@ -92,7 +98,7 @@ interface StepInterface
     /**
      * @param  array|Traversable $options
      * @throws Exception\InvalidArgumentException
-     * @return StepInterface
+     * @return self
      */
     public function setFromArray($options);
 

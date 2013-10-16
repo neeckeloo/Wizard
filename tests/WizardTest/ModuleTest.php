@@ -26,10 +26,4 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $config = $this->module->getAutoloaderConfig();
         $this->assertInternalType('array', $config);
     }
-
-    public function testGetServiceConfig()
-    {
-        $config = $this->module->getServiceConfig();
-        $this->assertInternalType('array', $config);
-    }
 }

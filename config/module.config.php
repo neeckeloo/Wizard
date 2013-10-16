@@ -6,21 +6,16 @@ return array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'Wizard\Form'           => 'Wizard\Service\FormFactory',
-            'Wizard\WizardRenderer' => 'Wizard\Service\WizardRendererFactory',
+            'Wizard\Config'         => 'Wizard\Factory\ConfigFactory',
+            'Wizard\Factory'        => 'Wizard\Factory\WizardFactoryFactory',
+            'Wizard\WizardRenderer' => 'Wizard\Factory\WizardRendererFactory',
         ),
         'invokables' => array(
-            'Zend\Session\Storage'                => 'Zend\Session\Storage\SessionStorage',
-            'Wizard\Form\Element\Button\Previous' => 'Wizard\Form\Element\Button\Previous',
-            'Wizard\Form\Element\Button\Next'     => 'Wizard\Form\Element\Button\Next',
-            'Wizard\Form\Element\Button\Valid'    => 'Wizard\Form\Element\Button\Valid',
             'Wizard\Form\Element\Button\Cancel'   => 'Wizard\Form\Element\Button\Cancel',
-        ),
-        'aliases' => array(
-            'session' => 'Zend\Session\Storage',
-        ),
-        'shared' => array(
-            'Wizard\Form' => false,
+            'Wizard\Form\Element\Button\Next'     => 'Wizard\Form\Element\Button\Next',
+            'Wizard\Form\Element\Button\Previous' => 'Wizard\Form\Element\Button\Previous',
+            'Wizard\Form\Element\Button\Valid'    => 'Wizard\Form\Element\Button\Valid',
+            'Wizard\Form\FormFactory'             => 'Wizard\Form\FormFactory',
         ),
     ),
 
