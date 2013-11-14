@@ -327,6 +327,28 @@ class Wizard implements WizardInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getTotalStepCount()
+    {
+        $steps = $this->getSteps();
+        return count($steps);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPercentProgress()
+    {
+        $stepCount = $this->getTotalStepCount();
+        if ($stepCount < 1) {
+            return 0;
+        }
+
+        return round((($this->getCurrentStepNumber() - 1) / $stepCount) * 100);
+    }
+
+    /**
      * @throws Exception\RuntimeException
      * @return void
      */
