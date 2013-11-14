@@ -218,7 +218,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @param  string|StepInterface $step
      * @return Wizard
      */
-    protected function setCurrentStep($step)
+    public function setCurrentStep($step)
     {
         if ($step instanceof StepInterface) {
             $step = $step->getName();
@@ -233,6 +233,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
 
         $this->getSessionContainer()->currentStep = $step;
         $this->resetForm();
+        $this->initViewModel();
 
         return $this;
     }
@@ -349,6 +350,28 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
 
         return $this->steps;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalStepCount()
+    {
+        $steps = $this->getSteps();
+        return count($steps);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPercentProgress()
+    {
+        $stepCount = $this->getTotalStepCount();
+        if ($stepCount < 1) {
+            return 0;
+        }
+
+        return round((($this->getCurrentStepNumber() - 1) / $stepCount) * 100);
     }
 
     /**

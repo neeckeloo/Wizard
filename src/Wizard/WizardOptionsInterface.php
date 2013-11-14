@@ -35,4 +35,15 @@ interface WizardOptionsInterface
      * @return WizardOptionsInterface
      */
     public function setLayoutTemplate($template);
+    
+    /**
+     * @param  string $name
+     * @return WizardOptionsInterface
+     */
+    public function setName($name);
+    
+    /**
+     * @return string
+     */
+    public function getName();
 }

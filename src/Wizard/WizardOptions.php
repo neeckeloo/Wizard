@@ -21,6 +21,11 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     protected $layoutTemplate;
 
     /**
+     * @var string
+     */
+    protected $name;
+    
+    /**
      * {@inheritDoc}
      */
     public function getRedirectUrl()
@@ -68,6 +73,23 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     public function setLayoutTemplate($template)
     {
         $this->layoutTemplate = (string) $template;
+        return $this;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function setName($name)
+    {
+        $this->name = (string) $name;
         return $this;
     }
 }
