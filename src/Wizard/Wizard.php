@@ -350,6 +350,30 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
 
         return $this->steps;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalStepsNumber()
+    {
+    	if(null === $this->steps) {
+    		return 0;
+    	}
+    	
+    	return count($this->steps);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function getProgressAsPercentage()
+    {
+    	if(null === $this->steps) {
+    		return 0;
+    	}
+    	
+    	return ($this->getCurrentStepNumber()/$this->getTotalStepsNumber())*100;
+    }
 
     /**
      * @throws Exception\RuntimeException

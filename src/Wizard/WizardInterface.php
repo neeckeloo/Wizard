@@ -84,6 +84,16 @@ interface WizardInterface
     public function getSteps();
 
     /**
+     * @return int
+     */
+    public function getTotalStepsNumber();
+    
+    /**
+     * @return float
+     */
+    public function getProgressAsPercentage();
+    
+    /**
      * @return void
      */
     public function process();
