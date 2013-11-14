@@ -149,10 +149,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     public function testSetStepDataDuringProcess()
     {
         $params = new \Zend\Stdlib\Parameters(array(
-            'step' => array(
-                'foo' => 123,
-                'bar' => 456,
-            ),
+            'foo' => 123,
+            'bar' => 456,
         ));
         $this->request
             ->setMethod(Request::METHOD_POST)
@@ -263,6 +261,37 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     public function testSetAndGetStepCollection()
     {
         $this->assertInstanceOf('Wizard\StepCollection', $this->wizard->getSteps());
+    }
+
+    public function testGetTotalStepCount()
+    {
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+
+        $this->assertEquals(2, $this->wizard->getTotalStepCount());
+    }
+
+    public function testGetTotalStepCountWithoutSteps()
+    {
+        $this->assertEquals(0, $this->wizard->getTotalStepCount());
+    }
+
+    public function testGetPercentProgress()
+    {
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+
+        $this->assertEquals(0, $this->wizard->getPercentProgress());
+
+        $this->wizard->setCurrentStep('bar');
+        $this->assertEquals(50, $this->wizard->getPercentProgress());
+    }
+
+    public function testGetPercentProgressWithoutSteps()
+    {
+        $this->assertEquals(0, $this->wizard->getPercentProgress());
     }
 
     public function testGetCollectionWithRestoredSteps()
