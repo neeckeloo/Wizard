@@ -61,6 +61,8 @@ class WizardFactory
         $wizard = new $class();
         $this->initializer->initialize($wizard, $this->serviceLocator);
 
+        $wizard->getOptions()->setName($name);
+        
         if (isset($config['layout_template'])) {
             $layoutTemplate = $config['layout_template'];
         } else {
