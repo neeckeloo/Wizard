@@ -358,7 +358,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function getTotalStepCount()
     {
         $steps = $this->getSteps();
-    	return count($steps);
+        return count($steps);
     }
 
     /**
@@ -367,11 +367,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function getPercentProgress()
     {
         $stepCount = $this->getTotalStepCount();
-    	if ($stepCount < 1) {
+        if ($stepCount < 1) {
             return 0;
-    	}
+        }
 
-    	return round((($this->getCurrentStepNumber() - 1) / $stepCount) * 100);
+        return round((($this->getCurrentStepNumber() - 1) / $stepCount) * 100);
     }
 
     /**

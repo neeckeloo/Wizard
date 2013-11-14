@@ -81,7 +81,7 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
      */
     public function getName()
     {
-    	return $this->name;
+        return $this->name;
     }
     
     /**
@@ -89,7 +89,7 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
      */
     public function setName($name)
     {
-    	$this->name = (string) $name;
-    	return $this;
+        $this->name = (string) $name;
+        return $this;
     }
 }

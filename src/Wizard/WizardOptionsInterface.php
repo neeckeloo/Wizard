@@ -37,7 +37,7 @@ interface WizardOptionsInterface
     public function setLayoutTemplate($template);
     
     /**
-     * @param string $name
+     * @param  string $name
      * @return WizardOptionsInterface
      */
     public function setName($name);
