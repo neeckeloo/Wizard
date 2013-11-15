@@ -8,6 +8,16 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     /**
      * @var string
      */
+    protected $tokenParamName = 'uid';
+
+    /**
+     * @var string
+     */
+    protected $layoutTemplate;
+
+    /**
+     * @var string
+     */
     protected $redirectUrl;
 
     /**
@@ -16,9 +26,38 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     protected $cancelUrl;
 
     /**
-     * @var string
+     * {@inheritDoc}
      */
-    protected $layoutTemplate;
+    public function getTokenParamName()
+    {
+        return $this->tokenParamName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTokenParamName($name)
+    {
+        $this->tokenParamName = (string) $name;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLayoutTemplate()
+    {
+        return $this->layoutTemplate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLayoutTemplate($template)
+    {
+        $this->layoutTemplate = (string) $template;
+        return $this;
+    }
 
     /**
      * {@inheritDoc}
@@ -51,23 +90,6 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     public function setCancelUrl($url)
     {
         $this->cancelUrl = (string) $url;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getLayoutTemplate()
-    {
-        return $this->layoutTemplate;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setLayoutTemplate($template)
-    {
-        $this->layoutTemplate = (string) $template;
         return $this;
     }
 }

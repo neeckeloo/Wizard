@@ -15,7 +15,6 @@ class Wizard implements WizardInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
-    const TOKEN_PARAM_NAME = 'uid';
 
     const EVENT_COMPLETE = 'wizard-complete';
     const EVENT_PRE_PROCESS_STEP = 'step-pre-process';
@@ -135,9 +134,8 @@ class Wizard implements WizardInterface
     protected function getSessionContainer()
     {
         if (null === $this->sessionContainer) {
-            $this->sessionContainer = new SessionContainer(
-                $this->getSessionContainerName()
-            );
+            $sessionContainerName = sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueId());
+            $this->sessionContainer = new SessionContainer($sessionContainerName);
         }
 
         return $this->sessionContainer;
@@ -146,19 +144,14 @@ class Wizard implements WizardInterface
     /**
      * @return string
      */
-    protected function getSessionContainerName()
-    {
-        return sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueId());
-    }
-
-    /**
-     * @return string
-     */
     protected function getUniqueId()
     {
         if (null === $this->uid) {
-            if (isset($this->request) && $this->request->getQuery(self::TOKEN_PARAM_NAME)) {
-                $this->uid = $this->request->getQuery(self::TOKEN_PARAM_NAME);
+            $tokenParamName = $this->getOptions()->getTokenParamName();
+            $tokenValue = $this->request->getQuery($tokenParamName, false);
+
+            if ($tokenValue) {
+                $this->uid = $tokenValue;
             } else {
                 $this->uid = md5(uniqid(rand(), true));
             }
@@ -189,8 +182,7 @@ class Wizard implements WizardInterface
     }
 
     /**
-     * @param  string|StepInterface $step
-     * @return Wizard
+     * {@inheritDoc}
      */
     public function setCurrentStep($step)
     {
@@ -263,7 +255,7 @@ class Wizard implements WizardInterface
             $this->form = $this->formFactory->create();
             $this->form->setAttribute('action', sprintf(
                 '?%s=%s',
-                self::TOKEN_PARAM_NAME,
+                $tokenParamName = $this->getOptions()->getTokenParamName(),
                 $this->getUniqueId()
             ));
 

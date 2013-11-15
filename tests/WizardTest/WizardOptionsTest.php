@@ -15,12 +15,12 @@ class WizardOptionsTest extends \PHPUnit_Framework_TestCase
         $this->options = new WizardOptions();
     }
 
-    public function testSetAndGetRedirectUrl()
+    public function testSetAndGetTokenParamName()
     {
-        $this->assertNull($this->options->getRedirectUrl());
+        $this->assertEquals('uid', $this->options->getTokenParamName());
 
-        $this->options->setRedirectUrl('/foo');
-        $this->assertEquals('/foo', $this->options->getRedirectUrl());
+        $this->options->setTokenParamName('foo');
+        $this->assertEquals('foo', $this->options->getTokenParamName());
     }
 
     public function testSetAndGetLayoutTemplate()
@@ -29,5 +29,21 @@ class WizardOptionsTest extends \PHPUnit_Framework_TestCase
 
         $this->options->setLayoutTemplate('foo');
         $this->assertEquals('foo', $this->options->getLayoutTemplate());
+    }
+
+    public function testSetAndGetRedirectUrl()
+    {
+        $this->assertNull($this->options->getRedirectUrl());
+
+        $this->options->setRedirectUrl('/foo');
+        $this->assertEquals('/foo', $this->options->getRedirectUrl());
+    }
+
+    public function testSetAndGetCancelUrl()
+    {
+        $this->assertNull($this->options->getCancelUrl());
+
+        $this->options->setCancelUrl('/foo');
+        $this->assertEquals('/foo', $this->options->getCancelUrl());
     }
 }
