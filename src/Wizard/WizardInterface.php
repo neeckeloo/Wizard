@@ -42,10 +42,10 @@ interface WizardInterface
     public function getEventManager();
 
     /**
-     * @param  WizardOptionsInterface $options
+     * @param  array|Traversable|WizardOptionsInterface $options
      * @return self
      */
-    public function setOptions(WizardOptionsInterface $options);
+    public function setOptions($options);
 
     /**
      * @return WizardOptionsInterface

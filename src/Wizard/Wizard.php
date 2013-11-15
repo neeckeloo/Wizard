@@ -163,8 +163,12 @@ class Wizard implements WizardInterface
     /**
      * {@inheritDoc}
      */
-    public function setOptions(WizardOptionsInterface $options)
+    public function setOptions($options)
     {
+        if (!$options instanceof WizardOptionsInterface) {
+            $options = new WizardOptions($options);
+        }
+
         $this->options = $options;
         return $this;
     }

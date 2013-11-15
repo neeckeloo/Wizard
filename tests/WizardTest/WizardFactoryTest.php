@@ -74,16 +74,16 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(3, $steps);
 
         $fooStep = $steps->get('foo');
-        $this->assertEquals('foo', $fooStep->getTitle());
-        $this->assertEquals('wizard/foo', $fooStep->getViewTemplate());
+        $this->assertEquals('foo', $fooStep->getOptions()->getTitle());
+        $this->assertEquals('wizard/foo', $fooStep->getOptions()->getViewTemplate());
 
         $barStep = $steps->get('bar');
-        $this->assertEquals('bar', $barStep->getTitle());
-        $this->assertEquals('wizard/bar', $barStep->getViewTemplate());
+        $this->assertEquals('bar', $barStep->getOptions()->getTitle());
+        $this->assertEquals('wizard/bar', $barStep->getOptions()->getViewTemplate());
 
         $bazStep = $steps->get('baz');
-        $this->assertEquals('baz', $bazStep->getTitle());
-        $this->assertEquals('wizard/baz', $bazStep->getViewTemplate());
+        $this->assertEquals('baz', $bazStep->getOptions()->getTitle());
+        $this->assertEquals('wizard/baz', $bazStep->getOptions()->getViewTemplate());
     }
 
     public function testCreateWizardWithDefaultOptions()

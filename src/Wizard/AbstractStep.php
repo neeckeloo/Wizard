@@ -13,9 +13,9 @@ abstract class AbstractStep implements StepInterface
     protected $name;
 
     /**
-     * @var string
+     * @var StepOptionsInterface
      */
-    protected $title;
+    protected $options;
 
     /**
      * @var Wizard
@@ -26,11 +26,6 @@ abstract class AbstractStep implements StepInterface
      * @var Form
      */
     protected $form;
-
-    /**
-     * @var string
-     */
-    protected $viewTemplate;
 
     /**
      * @var array
@@ -67,18 +62,26 @@ abstract class AbstractStep implements StepInterface
     /**
      * {@inheritDoc}
      */
-    public function setTitle($title)
+    public function setOptions($options)
     {
-        $this->title = (string) $title;
+        if (!$options instanceof StepOptionsInterface) {
+            $options = new StepOptions($options);
+        }
+        
+        $this->options = $options;
         return $this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getTitle()
+    public function getOptions()
     {
-        return $this->title;
+        if (!isset($this->options)) {
+            $this->setOptions(new StepOptions());
+        }
+
+        return $this->options;
     }
 
     /**
@@ -113,23 +116,6 @@ abstract class AbstractStep implements StepInterface
     public function getForm()
     {
         return $this->form;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setViewTemplate($template)
-    {
-        $this->viewTemplate = (string) $template;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getViewTemplate()
-    {
-        return $this->viewTemplate;
     }
 
     /**
@@ -212,6 +198,10 @@ abstract class AbstractStep implements StepInterface
         foreach ($vars as $key => $value) {
             if (in_array($key, $excluded)) {
                 continue;
+            }
+
+            if ($value instanceof StepOptionsInterface) {
+                $value = $value->toArray();
             }
 
             $options[$key] = $value;

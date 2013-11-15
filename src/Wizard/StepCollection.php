@@ -64,15 +64,12 @@ class StepCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param  string|StepInterface $identifier
+     * @param  string $identifier
      * @return StepInterface
      */
     public function get($identifier)
     {
-        if ($identifier instanceof StepInterface) {
-            $identifier = $identifier->getName();
-        }
-
+        $identifier = (string) $identifier;
         return $this->has($identifier) ? $this->steps[$identifier] : null;
     }
 

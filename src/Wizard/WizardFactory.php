@@ -172,11 +172,12 @@ class WizardFactory implements ServiceManagerAwareInterface
 
         $step->setName($name);
 
+        $stepOptions = $step->getOptions();
         if (isset($options['title'])) {
-            $step->setTitle($options['title']);
+            $stepOptions->setTitle($options['title']);
         }
         if (isset($options['view_template'])) {
-            $step->setViewTemplate($options['view_template']);
+            $stepOptions->setViewTemplate($options['view_template']);
         }
 
         return $step;

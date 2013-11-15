@@ -82,9 +82,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
 
-        $options = $this->getMock('Wizard\WizardOptions', array(), array(), 'MockOptions');
+        $options = $this->getMock('Wizard\WizardOptions');
         $this->wizard->setOptions($options);
-        $this->assertInstanceOf('MockOptions', $this->wizard->getOptions());
+        $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
     }
 
     public function testGetCurrentStep()
@@ -356,7 +356,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $this->sessionContainer->steps = array(
             'foo' => array(
-                'title' => 'Foo',
+                'options' => array(
+                    'title' => 'Foo',
+                ),
                 'data'  => array(
                     'foo' => 123,
                     'bar' => 456,
@@ -373,7 +375,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new \Zend\Form\Form));
         $stepCollection->add($step);
 
-        $this->assertEquals('Foo', $step->getTitle());
+        $step->getOptions()->setTitle('Foo');
+
+        $this->assertEquals('Foo', $step->getOptions()->getTitle());
         $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
     }
 
@@ -400,10 +404,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getForm')
             ->will($this->returnValue(new \Zend\Form\Form));
-        $step
-            ->expects($this->any())
-            ->method('getViewTemplate')
-            ->will($this->returnValue('wizard/step/foo'));
+
+        $step->getOptions()->setViewTemplate('wizard/step/foo');
+        
         $stepCollection->add($step);
 
         $this->wizard->getOptions()->setLayoutTemplate('wizard/layout');
@@ -443,7 +446,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMockForAbstractClass(
             'Wizard\AbstractStep', array(), '', true, true, true, array(
-                'getName', 'getForm', 'getViewTemplate', 'isComplete'
+                'getName', 'getForm', 'isComplete'
             )
         );
         $mock

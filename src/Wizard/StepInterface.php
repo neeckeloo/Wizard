@@ -24,15 +24,15 @@ interface StepInterface
     public function getName();
 
     /**
-     * @param  string $title
+     * @param  array|Traversable|StepOptionsInterface $options
      * @return self
      */
-    public function setTitle($title);
+    public function setOptions($options);
 
     /**
-     * @return string
+     * @return StepOptionsInterface
      */
-    public function getTitle();
+    public function getOptions();
 
     /**
      * @param  Wizard $wizard
@@ -55,17 +55,6 @@ interface StepInterface
      * @return Form
      */
     public function getForm();
-
-    /**
-     * @param  string $template
-     * @return self
-     */
-    public function setViewTemplate($template);
-
-    /**
-     * @return string
-     */
-    public function getViewTemplate();
 
     /**
      * @param  array $data
