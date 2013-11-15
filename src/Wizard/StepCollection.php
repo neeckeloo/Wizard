@@ -31,7 +31,7 @@ class StepCollection implements \IteratorAggregate, \Countable
 
     /**
      * @param  StepInterface $step
-     * @return StepCollection
+     * @return self
      */
     public function add(StepInterface $step)
     {
@@ -47,7 +47,7 @@ class StepCollection implements \IteratorAggregate, \Countable
 
     /**
      * @param  string|StepInterface $identifier
-     * @return StepCollection
+     * @return self
      */
     public function remove($identifier)
     {
@@ -189,7 +189,7 @@ class StepCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function count()
     {
