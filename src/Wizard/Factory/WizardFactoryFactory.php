@@ -27,8 +27,8 @@ class WizardFactoryFactory implements FactoryInterface
         $renderer = $serviceLocator->get('Wizard\WizardRenderer');
         $factory->setRenderer($renderer);
 
-        $factory = $serviceLocator->get('Wizard\Form\FormFactory');
-        $factory->setFormFactory($factory);
+        $formFactory = $serviceLocator->get('Wizard\Form\FormFactory');
+        $factory->setFormFactory($formFactory);
 
         return $factory;
     }
