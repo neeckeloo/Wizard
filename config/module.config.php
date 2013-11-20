@@ -5,17 +5,20 @@ return array(
         'default_class'           => 'Wizard\Wizard',
     ),
     'service_manager' => array(
-        'factories' => array(
-            'Wizard\Config'         => 'Wizard\Factory\ConfigFactory',
-            'Wizard\Factory'        => 'Wizard\Factory\WizardFactoryFactory',
-            'Wizard\WizardRenderer' => 'Wizard\Factory\WizardRendererFactory',
-        ),
         'invokables' => array(
             'Wizard\Form\Element\Button\Cancel'   => 'Wizard\Form\Element\Button\Cancel',
             'Wizard\Form\Element\Button\Next'     => 'Wizard\Form\Element\Button\Next',
             'Wizard\Form\Element\Button\Previous' => 'Wizard\Form\Element\Button\Previous',
             'Wizard\Form\Element\Button\Valid'    => 'Wizard\Form\Element\Button\Valid',
             'Wizard\Form\FormFactory'             => 'Wizard\Form\FormFactory',
+        ),
+        'factories' => array(
+            'Wizard\Config'         => 'Wizard\Factory\ConfigFactory',
+            'Wizard\Factory'        => 'Wizard\Factory\WizardFactoryFactory',
+            'Wizard\WizardRenderer' => 'Wizard\Factory\WizardRendererFactory',
+        ),
+        'abstract_factories' => array(
+            'Wizard\WizardAbstractServiceFactory'
         ),
     ),
 
