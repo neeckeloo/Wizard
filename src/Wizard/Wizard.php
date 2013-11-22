@@ -259,7 +259,7 @@ class Wizard implements WizardInterface
             $this->form = $this->formFactory->create();
             $this->form->setAttribute('action', sprintf(
                 '?%s=%s',
-                $tokenParamName = $this->getOptions()->getTokenParamName(),
+                $this->getOptions()->getTokenParamName(),
                 $this->getUniqueId()
             ));
 
