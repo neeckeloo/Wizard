@@ -141,7 +141,7 @@ class WizardFactory implements ServiceManagerAwareInterface
      * @param array $steps
      * @param Wizard $wizard
      */
-    protected function addSteps(array $steps, $wizard)
+    protected function addSteps(array $steps, Wizard $wizard)
     {
         foreach ($steps as $key => $values) {
             $step = $this->createStep($key, $values);
