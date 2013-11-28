@@ -53,7 +53,7 @@ Installation of Wizard uses composer. For composer documentation, please refer t
 Sample configuration
 --------------------
 
-Add this code in a `./vendors/neeckeloo/wizard/config/wizard.global.php` file into your `./config/autoload` directory.
+Add this code in a `wizard.global.php` file into your `./config/autoload` directory.
 
     ```php
     <?php
