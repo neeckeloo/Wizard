@@ -13,17 +13,17 @@ Wizard module intend to provide a way to manage multi-step forms. For that, wiza
 Requirements
 ------------
 
-* [Zend Framework 2](https://github.com/zendframework/zf2) (latest master).
-
-Features / Goals
-----------------
-
-* Manage wizard process [COMPLETE]
+* PHP 5.3 or higher
+* [Zend Framework 2](https://github.com/zendframework/zf2)
 
 Installation
 ------------
 
-1. Add this project in your composer.json:
+Installation of Wizard uses composer. For composer documentation, please refer to [getcomposer.org](http://getcomposer.org/).
+
+#### Installation steps
+
+1. Add this in your composer.json:
 
     ```json
     "require": {
@@ -31,13 +31,13 @@ Installation
     }
     ```
 
-2. Now tell composer to download dependencies by running the command:
+2. Download package by running command:
 
     ```bash
     $ php composer.phar update
     ```
 
-3. Enabling it in your `application.config.php` file:
+3. Enabling it in your `config/application.config.php` file:
 
     ```php
     <?php
@@ -50,14 +50,41 @@ Installation
     );
     ```
 
-4. Copy the `./vendors/neeckeloo/wizard/config/wizard.global.php.dist` to your `./config/autoload/wizard.global.php`.
+Sample configuration
+--------------------
 
-        <?php
+Add this code in a `./vendors/neeckeloo/wizard/config/wizard.global.php` file into your `./config/autoload` directory.
 
-        $wizard = array(
-            'default_layout_template' => 'wizard/layout',
+    ```php
+    <?php
+    return array(
+        'wizard' => $array(
             'default_class' => 'Wizard\Wizard',
-            'wizards' => array(),
-        );
-
-        return array('wizard' => $wizard);
+            'default_layout_template' => 'wizard/layout',
+            'wizards' => array(
+                'Wizard\Foo' => array(
+                    'class'           => 'WizardTest\TestAsset\Foo',
+                    'layout_template' => 'wizard/custom-layout',
+                    'redirect_url'    => '/foo',
+                    'steps' => array(
+                        'foo' => array(
+                            'service'       => 'WizardTest\TestAsset\Step\Foo',
+                            'title'         => 'foo',
+                            'view_template' => 'wizard/foo',
+                        ),
+                        'bar' => array(
+                            'service'       => 'WizardTest\TestAsset\Step\Bar',
+                            'title'         => 'bar',
+                            'view_template' => 'wizard/bar',
+                        ),
+                        'baz' => array(
+                            'service'       => 'WizardTest\TestAsset\Step\Baz',
+                            'title'         => 'baz',
+                            'view_template' => 'wizard/baz',
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    );
+    ```
