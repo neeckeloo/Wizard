@@ -65,8 +65,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             'Wizard\Form\Element\Button\Valid',
             'Wizard\Form\Element\Button\Cancel',
         );
-        foreach ($buttons as $key => $service) {
-            $button = new $service();
+        foreach ($buttons as $class) {
+            $button = new $class();
             $form->add($button);
         }
 
