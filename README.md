@@ -25,66 +25,66 @@ Installation of Wizard uses composer. For composer documentation, please refer t
 
 1. Add this in your composer.json:
 
-    ```json
-    "require": {
-        "neeckeloo/wizard": "dev-master"
-    }
-    ```
+```json
+"require": {
+    "neeckeloo/wizard": "dev-master"
+}
+```
 
 2. Download package by running command:
 
-    ```bash
-    $ php composer.phar update
-    ```
+```bash
+$ php composer.phar update
+```
 
 3. Enabling it in your `config/application.config.php` file:
 
-    ```php
-    <?php
-    return array(
-        'modules' => array(
-            // ...
-            'Wizard'
-        ),
+```php
+<?php
+return array(
+    'modules' => array(
         // ...
-    );
-    ```
+        'Wizard'
+    ),
+    // ...
+);
+```
 
 Sample configuration
 --------------------
 
-Add this code in a `wizard.global.php` file into your `./config/autoload` directory.
+Add this code in a `wizard.global.php` file into your `config/autoload` directory.
 
-    ```php
-    <?php
-    return array(
-        'wizard' => $array(
-            'default_class' => 'Wizard\Wizard',
-            'default_layout_template' => 'wizard/layout',
-            'wizards' => array(
-                'Wizard\Foo' => array(
-                    'class'           => 'WizardTest\TestAsset\Foo',
-                    'layout_template' => 'wizard/custom-layout',
-                    'redirect_url'    => '/foo',
-                    'steps' => array(
-                        'foo' => array(
-                            'service'       => 'WizardTest\TestAsset\Step\Foo',
-                            'title'         => 'foo',
-                            'view_template' => 'wizard/foo',
-                        ),
-                        'bar' => array(
-                            'service'       => 'WizardTest\TestAsset\Step\Bar',
-                            'title'         => 'bar',
-                            'view_template' => 'wizard/bar',
-                        ),
-                        'baz' => array(
-                            'service'       => 'WizardTest\TestAsset\Step\Baz',
-                            'title'         => 'baz',
-                            'view_template' => 'wizard/baz',
-                        ),
+```php
+<?php
+return array(
+    'wizard' => array(
+        'default_layout_template' => 'wizard/layout',
+        'wizards' => array(
+            'Wizard\Foo' => array(
+                'class'           => 'WizardTest\TestAsset\Foo',
+                'layout_template' => 'wizard/custom-layout',
+                'redirect_url'    => '/foo',
+                'cancel_url'      => '/bar',
+                'steps' => array(
+                    'foo' => array(
+                        'service'       => 'WizardTest\TestAsset\Step\Foo',
+                        'title'         => 'foo',
+                        'view_template' => 'wizard/foo',
+                    ),
+                    'bar' => array(
+                        'service'       => 'WizardTest\TestAsset\Step\Bar',
+                        'title'         => 'bar',
+                        'view_template' => 'wizard/bar',
+                    ),
+                    'baz' => array(
+                        'service'       => 'WizardTest\TestAsset\Step\Baz',
+                        'title'         => 'baz',
+                        'view_template' => 'wizard/baz',
                     ),
                 ),
             ),
         ),
-    );
-    ```
+    ),
+);
+```
