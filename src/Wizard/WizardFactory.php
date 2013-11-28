@@ -2,6 +2,8 @@
 namespace Wizard;
 
 use Wizard\Form\FormFactory;
+use Wizard\Listener\StepCollectionListener;
+use Wizard\Listener\WizardListener;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -133,6 +135,13 @@ class WizardFactory implements ServiceManagerAwareInterface
         if (isset($config['steps']) && is_array($config['steps'])) {
             $this->addSteps($config['steps'], $wizard);
         }
+        
+        $wizardListener = new WizardListener();
+        $wizard->getEventManager()->attachAggregate($wizardListener);
+
+        $stepListener = new StepCollectionListener();
+        $stepCollection = $wizard->getSteps();
+        $stepCollection->getEventManager()->attachAggregate($stepListener);
 
         return $wizard;
     }

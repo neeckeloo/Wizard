@@ -129,9 +129,9 @@ class Wizard implements WizardInterface
     }
 
     /**
-     * @return SessionContainer
+     * {@inheritDoc}
      */
-    protected function getSessionContainer()
+    public function getSessionContainer()
     {
         if (null === $this->sessionContainer) {
             $sessionContainerName = sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueId());
@@ -302,11 +302,6 @@ class Wizard implements WizardInterface
     public function setSteps(StepCollection $steps)
     {
         $this->steps = $steps;
-
-        $sessionContainer = $this->getSessionContainer();
-        $stepListener = new StepListener($sessionContainer);
-        $this->steps->getEventManager()->attachAggregate($stepListener);
-
         return $this;
     }
 
@@ -426,14 +421,6 @@ class Wizard implements WizardInterface
         }
 
         $this->processed = true;
-
-        $sessionSteps = array();
-        foreach ($steps as $step) {
-            $sessionSteps[$step->getName()] = $step->toArray();
-        }
-
-        $sessionContainer = $this->getSessionContainer();
-        $sessionContainer->steps = $sessionSteps;
     }
 
     /**

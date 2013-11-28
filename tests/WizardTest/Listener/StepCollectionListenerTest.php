@@ -1,13 +1,13 @@
 <?php
-namespace WizardTest;
+namespace WizardTest\Listener;
 
-use Wizard\StepListener;
+use Wizard\Listener\StepCollectionListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container as SessionContainer;
 use Zend\Session\SessionManager;
 use Zend\Session\Storage\ArrayStorage as SessionStorage;
 
-class StepListenerTest extends \PHPUnit_Framework_TestCase
+class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var StepListener
@@ -23,7 +23,7 @@ class StepListenerTest extends \PHPUnit_Framework_TestCase
     {
         $this->sessionContainer = $this->getSessionContainer();
 
-        $this->listener = new StepListener($this->sessionContainer);
+        $this->listener = new StepCollectionListener($this->sessionContainer);
         $this->event    = new MvcEvent();
     }
 
@@ -33,11 +33,21 @@ class StepListenerTest extends \PHPUnit_Framework_TestCase
             'foo' => array(),
         );
 
+        $wizard = $this->getMock('Wizard\WizardInterface');
+        $wizard
+            ->expects($this->once())
+            ->method('getSessionContainer')
+            ->will($this->returnValue($this->sessionContainer));
+
         $step = $this->getMock('Wizard\StepInterface');
         $step
             ->expects($this->once())
             ->method('getName')
             ->will($this->returnValue('foo'));
+        $step
+            ->expects($this->once())
+            ->method('getWizard')
+            ->will($this->returnValue($wizard));
         $step
             ->expects($this->once())
             ->method('setFromArray');
@@ -50,10 +60,20 @@ class StepListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testNotRestoreWithoutSessionSteps()
     {
+        $wizard = $this->getMock('Wizard\WizardInterface');
+        $wizard
+            ->expects($this->once())
+            ->method('getSessionContainer')
+            ->will($this->returnValue($this->sessionContainer));
+        
         $step = $this->getMock('Wizard\StepInterface');
         $step
             ->expects($this->never())
             ->method('getName');
+        $step
+            ->expects($this->once())
+            ->method('getWizard')
+            ->will($this->returnValue($wizard));
         $step
             ->expects($this->never())
             ->method('setFromArray');

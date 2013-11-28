@@ -1,12 +1,13 @@
 <?php
 namespace Wizard;
-;
+
 use Wizard\Form\FormFactory;
 use Wizard\StepInterface;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
+use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface as Renderer;
 
@@ -40,6 +41,11 @@ interface WizardInterface
      * @return EventManager
      */
     public function getEventManager();
+
+    /**
+     * @return SessionContainer
+     */
+    public function getSessionContainer();
 
     /**
      * @param  array|Traversable|WizardOptionsInterface $options

@@ -1,30 +1,17 @@
 <?php
-namespace Wizard;
+namespace Wizard\Listener;
 
+use Wizard\StepCollection;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
-use Zend\Session\Container as SessionContainer;
 
-class StepListener implements ListenerAggregateInterface
+class StepCollectionListener implements ListenerAggregateInterface
 {
-    /**
-     * @var SessionContainer
-     */
-    protected $sessionContainer;
-
     /**
      * @var array
      */
     protected $listeners = array();
-
-    /**
-     * @param SessionContainer $sessionContainer
-     */
-    public function __construct(SessionContainer $sessionContainer)
-    {
-        $this->sessionContainer = $sessionContainer;
-    }
 
     /**
      * @param EventManagerInterface $events
@@ -52,16 +39,19 @@ class StepListener implements ListenerAggregateInterface
      */
     public function restore(EventInterface $e)
     {
-        if (!isset($this->sessionContainer->steps)) {
-            return;
-        }
-
         $step = $e->getTarget();
-        $stepName = $step->getName();
-        if (!isset($this->sessionContainer->steps[$stepName])) {
+        $wizard = $step->getWizard();
+
+        $sessionContainer = $wizard->getSessionContainer();
+        if (!isset($sessionContainer->steps)) {
             return;
         }
 
-        $step->setFromArray($this->sessionContainer->steps[$stepName]);
+        $stepName = $step->getName();
+        if (!isset($sessionContainer->steps[$stepName])) {
+            return;
+        }
+
+        $step->setFromArray($sessionContainer->steps[$stepName]);
     }
 }
