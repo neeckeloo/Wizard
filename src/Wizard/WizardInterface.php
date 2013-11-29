@@ -26,12 +26,6 @@ interface WizardInterface
     public function setResponse(Response $response);
 
     /**
-     * @param  Renderer $renderer
-     * @return self
-     */
-    public function setRenderer(Renderer $renderer);
-
-    /**
      * @param  FormFactory $factory
      * @return self
      */
@@ -109,9 +103,4 @@ interface WizardInterface
      * @return ViewModel
      */
     public function getViewModel();
-
-    /**
-     * @return string
-     */
-    public function render();
 }

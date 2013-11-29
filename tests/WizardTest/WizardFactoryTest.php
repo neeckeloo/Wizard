@@ -41,9 +41,6 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $response = $this->getMock('Zend\Http\Response');
         $wizardFactory->setResponse($response);
 
-        $renderer = $this->getMock('Zend\View\Renderer\PhpRenderer');
-        $wizardFactory->setRenderer($renderer);
-
         $formFactory = $this->getMock('Wizard\Form\FormFactory');
         $formFactory
             ->expects($this->any())
@@ -96,9 +93,6 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->getMock('Zend\Http\Response');
         $wizardFactory->setResponse($response);
-
-        $renderer = $this->getMock('Zend\View\Renderer\PhpRenderer');
-        $wizardFactory->setRenderer($renderer);
 
         $formFactory = $this->getMock('Wizard\Form\FormFactory');
         $formFactory

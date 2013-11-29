@@ -386,9 +386,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $formFactory = $this->getFormFactory();
         $this->wizard->setFormFactory($formFactory);
 
-        $renderer = new PhpRenderer;
-        $this->wizard->setRenderer($renderer);
-
+        $renderer = new PhpRenderer;        
         $resolver = new TemplateMapResolver(array(
             'wizard/layout'   => __DIR__ . '/_files/layout.phtml',
             'wizard/header'   => __DIR__ . '/_files/header.phtml',
@@ -413,8 +411,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
         $viewModel = $this->wizard->getViewModel();
         $this->assertNotEmpty($viewModel->getTemplate());
-        
-        $output = $this->wizard->render();
+
+        $output = $renderer->render($viewModel);
 
         $this->assertRegExp('/foo-step/', $output);
     }

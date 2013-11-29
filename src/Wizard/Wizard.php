@@ -41,11 +41,6 @@ class Wizard implements WizardInterface
     protected $response;
 
     /**
-     * @var Renderer
-     */
-    protected $renderer;
-
-    /**
      * @var EventManager
      */
     protected $eventManager;
@@ -95,15 +90,6 @@ class Wizard implements WizardInterface
     public function setResponse(Response $response)
     {
         $this->response = $response;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setRenderer(Renderer $renderer)
-    {
-        $this->renderer = $renderer;
         return $this;
     }
 
@@ -451,14 +437,5 @@ class Wizard implements WizardInterface
         $this->viewModel->setTemplate($template);
 
         return $this->viewModel;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function render()
-    {
-        $model = $this->getViewModel();
-        return $this->renderer->render($model);
     }
 }

@@ -29,11 +29,6 @@ class WizardFactory implements ServiceManagerAwareInterface
     protected $response;
 
     /**
-     * @var Renderer
-     */
-    protected $renderer;
-
-    /**
      * @var FormFactory
      */
     protected $formFactory;
@@ -76,14 +71,6 @@ class WizardFactory implements ServiceManagerAwareInterface
     }
 
     /**
-     * @param Renderer $renderer
-     */
-    public function setRenderer(Renderer $renderer)
-    {
-        $this->renderer = $renderer;
-    }
-
-    /**
      * @param FormFactory $factory
      */
     public function setFormFactory(FormFactory $factory)
@@ -112,7 +99,6 @@ class WizardFactory implements ServiceManagerAwareInterface
         $wizard
             ->setRequest($this->request)
             ->setResponse($this->response)
-            ->setRenderer($this->renderer)
             ->setFormFactory($this->formFactory);
 
         if (isset($config['layout_template'])) {
