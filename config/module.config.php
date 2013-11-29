@@ -2,7 +2,6 @@
 return array(
     'wizard' => array(
         'default_layout_template' => 'wizard/layout',
-        'default_class'           => 'Wizard\Wizard',
     ),
     'service_manager' => array(
         'invokables' => array(

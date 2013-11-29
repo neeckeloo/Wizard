@@ -19,7 +19,6 @@ class WizardAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
         )));
 
         $this->serviceManager->setService('Wizard\Config', array(
-            'default_class' => 'Wizard\Wizard',
             'default_layout_template' => 'wizard/layout',
             'wizards' => array(
                 'Wizard\Foo' => array(),

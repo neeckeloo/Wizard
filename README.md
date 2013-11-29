@@ -61,29 +61,32 @@ return array(
     'wizard' => array(
         'default_layout_template' => 'wizard/layout',
         'wizards' => array(
-            'Wizard\Foo' => array(
-                'class'           => 'WizardTest\TestAsset\Foo',
+            'wizard-foo' => array(
                 'layout_template' => 'wizard/custom-layout',
                 'redirect_url'    => '/foo',
                 'cancel_url'      => '/bar',
                 'steps' => array(
-                    'foo' => array(
-                        'service'       => 'WizardTest\TestAsset\Step\Foo',
+                    'Namespace\Wizard\Step\Foo' => array(
                         'title'         => 'foo',
                         'view_template' => 'wizard/foo',
                     ),
-                    'bar' => array(
-                        'service'       => 'WizardTest\TestAsset\Step\Bar',
+                    'Namespace\Wizard\Step\Bar' => array(
                         'title'         => 'bar',
                         'view_template' => 'wizard/bar',
                     ),
-                    'baz' => array(
-                        'service'       => 'WizardTest\TestAsset\Step\Baz',
+                    'Namespace\Wizard\Step\Baz' => array(
                         'title'         => 'baz',
                         'view_template' => 'wizard/baz',
                     ),
                 ),
             ),
+        ),
+    ),
+    'wizard_steps' => array(
+        'invokables' => array(
+            'Namespace\Wizard\Step\Foo' => 'Namespace\Wizard\Step\Foo',
+            'Namespace\Wizard\Step\Bar' => 'Namespace\Wizard\Step\Bar',
+            'Namespace\Wizard\Step\Baz' => 'Namespace\Wizard\Step\Baz',
         ),
     ),
 );

@@ -106,14 +106,8 @@ class WizardFactory implements ServiceManagerAwareInterface
 
         $config = $this->config['wizards'][$name];
 
-        if (isset($config['class']) && class_exists($config['class'])) {
-            $class = $config['class'];
-        } else {
-            $class = $this->config['default_class'];
-        }
-
         /* @var $wizard \Wizard\WizardInterface */
-        $wizard = new $class();
+        $wizard = new Wizard();
 
         $wizard
             ->setRequest($this->request)
@@ -167,27 +161,17 @@ class WizardFactory implements ServiceManagerAwareInterface
     }
 
     /**
-     * @param string $name
-     * @param array $options
+     * @param  string $name
+     * @param  array $options
+     * @return StepInterface
      */
-    protected function createStep($name, $options)
+    protected function createStep($service, $options)
     {
-        if (!isset($options['service']) || !$this->serviceManager->has($options['service'])) {
-            return null;
-        }
-
         /* @var $step \Wizard\StepInterface */
-        $step = $this->serviceManager->get($options['service']);
+        $step = $this->serviceManager->get($service);
 
-        $step->setName($name);
-
-        $stepOptions = $step->getOptions();
-        if (isset($options['title'])) {
-            $stepOptions->setTitle($options['title']);
-        }
-        if (isset($options['view_template'])) {
-            $stepOptions->setViewTemplate($options['view_template']);
-        }
+        $step->setName($service);
+        $step->getOptions()->setFromArray($options);
 
         return $step;
     }

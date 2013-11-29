@@ -10,26 +10,21 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateWizard()
     {
         $config = array(
-            'default_class' => 'Wizard\Wizard',
             'default_layout_template' => 'wizard/layout',
             'wizards' => array(
                 'Wizard\Foo' => array(
-                    'class'           => 'WizardTest\TestAsset\Foo',
                     'layout_template' => 'wizard/custom-layout',
                     'redirect_url'    => '/foo',
                     'steps' => array(
-                        'foo' => array(
-                            'service'       => 'WizardTest\TestAsset\Step\Foo',
+                        'WizardTest\TestAsset\Step\Foo' => array(
                             'title'         => 'foo',
                             'view_template' => 'wizard/foo',
                         ),
-                        'bar' => array(
-                            'service'       => 'WizardTest\TestAsset\Step\Bar',
+                        'WizardTest\TestAsset\Step\Bar' => array(
                             'title'         => 'bar',
                             'view_template' => 'wizard/bar',
                         ),
-                        'baz' => array(
-                            'service'       => 'WizardTest\TestAsset\Step\Baz',
+                        'WizardTest\TestAsset\Step\Baz' => array(
                             'title'         => 'baz',
                             'view_template' => 'wizard/baz',
                         ),
@@ -65,7 +60,6 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         
         $wizard = $wizardFactory->create('Wizard\Foo');
         $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
-        $this->assertInstanceOf('WizardTest\TestAsset\Foo', $wizard);
 
         $this->assertEquals('wizard/custom-layout', $wizard->getOptions()->getLayoutTemplate());
         $this->assertEquals('/foo', $wizard->getOptions()->getRedirectUrl());
@@ -73,15 +67,15 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $steps = $wizard->getSteps();
         $this->assertCount(3, $steps);
 
-        $fooStep = $steps->get('foo');
+        $fooStep = $steps->get('WizardTest\TestAsset\Step\Foo');
         $this->assertEquals('foo', $fooStep->getOptions()->getTitle());
         $this->assertEquals('wizard/foo', $fooStep->getOptions()->getViewTemplate());
 
-        $barStep = $steps->get('bar');
+        $barStep = $steps->get('WizardTest\TestAsset\Step\Bar');
         $this->assertEquals('bar', $barStep->getOptions()->getTitle());
         $this->assertEquals('wizard/bar', $barStep->getOptions()->getViewTemplate());
 
-        $bazStep = $steps->get('baz');
+        $bazStep = $steps->get('WizardTest\TestAsset\Step\Baz');
         $this->assertEquals('baz', $bazStep->getOptions()->getTitle());
         $this->assertEquals('wizard/baz', $bazStep->getOptions()->getViewTemplate());
     }
@@ -89,7 +83,6 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateWizardWithDefaultOptions()
     {
         $config = array(
-            'default_class' => 'Wizard\Wizard',
             'default_layout_template' => 'wizard/layout',
             'wizards' => array(
                 'Wizard\Foo' => array(),
