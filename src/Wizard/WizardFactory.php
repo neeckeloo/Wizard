@@ -9,7 +9,6 @@ use Zend\Http\Response;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\View\Renderer\RendererInterface as Renderer;
 
 class WizardFactory implements ServiceManagerAwareInterface
 {
