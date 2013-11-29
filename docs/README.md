@@ -1,4 +1,4 @@
-Welcome to the official Wizard documentation. This documentation will help you to quickly understand how to use the module.
+Welcome to the Wizard module documentation. This documentation will help you to quickly understand how to use the module.
 
 If you are looking for some information that is not listed in the documentation, please open an issue!
 
