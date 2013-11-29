@@ -10,3 +10,4 @@ If you are looking for some information that is not listed in the documentation,
    1. [Creating a wizard](/docs/02. Quick Start.md#creating-a-wizard)
    2. [Specifying redirect urls](/docs/02. Quick Start.md#specifying-redirect-urls)
    3. [Adding steps](/docs/02. Quick Start.md#adding-steps)
+   4. [Using wizard](/docs/02. Quick Start.md#using-wizard)
