@@ -2,7 +2,7 @@
 namespace Wizard;
 
 use Wizard\Wizard;
-use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Traversable;
 
 interface StepInterface
@@ -46,13 +46,13 @@ interface StepInterface
     public function getWizard();
 
     /**
-     * @param  Form $form
+     * @param  FormInterface $form
      * @return self
      */
-    public function setForm(Form $form);
+    public function setForm(FormInterface $form);
 
     /**
-     * @return Form
+     * @return FormInterface
      */
     public function getForm();
 

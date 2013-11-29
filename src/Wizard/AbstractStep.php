@@ -2,7 +2,7 @@
 namespace Wizard;
 
 use Wizard\Wizard;
-use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Traversable;
 
 abstract class AbstractStep implements StepInterface
@@ -23,7 +23,7 @@ abstract class AbstractStep implements StepInterface
     protected $wizard;
 
     /**
-     * @var Form
+     * @var FormInterface
      */
     protected $form;
 
@@ -104,7 +104,7 @@ abstract class AbstractStep implements StepInterface
     /**
      * {@inheritDoc}
      */
-    public function setForm(Form $form)
+    public function setForm(FormInterface $form)
     {
         $this->form = $form;
         return $this;
@@ -140,7 +140,14 @@ abstract class AbstractStep implements StepInterface
      */
     public function process(array $data)
     {
+        $form = $this->getForm();
+        if (!($form instanceof FormInterface)) {
+            return null;
+        }
 
+        $form->setData($data);
+
+        return $form->isValid();
     }
 
     /**
