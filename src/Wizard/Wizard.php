@@ -9,7 +9,6 @@ use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
-use Zend\View\Renderer\RendererInterface as Renderer;
 
 class Wizard implements WizardInterface
 {
