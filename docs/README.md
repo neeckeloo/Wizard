@@ -11,3 +11,4 @@ If you are looking for some information that is not listed in the documentation,
    2. [Specifying redirect urls](/docs/02. Quick Start.md#specifying-redirect-urls)
    3. [Adding steps](/docs/02. Quick Start.md#adding-steps)
    4. [Using wizard](/docs/02. Quick Start.md#using-wizard)
+   5. [Processing wizard](/docs/02. Quick Start.md#processing-wizard)
