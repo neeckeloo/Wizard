@@ -19,6 +19,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
                         'WizardTest\TestAsset\Step\Foo' => array(
                             'title'         => 'foo',
                             'view_template' => 'wizard/foo',
+                            'form'          => 'WizardTest\TestAsset\Step\FooForm',
                         ),
                         'WizardTest\TestAsset\Step\Bar' => array(
                             'title'         => 'bar',
@@ -33,23 +34,17 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ),
         );
 
-        $wizardFactory = new WizardFactory($config);
+        $wizardFactory = $this->getWizardFactory($config);
 
-        $request = $this->getMock('Zend\Http\Request');
-        $wizardFactory->setRequest($request);
-
-        $response = $this->getMock('Zend\Http\Response');
-        $wizardFactory->setResponse($response);
-
-        $formFactory = $this->getMock('Wizard\Form\FormFactory');
-        $formFactory
-            ->expects($this->any())
-            ->method('create')
-            ->will($this->returnValue(new Form));
-        $wizardFactory->setFormFactory($formFactory);
+        $formElementManager = new ServiceManager();
+        $formElementManager->setService(
+            'WizardTest\TestAsset\Step\FooForm',
+            $this->getMock('Zend\Form\Form')
+        );
 
         $serviceManager = new ServiceManager();
         $serviceManager
+            ->setService('FormElementManager', $formElementManager)
             ->setService('WizardTest\TestAsset\Step\Foo', $this->getMockForAbstractClass('Wizard\AbstractStep'))
             ->setService('WizardTest\TestAsset\Step\Bar', $this->getMockForAbstractClass('Wizard\AbstractStep'))
             ->setService('WizardTest\TestAsset\Step\Baz', $this->getMockForAbstractClass('Wizard\AbstractStep'));
@@ -67,14 +62,17 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $fooStep = $steps->get('WizardTest\TestAsset\Step\Foo');
         $this->assertEquals('foo', $fooStep->getOptions()->getTitle());
         $this->assertEquals('wizard/foo', $fooStep->getOptions()->getViewTemplate());
+        $this->assertInstanceOf('Zend\Form\Form', $fooStep->getForm());
 
         $barStep = $steps->get('WizardTest\TestAsset\Step\Bar');
         $this->assertEquals('bar', $barStep->getOptions()->getTitle());
         $this->assertEquals('wizard/bar', $barStep->getOptions()->getViewTemplate());
+        $this->assertNull($barStep->getForm());
 
         $bazStep = $steps->get('WizardTest\TestAsset\Step\Baz');
         $this->assertEquals('baz', $bazStep->getOptions()->getTitle());
         $this->assertEquals('wizard/baz', $bazStep->getOptions()->getViewTemplate());
+        $this->assertNull($bazStep->getForm());
     }
 
     public function testCreateWizardWithDefaultOptions()
@@ -86,6 +84,28 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ),
         );
 
+        $wizardFactory = $this->getWizardFactory($config);
+        $wizard = $wizardFactory->create('Wizard\Foo');
+
+        $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
+        $this->assertEquals('wizard/layout', $wizard->getOptions()->getLayoutTemplate());
+    }
+
+    /**
+     * @expectedException \Wizard\Exception\RuntimeException
+     */
+    public function testCreateInvalidWizard()
+    {
+        $wizardFactory = $this->getWizardFactory(array());
+        $wizardFactory->create('invalid');
+    }
+    
+    /**
+     * @param  array $config
+     * @return WizardFactory
+     */
+    protected function getWizardFactory(array $config)
+    {
         $wizardFactory = new WizardFactory($config);
 
         $request = $this->getMock('Zend\Http\Request');
@@ -101,17 +121,6 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new Form));
         $wizardFactory->setFormFactory($formFactory);
 
-        $wizard = $wizardFactory->create('Wizard\Foo');
-        $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
-        $this->assertEquals('wizard/layout', $wizard->getOptions()->getLayoutTemplate());
-    }
-
-    /**
-     * @expectedException \Wizard\Exception\RuntimeException
-     */
-    public function testCreateInvalidWizard()
-    {
-        $wizardFactory = new WizardFactory(array());
-        $wizardFactory->create('invalid');
+        return $wizardFactory;
     }
 }

@@ -155,6 +155,13 @@ class WizardFactory implements ServiceManagerAwareInterface
         /* @var $step \Wizard\StepInterface */
         $step = $this->serviceManager->get($service);
 
+        if (isset($options['form'])) {
+            $formManager = $this->serviceManager->get('FormElementManager');
+            $form = $formManager->get($options['form']);
+            $step->setForm($form);
+            unset($options['form']);
+        }
+
         $step->setName($service);
         $step->getOptions()->setFromArray($options);
 
