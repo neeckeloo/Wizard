@@ -2,6 +2,7 @@ Wizard module for Zend Framework 2
 ==================================
 
 [![Build Status](https://secure.travis-ci.org/neeckeloo/Wizard.png?branch=master)](http://travis-ci.org/neeckeloo/Wizard)
+[![Latest Stable Version](https://poser.pugx.org/neeckeloo/Wizard/v/stable.png)](https://packagist.org/packages/neeckeloo/Wizard)
 [![Coverage Status](https://coveralls.io/repos/neeckeloo/Wizard/badge.png?branch=master)](https://coveralls.io/r/neeckeloo/Wizard)
 [![Dependencies Status](https://d2xishtp1ojlk0.cloudfront.net/d/8723804)](http://depending.in/neeckeloo/Wizard)
 
