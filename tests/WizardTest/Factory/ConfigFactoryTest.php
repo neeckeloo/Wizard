@@ -2,15 +2,10 @@
 namespace WizardTest\Factory;
 
 use Wizard\Factory\ConfigFactory;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceManager;
 
 class ConfigFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
     /**
      * @var ConfigFactory
      */
@@ -18,20 +13,17 @@ class ConfigFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $this->configFactory = new ConfigFactory();
     }
 
     public function testCreateConfig()
     {
-        $this->serviceLocator
-            ->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue(array(
-                'wizard' => array(),
-            )));
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService('Config', array(
+            'wizard' => array(),
+        ));
 
-        $config = $this->configFactory->createService($this->serviceLocator);
+        $config = $this->configFactory->createService($serviceManager);
         $this->assertInternalType('array', $config);
     }
 }
