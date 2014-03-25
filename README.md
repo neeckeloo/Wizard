@@ -20,7 +20,7 @@ Requirements
 Installation
 ------------
 
-Wizadr module only officially supports installation through Composer. For Composer documentation, please refer to
+Wizard module only officially supports installation through Composer. For Composer documentation, please refer to
 [getcomposer.org](http://getcomposer.org/).
 
 Install the module:
