@@ -13,6 +13,17 @@ use Zend\View\Renderer\RendererInterface as Renderer;
 interface WizardInterface
 {
     /**
+     * @param  string $title
+     * @return WizardInterface
+     */
+    public function setTitle($title);
+
+    /**
+     * @return string
+     */
+    public function getTitle();
+            
+    /**
      * @return ServiceManager
      */
     public function getServiceManager();

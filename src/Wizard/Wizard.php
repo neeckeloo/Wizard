@@ -29,6 +29,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $uid;
 
     /**
+     * @var string
+     */
+    protected $title;
+
+    /**
      * @var SessionManager
      */
     protected $sessionManager;
@@ -87,6 +92,23 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @var bool
      */
     protected $processed = false;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTitle($title)
+    {
+        $this->title = (string) $title;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
     /**
      * {@inheritDoc}
