@@ -1,7 +1,7 @@
 <?php
 namespace Wizard\Listener;
 
-use Wizard\Wizard;
+use Wizard\WizardEvent;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -18,7 +18,7 @@ class WizardListener implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(Wizard::EVENT_POST_PROCESS_STEP, array($this, 'persistStep'), 100);
+        $this->listeners[] = $events->attach(WizardEvent::EVENT_POST_PROCESS_STEP, array($this, 'persistStep'), 100);
     }
 
     /**
