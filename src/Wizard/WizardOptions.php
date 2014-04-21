@@ -6,6 +6,11 @@ use Zend\Stdlib\AbstractOptions;
 class WizardOptions extends AbstractOptions implements WizardOptionsInterface
 {
     /**
+     * @var string 
+     */
+    protected $title;
+
+    /**
      * @var string
      */
     protected $tokenParamName = 'uid';
@@ -24,6 +29,23 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
      * @var string
      */
     protected $cancelUrl;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTitle($title)
+    {
+        $this->title = (string) $title;
+        return $this;
+    }
 
     /**
      * {@inheritDoc}

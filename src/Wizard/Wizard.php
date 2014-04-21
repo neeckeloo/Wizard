@@ -3,6 +3,7 @@ namespace Wizard;
 
 use Wizard\Exception;
 use Wizard\Form\FormFactory;
+use Wizard\WizardEvent;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
@@ -14,10 +15,6 @@ class Wizard implements WizardInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
-
-    const EVENT_COMPLETE = 'wizard-complete';
-    const EVENT_PRE_PROCESS_STEP = 'step-pre-process';
-    const EVENT_POST_PROCESS_STEP = 'step-post-process';
 
     /**
      * @var string
@@ -382,7 +379,7 @@ class Wizard implements WizardInterface
         } else if (isset($values['cancel'])) {
             $this->doCancel();
         } else {
-            $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
+            $this->getEventManager()->trigger(WizardEvent::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,
             ));
 
@@ -392,11 +389,11 @@ class Wizard implements WizardInterface
             }
             $currentStep->setData($values);
 
-            $this->getEventManager()->trigger(self::EVENT_POST_PROCESS_STEP, $currentStep);
+            $this->getEventManager()->trigger(WizardEvent::EVENT_POST_PROCESS_STEP, $currentStep);
 
             if ($currentStep->isComplete()) {
                 if ($steps->isLast($currentStep)) {
-                    $this->getEventManager()->trigger(self::EVENT_COMPLETE, $this);
+                    $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $this);
                     $this->doRedirect();
                 } else {
                     $nextStep = $steps->getNext($currentStep);

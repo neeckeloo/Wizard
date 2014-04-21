@@ -6,6 +6,17 @@ interface WizardOptionsInterface
     /**
      * @return string
      */
+    public function getTitle();
+
+    /**
+     * @param  string $title
+     * @return self
+     */
+    public function setTitle($title);
+    
+    /**
+     * @return string
+     */
     public function getTokenParamName();
 
     /**

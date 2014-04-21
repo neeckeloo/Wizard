@@ -99,16 +99,22 @@ class WizardFactory implements ServiceManagerAwareInterface
             ->setRequest($this->request)
             ->setResponse($this->response)
             ->setFormFactory($this->formFactory);
+        
+        $wizardOptions = $wizard->getOptions();
+        
+        if (isset($config['title'])) {
+            $wizardOptions->setTitle($config['title']);
+        }
 
         if (isset($config['layout_template'])) {
             $layoutTemplate = $config['layout_template'];
         } else {
             $layoutTemplate = $this->config['default_layout_template'];
         }
-        $wizard->getOptions()->setLayoutTemplate($layoutTemplate);
+        $wizardOptions->setLayoutTemplate($layoutTemplate);
         
         if (isset($config['redirect_url'])) {
-            $wizard->getOptions()->setRedirectUrl($config['redirect_url']);
+            $wizardOptions->setRedirectUrl($config['redirect_url']);
         }
 
         if (isset($config['steps']) && is_array($config['steps'])) {
@@ -146,14 +152,16 @@ class WizardFactory implements ServiceManagerAwareInterface
     }
 
     /**
-     * @param  string $name
+     * @param  string $service
      * @param  array $options
      * @return StepInterface
      */
     protected function createStep($service, $options)
     {
+        $stepPluginManager = $this->serviceManager->get('Wizard\Step\StepPluginManager');
+        
         /* @var $step \Wizard\StepInterface */
-        $step = $this->serviceManager->get($service);
+        $step = $stepPluginManager->get($service);
 
         if (isset($options['form'])) {
             $formManager = $this->serviceManager->get('FormElementManager');

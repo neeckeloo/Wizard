@@ -12,9 +12,10 @@ return array(
             'Wizard\Form\FormFactory'             => 'Wizard\Form\FormFactory',
         ),
         'factories' => array(
-            'Wizard\Config'         => 'Wizard\Factory\ConfigFactory',
-            'Wizard\Factory'        => 'Wizard\Factory\WizardFactoryFactory',
-            'Wizard\WizardRenderer' => 'Wizard\Factory\WizardRendererFactory',
+            'Wizard\Config'                 => 'Wizard\Factory\ConfigFactory',
+            'Wizard\Factory'                => 'Wizard\Factory\WizardFactoryFactory',
+            'Wizard\WizardRenderer'         => 'Wizard\Factory\WizardRendererFactory',
+            'Wizard\Step\StepPluginManager' => 'Wizard\Factory\StepPluginManagerFactory',
         ),
         'abstract_factories' => array(
             'Wizard\WizardAbstractServiceFactory'
