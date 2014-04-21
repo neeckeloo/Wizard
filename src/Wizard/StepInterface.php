@@ -2,7 +2,7 @@
 namespace Wizard;
 
 use Wizard\Wizard;
-use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Traversable;
 
 interface StepInterface
@@ -13,24 +13,30 @@ interface StepInterface
     public function init();
 
     /**
+     * @param  string $name
+     * @return self
+     */
+    public function setName($name);
+
+    /**
      * @return string
      */
     public function getName();
 
     /**
-     * @param  string $title
-     * @return StepInterface
+     * @param  array|Traversable|StepOptionsInterface $options
+     * @return self
      */
-    public function setTitle($title);
+    public function setOptions($options);
 
     /**
-     * @return string
+     * @return StepOptionsInterface
      */
-    public function getTitle();
+    public function getOptions();
 
     /**
      * @param  Wizard $wizard
-     * @return StepInterface
+     * @return self
      */
     public function setWizard(Wizard $wizard);
 
@@ -40,30 +46,19 @@ interface StepInterface
     public function getWizard();
 
     /**
-     * @param  Form $form
-     * @return StepInterface
+     * @param  FormInterface $form
+     * @return self
      */
-    public function setForm(Form $form);
+    public function setForm(FormInterface $form);
 
     /**
-     * @return Form
+     * @return FormInterface
      */
     public function getForm();
 
     /**
-     * @param  string $template
-     * @return StepInterface
-     */
-    public function setViewTemplate($template);
-
-    /**
-     * @return string
-     */
-    public function getViewTemplate();
-
-    /**
      * @param  array $data
-     * @return StepInterface
+     * @return self
      */
     public function setData(array $data);
 
@@ -80,7 +75,7 @@ interface StepInterface
 
     /**
      * @param  bool $complete
-     * @return StepInterface
+     * @return self
      */
     public function setComplete($complete = true);
 
@@ -92,7 +87,7 @@ interface StepInterface
     /**
      * @param  array|Traversable $options
      * @throws Exception\InvalidArgumentException
-     * @return StepInterface
+     * @return self
      */
     public function setFromArray($options);
 

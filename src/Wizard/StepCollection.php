@@ -1,6 +1,7 @@
 <?php
 namespace Wizard;
 
+use ArrayIterator;
 use Zend\EventManager\EventManager;
 
 class StepCollection implements \IteratorAggregate, \Countable
@@ -31,7 +32,7 @@ class StepCollection implements \IteratorAggregate, \Countable
 
     /**
      * @param  StepInterface $step
-     * @return StepCollection
+     * @return self
      */
     public function add(StepInterface $step)
     {
@@ -47,7 +48,7 @@ class StepCollection implements \IteratorAggregate, \Countable
 
     /**
      * @param  string|StepInterface $identifier
-     * @return StepCollection
+     * @return self
      */
     public function remove($identifier)
     {
@@ -64,15 +65,12 @@ class StepCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param  string|StepInterface $identifier
+     * @param  string $identifier
      * @return StepInterface
      */
     public function get($identifier)
     {
-        if ($identifier instanceof StepInterface) {
-            $identifier = $identifier->getName();
-        }
-
+        $identifier = (string) $identifier;
         return $this->has($identifier) ? $this->steps[$identifier] : null;
     }
 
@@ -104,7 +102,7 @@ class StepCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param  string|StepInterface $identitier
+     * @param  string|StepInterface $identifier
      * @return bool
      */
     public function isFirst($identifier)
@@ -133,7 +131,7 @@ class StepCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param  string|StepInterface $identitier
+     * @param  string|StepInterface $identifier
      * @return bool
      */
     public function isLast($identifier)
@@ -185,11 +183,11 @@ class StepCollection implements \IteratorAggregate, \Countable
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->steps);
+        return new ArrayIterator($this->steps);
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function count()
     {

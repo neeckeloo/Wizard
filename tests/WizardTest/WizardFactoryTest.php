@@ -2,87 +2,56 @@
 namespace WizardTest;
 
 use Wizard\WizardFactory;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Form\Form;
+use Zend\ServiceManager\ServiceManager;
 
 class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    public function setUp()
-    {
-        $this->serviceLocator = $this->getMock('Zend\ServiceManager\ServiceManager');
-    }
-
     public function testCreateWizard()
     {
         $config = array(
-            'wizard' => array(
-                'default_class' => 'Wizard\Wizard',
-                'default_layout_template' => 'wizard/layout',
-                'wizards' => array(
-                    'Wizard\Foo' => array(
-                        'class'           => 'WizardTest\TestAsset\Foo',
-                        'layout_template' => 'wizard/custom-layout',
-                        'redirect_url'    => '/foo',
-                        'steps' => array(
-                            'WizardTest\TestAsset\Step\Foo' => array(
-                                'title'         => 'foo',
-                                'view_template' => 'wizard/foo',
-                            ),
-                            'WizardTest\TestAsset\Step\Bar' => array(
-                                'title'         => 'bar',
-                                'view_template' => 'wizard/bar',
-                            ),
-                            'WizardTest\TestAsset\Step\Baz' => array(
-                                'title'         => 'baz',
-                                'view_template' => 'wizard/baz',
-                            ),
+            'default_layout_template' => 'wizard/layout',
+            'wizards' => array(
+                'Wizard\Foo' => array(
+                    'layout_template' => 'wizard/custom-layout',
+                    'redirect_url'    => '/foo',
+                    'steps' => array(
+                        'WizardTest\TestAsset\Step\Foo' => array(
+                            'title'         => 'foo',
+                            'view_template' => 'wizard/foo',
+                            'form'          => 'WizardTest\TestAsset\Step\FooForm',
+                        ),
+                        'WizardTest\TestAsset\Step\Bar' => array(
+                            'title'         => 'bar',
+                            'view_template' => 'wizard/bar',
+                        ),
+                        'WizardTest\TestAsset\Step\Baz' => array(
+                            'title'         => 'baz',
+                            'view_template' => 'wizard/baz',
                         ),
                     ),
                 ),
-            )
+            ),
         );
 
-        $this->serviceLocator
-            ->expects($this->at(0))
-            ->method('get')
-            ->will($this->returnValue($config));
+        $wizardFactory = $this->getWizardFactory($config);
 
-        $application = $this->getMock('\Zend\Mvc\Application', array(), array(), '', false);
-        $application
-            ->expects($this->once())
-            ->method('getRequest')
-            ->will($this->returnValue($this->getMock('Zend\Http\Request')));
-        $application
-            ->expects($this->once())
-            ->method('getResponse')
-            ->will($this->returnValue($this->getMock('Zend\Http\Response')));
+        $formElementManager = new ServiceManager();
+        $formElementManager->setService(
+            'WizardTest\TestAsset\Step\FooForm',
+            $this->getMock('Zend\Form\Form')
+        );
 
-        $this->serviceLocator
-            ->expects($this->at(1))
-            ->method('get')
-            ->will($this->returnValue($application));
-
-        $sessionManager = $this->getMock('Zend\Session\SessionManager');
-        $this->serviceLocator
-            ->expects($this->at(2))
-            ->method('get')
-            ->will($this->returnValue($sessionManager));
-
-        $renderer = $this->getMock('Zend\View\Renderer\PhpRenderer');
-        $this->serviceLocator
-            ->expects($this->at(3))
-            ->method('get')
-            ->will($this->returnValue($renderer));
-
-        $wizardFactory = new WizardFactory($this->serviceLocator);
+        $serviceManager = new ServiceManager();
+        $serviceManager
+            ->setService('FormElementManager', $formElementManager)
+            ->setService('WizardTest\TestAsset\Step\Foo', $this->getMockForAbstractClass('Wizard\AbstractStep'))
+            ->setService('WizardTest\TestAsset\Step\Bar', $this->getMockForAbstractClass('Wizard\AbstractStep'))
+            ->setService('WizardTest\TestAsset\Step\Baz', $this->getMockForAbstractClass('Wizard\AbstractStep'));
+        $wizardFactory->setServiceManager($serviceManager);
         
         $wizard = $wizardFactory->create('Wizard\Foo');
         $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
-        $this->assertInstanceOf('WizardTest\TestAsset\Foo', $wizard);
 
         $this->assertEquals('wizard/custom-layout', $wizard->getOptions()->getLayoutTemplate());
         $this->assertEquals('/foo', $wizard->getOptions()->getRedirectUrl());
@@ -90,67 +59,34 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $steps = $wizard->getSteps();
         $this->assertCount(3, $steps);
 
-        $fooStep = $steps->get('foo');
-        $this->assertEquals('foo', $fooStep->getTitle());
-        $this->assertEquals('wizard/foo', $fooStep->getViewTemplate());
+        $fooStep = $steps->get('WizardTest\TestAsset\Step\Foo');
+        $this->assertEquals('foo', $fooStep->getOptions()->getTitle());
+        $this->assertEquals('wizard/foo', $fooStep->getOptions()->getViewTemplate());
+        $this->assertInstanceOf('Zend\Form\Form', $fooStep->getForm());
 
-        $barStep = $steps->get('bar');
-        $this->assertEquals('bar', $barStep->getTitle());
-        $this->assertEquals('wizard/bar', $barStep->getViewTemplate());
+        $barStep = $steps->get('WizardTest\TestAsset\Step\Bar');
+        $this->assertEquals('bar', $barStep->getOptions()->getTitle());
+        $this->assertEquals('wizard/bar', $barStep->getOptions()->getViewTemplate());
+        $this->assertNull($barStep->getForm());
 
-        $bazStep = $steps->get('baz');
-        $this->assertEquals('baz', $bazStep->getTitle());
-        $this->assertEquals('wizard/baz', $bazStep->getViewTemplate());
+        $bazStep = $steps->get('WizardTest\TestAsset\Step\Baz');
+        $this->assertEquals('baz', $bazStep->getOptions()->getTitle());
+        $this->assertEquals('wizard/baz', $bazStep->getOptions()->getViewTemplate());
+        $this->assertNull($bazStep->getForm());
     }
 
     public function testCreateWizardWithDefaultOptions()
     {
         $config = array(
-            'wizard' => array(
-                'default_class' => 'Wizard\Wizard',
-                'default_layout_template' => 'wizard/layout',
-                'wizards' => array(
-                    'Wizard\Foo' => array(),
-                ),
-            )
+            'default_layout_template' => 'wizard/layout',
+            'wizards' => array(
+                'Wizard\Foo' => array(),
+            ),
         );
 
-        $this->serviceLocator
-            ->expects($this->at(0))
-            ->method('get')
-            ->will($this->returnValue($config));
-
-        $application = $this->getMock('\Zend\Mvc\Application', array(), array(), '', false);
-        $application
-            ->expects($this->once())
-            ->method('getRequest')
-            ->will($this->returnValue($this->getMock('Zend\Http\Request')));
-        $application
-            ->expects($this->once())
-            ->method('getResponse')
-            ->will($this->returnValue($this->getMock('Zend\Http\Response')));
-
-        $this->serviceLocator
-            ->expects($this->at(1))
-            ->method('get')
-            ->will($this->returnValue($application));
-
-
-        $sessionManager = $this->getMock('Zend\Session\SessionManager');
-        $this->serviceLocator
-            ->expects($this->at(2))
-            ->method('get')
-            ->will($this->returnValue($sessionManager));
-
-        $renderer = $this->getMock('Zend\View\Renderer\PhpRenderer');
-        $this->serviceLocator
-            ->expects($this->at(3))
-            ->method('get')
-            ->will($this->returnValue($renderer));
-
-        $wizardFactory = new WizardFactory($this->serviceLocator);
-
+        $wizardFactory = $this->getWizardFactory($config);
         $wizard = $wizardFactory->create('Wizard\Foo');
+
         $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
         $this->assertEquals('wizard/layout', $wizard->getOptions()->getLayoutTemplate());
     }
@@ -160,7 +96,31 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInvalidWizard()
     {
-        $wizardFactory = new WizardFactory($this->serviceLocator);
+        $wizardFactory = $this->getWizardFactory(array());
         $wizardFactory->create('invalid');
+    }
+    
+    /**
+     * @param  array $config
+     * @return WizardFactory
+     */
+    protected function getWizardFactory(array $config)
+    {
+        $wizardFactory = new WizardFactory($config);
+
+        $request = $this->getMock('Zend\Http\Request');
+        $wizardFactory->setRequest($request);
+
+        $response = $this->getMock('Zend\Http\Response');
+        $wizardFactory->setResponse($response);
+
+        $formFactory = $this->getMock('Wizard\Form\FormFactory');
+        $formFactory
+            ->expects($this->any())
+            ->method('create')
+            ->will($this->returnValue(new Form));
+        $wizardFactory->setFormFactory($formFactory);
+
+        return $wizardFactory;
     }
 }

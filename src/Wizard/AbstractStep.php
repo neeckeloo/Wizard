@@ -2,7 +2,7 @@
 namespace Wizard;
 
 use Wizard\Wizard;
-use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Traversable;
 
 abstract class AbstractStep implements StepInterface
@@ -10,7 +10,12 @@ abstract class AbstractStep implements StepInterface
     /**
      * @var string
      */
-    protected $title;
+    protected $name;
+
+    /**
+     * @var StepOptionsInterface
+     */
+    protected $options;
 
     /**
      * @var Wizard
@@ -18,14 +23,9 @@ abstract class AbstractStep implements StepInterface
     protected $wizard;
 
     /**
-     * @var Form
+     * @var FormInterface
      */
     protected $form;
-
-    /**
-     * @var string
-     */
-    protected $viewTemplate;
 
     /**
      * @var array
@@ -39,7 +39,16 @@ abstract class AbstractStep implements StepInterface
 
     public function init()
     {
-        
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setName($name)
+    {
+        $this->name = (string) $name;
+        return $this;
     }
 
     /**
@@ -47,29 +56,32 @@ abstract class AbstractStep implements StepInterface
      */
     public function getName()
     {
-        $filter = new \Zend\Filter\Word\CamelCaseToUnderscore();
-
-        $parts = explode('\\', get_called_class());
-        $name = array_pop($parts);
-
-        return strtolower($filter->filter($name));
+        return $this->name;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setTitle($title)
+    public function setOptions($options)
     {
-        $this->title = (string) $title;
+        if (!$options instanceof StepOptionsInterface) {
+            $options = new StepOptions($options);
+        }
+        
+        $this->options = $options;
         return $this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getTitle()
+    public function getOptions()
     {
-        return $this->title;
+        if (!isset($this->options)) {
+            $this->setOptions(new StepOptions());
+        }
+
+        return $this->options;
     }
 
     /**
@@ -92,7 +104,7 @@ abstract class AbstractStep implements StepInterface
     /**
      * {@inheritDoc}
      */
-    public function setForm(Form $form)
+    public function setForm(FormInterface $form)
     {
         $this->form = $form;
         return $this;
@@ -104,23 +116,6 @@ abstract class AbstractStep implements StepInterface
     public function getForm()
     {
         return $this->form;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setViewTemplate($template)
-    {
-        $this->viewTemplate = (string) $template;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getViewTemplate()
-    {
-        return $this->viewTemplate;
     }
 
     /**
@@ -145,7 +140,14 @@ abstract class AbstractStep implements StepInterface
      */
     public function process(array $data)
     {
+        $form = $this->getForm();
+        if (!($form instanceof FormInterface)) {
+            return null;
+        }
 
+        $form->setData($data);
+
+        return $form->isValid();
     }
 
     /**
@@ -186,7 +188,7 @@ abstract class AbstractStep implements StepInterface
 
             $this->$method($value);
         }
-        
+
         return $this;
     }
 
@@ -203,6 +205,10 @@ abstract class AbstractStep implements StepInterface
         foreach ($vars as $key => $value) {
             if (in_array($key, $excluded)) {
                 continue;
+            }
+
+            if ($value instanceof StepOptionsInterface) {
+                $value = $value->toArray();
             }
 
             $options[$key] = $value;

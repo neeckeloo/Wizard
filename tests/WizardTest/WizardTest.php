@@ -1,18 +1,18 @@
 <?php
 namespace WizardTest;
 
+use Wizard\Wizard;
+use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Session\Container as SessionContainer;
-use Zend\Session\SessionManager;
-use Zend\Session\Storage\ArrayStorage as SessionStorage;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver\TemplateMapResolver;
 
 class WizardTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Wizard\Wizard
+     * @var Wizard
      */
     protected $wizard;
 
@@ -35,17 +35,14 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $this->request = new Request;
         $this->response = new Response;
-        
-        $sessionManager = $this->getSessionManager();
 
         $this->wizard = $this->getMock('Wizard\Wizard', array('getSessionContainer'));
         $this->wizard
-            ->setServiceManager($this->getServiceManagerMock())
             ->setRequest($this->request)
-            ->setResponse($this->response)
-            ->setSessionManager($sessionManager);
+            ->setResponse($this->response);
 
-        $this->sessionContainer = new SessionContainer('foo', $sessionManager);
+        $this->sessionContainer = new SessionContainer('foo');
+        $this->sessionContainer->getManager()->getStorage()->clear('foo');
 
         $this->wizard
             ->expects($this->any())
@@ -53,13 +50,41 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->sessionContainer));
     }
 
+    /**
+     * @return FormFactory
+     */
+    protected function getFormFactory()
+    {
+        $formFactory = $this->getMock('Wizard\Form\FormFactory');
+
+        $form = new Form();
+
+        $buttons = array(
+            'Wizard\Form\Element\Button\Previous',
+            'Wizard\Form\Element\Button\Next',
+            'Wizard\Form\Element\Button\Valid',
+            'Wizard\Form\Element\Button\Cancel',
+        );
+        foreach ($buttons as $class) {
+            $button = new $class();
+            $form->add($button);
+        }
+
+        $formFactory
+            ->expects($this->any())
+            ->method('create')
+            ->will($this->returnValue($form));
+
+        return $formFactory;
+    }
+
     public function testSetAndGetOptions()
     {
         $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
 
-        $options = $this->getMock('Wizard\WizardOptions', array(), array(), 'MockOptions');
+        $options = $this->getMock('Wizard\WizardOptions');
         $this->wizard->setOptions($options);
-        $this->assertInstanceOf('MockOptions', $this->wizard->getOptions());
+        $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
     }
 
     public function testGetCurrentStep()
@@ -87,6 +112,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormOfFirstStep()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+        
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
         $steps->add($this->getStepMock('bar'));
@@ -102,6 +130,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormOfMiddleStep()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $this->sessionContainer->currentStep = 'bar';
 
         $steps = $this->wizard->getSteps();
@@ -120,6 +151,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormOfLastStep()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $this->sessionContainer->currentStep = 'bar';
 
         $steps = $this->wizard->getSteps();
@@ -137,6 +171,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testFormActionAttribute()
     {
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
+
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
 
@@ -247,15 +284,67 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($uri, $locationHeader->getUri());
     }
 
+    public function testCanRedirectAfterCancel()
+    {
+        $params = new \Zend\Stdlib\Parameters(array('cancel' => true));
+        $this->request
+            ->setMethod(Request::METHOD_POST)
+            ->setPost($params);
+
+        $uri = '/cancel';
+        $this->wizard->getOptions()->setCancelUrl($uri);
+
+        $this->wizard->process();
+
+        $this->assertEquals(302, $this->response->getStatusCode());
+
+        $headers = $this->response->getHeaders();
+        /* @var $locationHeader \Zend\Http\Header\Location */
+        $locationHeader = $headers->get('Location');
+
+        $this->assertEquals($uri, $locationHeader->getUri());
+    }
+
     public function testCurrentStepNumber()
     {
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));        
+        $steps->add($this->getStepMock('bar'));
         $this->assertEquals(1, $this->wizard->getCurrentStepNumber());
 
         $this->sessionContainer->currentStep = 'bar';
         $this->assertEquals(2, $this->wizard->getCurrentStepNumber());
+    }
+
+    public function testGetTotalStepCount()
+    {
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+
+        $this->assertEquals(2, $this->wizard->getTotalStepCount());
+    }
+
+    public function testGetTotalStepCountWithoutSteps()
+    {
+        $this->assertEquals(0, $this->wizard->getTotalStepCount());
+    }
+
+    public function testGetPercentProgress()
+    {
+        $steps = $this->wizard->getSteps();
+        $steps->add($this->getStepMock('foo'));
+        $steps->add($this->getStepMock('bar'));
+
+        $this->assertEquals(0, $this->wizard->getPercentProgress());
+
+        $this->wizard->setCurrentStep('bar');
+        $this->assertEquals(50, $this->wizard->getPercentProgress());
+    }
+
+    public function testGetPercentProgressWithoutSteps()
+    {
+        $this->assertEquals(0, $this->wizard->getPercentProgress());
     }
 
     public function testSetAndGetStepCollection()
@@ -298,7 +387,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $this->sessionContainer->steps = array(
             'foo' => array(
-                'title' => 'Foo',
+                'options' => array(
+                    'title' => 'Foo',
+                ),
                 'data'  => array(
                     'foo' => 123,
                     'bar' => 456,
@@ -315,15 +406,18 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new \Zend\Form\Form));
         $stepCollection->add($step);
 
-        $this->assertEquals('Foo', $step->getTitle());
+        $step->getOptions()->setTitle('Foo');
+
+        $this->assertEquals('Foo', $step->getOptions()->getTitle());
         $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
     }
 
     public function testRender()
     {
-        $renderer = new PhpRenderer;
-        $this->wizard->setRenderer($renderer);
+        $formFactory = $this->getFormFactory();
+        $this->wizard->setFormFactory($formFactory);
 
+        $renderer = new PhpRenderer;        
         $resolver = new TemplateMapResolver(array(
             'wizard/layout'   => __DIR__ . '/_files/layout.phtml',
             'wizard/header'   => __DIR__ . '/_files/header.phtml',
@@ -339,18 +433,17 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getForm')
             ->will($this->returnValue(new \Zend\Form\Form));
-        $step
-            ->expects($this->any())
-            ->method('getViewTemplate')
-            ->will($this->returnValue('wizard/step/foo'));
+
+        $step->getOptions()->setViewTemplate('wizard/step/foo');
+        
         $stepCollection->add($step);
 
         $this->wizard->getOptions()->setLayoutTemplate('wizard/layout');
 
         $viewModel = $this->wizard->getViewModel();
         $this->assertNotEmpty($viewModel->getTemplate());
-        
-        $output = $this->wizard->render();
+
+        $output = $renderer->render($viewModel);
 
         $this->assertRegExp('/foo-step/', $output);
     }
@@ -382,7 +475,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMockForAbstractClass(
             'Wizard\AbstractStep', array(), '', true, true, true, array(
-                'getName', 'getForm', 'getViewTemplate', 'isComplete'
+                'getName', 'getForm', 'isComplete'
             )
         );
         $mock
@@ -391,37 +484,5 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($name));
 
         return $mock;
-    }
-
-    /**
-     * @return \Zend\ServiceManager\ServiceManager
-     */
-    public function getServiceManagerMock()
-    {
-        $form = new \Zend\Form\Form();
-        $form
-            ->add(new \Wizard\Form\Element\Button\Previous())
-            ->add(new \Wizard\Form\Element\Button\Next())
-            ->add(new \Wizard\Form\Element\Button\Valid())
-            ->add(new \Wizard\Form\Element\Button\Cancel());
-
-        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
-        $serviceManager
-            ->expects($this->any())
-            ->method('get')
-            ->will($this->returnValue($form));
-
-        return $serviceManager;
-    }
-
-    /**
-     * @return \Zend\Session\SessionManager
-     */
-    public function getSessionManager()
-    {
-        $sessionStorage = new SessionStorage;
-        $sessionManager = new SessionManager(null, $sessionStorage);
-
-        return $sessionManager;
     }
 }

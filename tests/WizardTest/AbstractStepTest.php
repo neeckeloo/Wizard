@@ -16,12 +16,13 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
         $this->step = $this->getMockForAbstractClass('Wizard\AbstractStep');
     }
 
-    public function testSetAndGetTitle()
+    public function testSetAndGetOptions()
     {
-        $this->assertNull($this->step->getTitle());
+        $this->assertInstanceOf('Wizard\StepOptions', $this->step->getOptions());
 
-        $this->step->setTitle('foo');
-        $this->assertEquals('foo', $this->step->getTitle());
+        $options = $this->getMock('Wizard\StepOptions', array(), array(), 'MockOptions');
+        $this->step->setOptions($options);
+        $this->assertInstanceOf('MockOptions', $this->step->getOptions());
     }
 
     public function testSetAndGetWizard()
@@ -39,14 +40,6 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
         $this->step->setForm(new Form);
         $this->assertInstanceOf('Zend\Form\Form', $this->step->getForm());
-    }
-
-    public function testSetAndGetViewTemplate()
-    {
-        $this->assertNull($this->step->getViewTemplate());
-
-        $this->step->setViewTemplate('foo');
-        $this->assertEquals('foo', $this->step->getViewTemplate());
     }
 
     public function testSetAndGetData()
@@ -91,17 +84,25 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
     public function testToArray()
     {
-        $this->step
-            ->setTitle('foo');
+        $this->step->setName('name');
 
-        $options = $this->step->toArray();
+        $options = $this->step->getOptions();
+        $options
+            ->setTitle('title')
+            ->setViewTemplate('view_template');
 
-        $this->assertArrayHasKey('title', $options);
-        $this->assertEquals('foo', $options['title']);
+        $data = $this->step->toArray();
 
-        $this->assertArrayHasKey('complete', $options);
-        $this->assertFalse($options['complete']);
+        $this->assertArrayHasKey('name', $data);
+        $this->assertEquals('name', $data['name']);
 
-        $this->assertArrayNotHasKey('form', $options);
+        $this->assertArrayHasKey('options', $data);
+        $this->assertEquals('title', $data['options']['title']);
+        $this->assertEquals('view_template', $data['options']['view_template']);
+
+        $this->assertArrayHasKey('complete', $data);
+        $this->assertFalse($data['complete']);
+
+        $this->assertArrayNotHasKey('form', $data);
     }
 }

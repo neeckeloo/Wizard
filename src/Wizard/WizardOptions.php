@@ -6,6 +6,21 @@ use Zend\Stdlib\AbstractOptions;
 class WizardOptions extends AbstractOptions implements WizardOptionsInterface
 {
     /**
+     * @var string 
+     */
+    protected $title;
+
+    /**
+     * @var string
+     */
+    protected $tokenParamName = 'uid';
+
+    /**
+     * @var string
+     */
+    protected $layoutTemplate;
+
+    /**
      * @var string
      */
     protected $redirectUrl;
@@ -16,15 +31,56 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     protected $cancelUrl;
 
     /**
-     * @var string
+     * {@inheritDoc}
      */
-    protected $layoutTemplate;
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
     /**
-     * @var string
+     * {@inheritDoc}
      */
-    protected $name;
-    
+    public function setTitle($title)
+    {
+        $this->title = (string) $title;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTokenParamName()
+    {
+        return $this->tokenParamName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTokenParamName($name)
+    {
+        $this->tokenParamName = (string) $name;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLayoutTemplate()
+    {
+        return $this->layoutTemplate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLayoutTemplate($template)
+    {
+        $this->layoutTemplate = (string) $template;
+        return $this;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -56,40 +112,6 @@ class WizardOptions extends AbstractOptions implements WizardOptionsInterface
     public function setCancelUrl($url)
     {
         $this->cancelUrl = (string) $url;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getLayoutTemplate()
-    {
-        return $this->layoutTemplate;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setLayoutTemplate($template)
-    {
-        $this->layoutTemplate = (string) $template;
-        return $this;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public function setName($name)
-    {
-        $this->name = (string) $name;
         return $this;
     }
 }

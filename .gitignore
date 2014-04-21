@@ -3,8 +3,4 @@
 composer.phar
 phpunit.xml
 /composer.lock
-
-# eclipse project config
-.settings
-.buildpath
-.project
+build/logs/clover.xml

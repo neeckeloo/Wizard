@@ -1,56 +1,35 @@
 <?php
 namespace Wizard;
 
+use Wizard\Form\FormFactory;
+use Wizard\StepInterface;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Session\ManagerInterface as SessionManager;
+use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface as Renderer;
 
 interface WizardInterface
 {
     /**
-     * @param  string $title
-     * @return WizardInterface
-     */
-    public function setTitle($title);
-
-    /**
-     * @return string
-     */
-    public function getTitle();
-            
-    /**
-     * @return ServiceManager
-     */
-    public function getServiceManager();
-
-    /**
      * @param  Request $request
-     * @return WizardInterface
+     * @return self
      */
     public function setRequest(Request $request);
 
     /**
      * @param  Response $response
-     * @return WizardInterface
+     * @return self
      */
     public function setResponse(Response $response);
 
     /**
-     * @param  SessionManager $sessionManager
-     * @return WizardInterface
+     * @param  FormFactory $factory
+     * @return self
      */
-    public function setSessionManager(SessionManager $sessionManager);
-
-    /**
-     * @param  Renderer $renderer
-     * @return WizardInterface
-     */
-    public function setRenderer(Renderer $renderer);
+    public function setFormFactory(FormFactory $factory);
 
     /**
      * @return EventManager
@@ -58,15 +37,26 @@ interface WizardInterface
     public function getEventManager();
 
     /**
-     * @param  WizardOptionsInterface $options
-     * @return WizardInterface
+     * @return SessionContainer
      */
-    public function setOptions(WizardOptionsInterface $options);
+    public function getSessionContainer();
+
+    /**
+     * @param  array|Traversable|WizardOptionsInterface $options
+     * @return self
+     */
+    public function setOptions($options);
 
     /**
      * @return WizardOptionsInterface
      */
     public function getOptions();
+
+    /**
+     * @param  string|StepInterface $step
+     * @return self
+     */
+    public function setCurrentStep($step);
 
     /**
      * @return StepInterface
@@ -85,7 +75,7 @@ interface WizardInterface
 
     /**
      * @param  StepCollection $steps
-     * @return WizardInterface
+     * @return self
      */
     public function setSteps(StepCollection $steps);
 
@@ -98,29 +88,19 @@ interface WizardInterface
      * @return int
      */
     public function getTotalStepCount();
-    
+
     /**
      * @return int
      */
     public function getPercentProgress();
-    
+
     /**
      * @return void
      */
     public function process();
 
     /**
-     * @return void
-     */
-    public function complete();
-
-    /**
      * @return ViewModel
      */
     public function getViewModel();
-
-    /**
-     * @return string
-     */
-    public function render();
 }

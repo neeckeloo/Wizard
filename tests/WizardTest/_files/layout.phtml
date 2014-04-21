@@ -7,7 +7,7 @@ $currentStep = $this->wizard->getCurrentStep();
 ?>
 <form>
     <?php
-    echo $this->partial($currentStep->getViewTemplate(), array(
+    echo $this->partial($currentStep->getOptions()->getViewTemplate(), array(
         'form' => $wizardForm->get('step')
     ));
     ?>

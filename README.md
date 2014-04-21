@@ -14,51 +14,24 @@ Wizard module intend to provide a way to manage multi-step forms. For that, wiza
 Requirements
 ------------
 
-* [Zend Framework 2](https://github.com/zendframework/zf2) (latest master).
-
-Features / Goals
-----------------
-
-* Manage wizard process [COMPLETE]
+* PHP 5.3 or higher
+* [Zend Framework 2](https://github.com/zendframework/zf2)
 
 Installation
 ------------
 
-1. Add this project in your composer.json:
+Wizard module only officially supports installation through Composer. For Composer documentation, please refer to
+[getcomposer.org](http://getcomposer.org/).
 
-    ```json
-    "require": {
-        "neeckeloo/wizard": "dev-master"
-    }
-    ```
+Install the module:
 
-2. Now tell composer to download dependencies by running the command:
+```sh
+$ php composer.phar require neeckeloo/wizard:~1.0
+```
 
-    ```bash
-    $ php composer.phar update
-    ```
+Enable the module by adding `Wizard` key to your `application.config.php` file. Customize the module by copy-pasting
+the `wizard.global.php.dist` file to your `config/autoload` folder.
 
-3. Enabling it in your `application.config.php` file:
+## Documentation
 
-    ```php
-    <?php
-    return array(
-        'modules' => array(
-            // ...
-            'Wizard'
-        ),
-        // ...
-    );
-    ```
-
-4. Copy the `./vendors/neeckeloo/wizard/config/wizard.global.php.dist` to your `./config/autoload/wizard.global.php`.
-
-        <?php
-
-        $wizard = array(
-            'default_layout_template' => 'wizard/layout',
-            'default_class' => 'Wizard\Wizard',
-            'wizards' => array(),
-        );
-
-        return array('wizard' => $wizard);
+The official documentation is available in the [/docs](/docs) folder.

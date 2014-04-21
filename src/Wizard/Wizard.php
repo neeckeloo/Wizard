@@ -2,26 +2,19 @@
 namespace Wizard;
 
 use Wizard\Exception;
+use Wizard\Form\FormFactory;
+use Wizard\WizardEvent;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
-use Zend\ServiceManager\ServiceManager;
 use Zend\Session\Container as SessionContainer;
-use Zend\Session\ManagerInterface as SessionManager;
 use Zend\View\Model\ViewModel;
-use Zend\View\Renderer\RendererInterface as Renderer;
 
-class Wizard implements WizardInterface, ServiceManagerAwareInterface
+class Wizard implements WizardInterface
 {
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
-    const TOKEN_PARAM_NAME = 'uid';
-
-    const EVENT_COMPLETE = 'wizard-complete';
-    const EVENT_PRE_PROCESS_STEP = 'step-pre-process';
-    const EVENT_POST_PROCESS_STEP = 'step-post-process';
 
     /**
      * @var string
@@ -29,24 +22,9 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     protected $uid;
 
     /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
      * @var SessionContainer
      */
     protected $sessionContainer;
-
-    /**
-     * @var ServiceManager
-     */
-    protected $serviceManager;
 
     /**
      * @var Request
@@ -57,11 +35,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @var Response
      */
     protected $response;
-
-    /**
-     * @var Renderer
-     */
-    protected $renderer;
 
     /**
      * @var EventManager
@@ -77,6 +50,11 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
      * @var StepCollection
      */
     protected $steps;
+
+    /**
+     * @var FormFactory
+     */
+    protected $formFactory;
 
     /**
      * @var Form
@@ -96,40 +74,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function setTitle($title)
-    {
-        $this->title = (string) $title;
-        return $this;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setServiceManager(ServiceManager $serviceManager)
-    {
-        $this->serviceManager = $serviceManager;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getServiceManager()
-    {
-        return $this->serviceManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function setRequest(Request $request)
     {
         $this->request = $request;
@@ -148,18 +93,9 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function setSessionManager(SessionManager $sessionManager)
+    public function setFormFactory(FormFactory $factory)
     {
-        $this->sessionManager = $sessionManager;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setRenderer(Renderer $renderer)
-    {
-        $this->renderer = $renderer;
+        $this->formFactory = $factory;
         return $this;
     }
 
@@ -170,22 +106,19 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     {
         if (null === $this->eventManager) {
             $this->eventManager = new EventManager();
-            $this->eventManager->attach(self::EVENT_COMPLETE, array($this, 'complete'));
         }
 
         return $this->eventManager;
     }
 
     /**
-     * @return SessionContainer
+     * {@inheritDoc}
      */
-    protected function getSessionContainer()
+    public function getSessionContainer()
     {
         if (null === $this->sessionContainer) {
-            $this->sessionContainer = new SessionContainer(
-                $this->getSessionContainerName()/*,
-                $this->sessionManager$*/
-            );
+            $sessionContainerName = sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueId());
+            $this->sessionContainer = new SessionContainer($sessionContainerName);
         }
 
         return $this->sessionContainer;
@@ -194,19 +127,14 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * @return string
      */
-    protected function getSessionContainerName()
-    {
-        return sprintf('%s_%s', self::SESSION_CONTAINER_PREFIX, $this->getUniqueId());
-    }
-
-    /**
-     * @return string
-     */
     protected function getUniqueId()
     {
         if (null === $this->uid) {
-            if (isset($this->request) && $this->request->getQuery(self::TOKEN_PARAM_NAME)) {
-                $this->uid = $this->request->getQuery(self::TOKEN_PARAM_NAME);
+            $tokenParamName = $this->getOptions()->getTokenParamName();
+            $tokenValue = $this->request->getQuery($tokenParamName, false);
+
+            if ($tokenValue) {
+                $this->uid = $tokenValue;
             } else {
                 $this->uid = md5(uniqid(rand(), true));
             }
@@ -218,8 +146,12 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function setOptions(WizardOptionsInterface $options)
+    public function setOptions($options)
     {
+        if (!$options instanceof WizardOptionsInterface) {
+            $options = new WizardOptions($options);
+        }
+
         $this->options = $options;
         return $this;
     }
@@ -237,8 +169,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     }
 
     /**
-     * @param  string|StepInterface $step
-     * @return Wizard
+     * {@inheritDoc}
      */
     public function setCurrentStep($step)
     {
@@ -308,10 +239,10 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
 
         if (null === $this->form) {
-            $this->form = $this->serviceManager->get('Wizard\Form');
+            $this->form = $this->formFactory->create();
             $this->form->setAttribute('action', sprintf(
                 '?%s=%s',
-                self::TOKEN_PARAM_NAME,
+                $this->getOptions()->getTokenParamName(),
                 $this->getUniqueId()
             ));
 
@@ -354,11 +285,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
     public function setSteps(StepCollection $steps)
     {
         $this->steps = $steps;
-
-        $sessionContainer = $this->getSessionContainer();
-        $stepListener = new StepListener($sessionContainer);
-        $this->steps->getEventManager()->attachAggregate($stepListener);
-
         return $this;
     }
 
@@ -454,7 +380,7 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         } else if (isset($values['cancel'])) {
             $this->doCancel();
         } else {
-            $this->getEventManager()->trigger(self::EVENT_PRE_PROCESS_STEP, $currentStep, array(
+            $this->getEventManager()->trigger(WizardEvent::EVENT_PRE_PROCESS_STEP, $currentStep, array(
                 'values' => $values,
             ));
 
@@ -464,11 +390,14 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
             }
             $currentStep->setData($values);
 
-            $this->getEventManager()->trigger(self::EVENT_POST_PROCESS_STEP, $currentStep);
+            $this->getEventManager()->trigger(WizardEvent::EVENT_POST_PROCESS_STEP, $currentStep);
 
             if ($currentStep->isComplete()) {
                 if ($steps->isLast($currentStep)) {
-                    $this->getEventManager()->trigger(self::EVENT_COMPLETE, $this);
+                    $wizardEvent = new WizardEvent();
+                    $wizardEvent->setWizard($this);
+                    
+                    $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $wizardEvent);
                     $this->doRedirect();
                 } else {
                     $nextStep = $steps->getNext($currentStep);
@@ -478,22 +407,6 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         }
 
         $this->processed = true;
-
-        $sessionSteps = array();
-        foreach ($steps as $step) {
-            $sessionSteps[$step->getName()] = $step->toArray();
-        }
-
-        $sessionContainer = $this->getSessionContainer();
-        $sessionContainer->steps = $sessionSteps;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function complete()
-    {
-
     }
 
     /**
@@ -524,14 +437,5 @@ class Wizard implements WizardInterface, ServiceManagerAwareInterface
         $this->viewModel->setTemplate($template);
 
         return $this->viewModel;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function render()
-    {
-        $model = $this->getViewModel();
-        return $this->renderer->render($model);
     }
 }
