@@ -393,7 +393,10 @@ class Wizard implements WizardInterface
 
             if ($currentStep->isComplete()) {
                 if ($steps->isLast($currentStep)) {
-                    $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $this);
+                    $wizardEvent = new WizardEvent();
+                    $wizardEvent->setWizard($this);
+                    
+                    $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $wizardEvent);
                     $this->doRedirect();
                 } else {
                     $nextStep = $steps->getNext($currentStep);
