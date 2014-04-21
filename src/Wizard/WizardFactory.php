@@ -105,8 +105,6 @@ class WizardFactory implements ServiceManagerAwareInterface
         if (isset($config['title'])) {
             $wizardOptions->setTitle($config['title']);
         }
-
-        $wizard->getOptions()->setName($name);
         
         if (isset($config['layout_template'])) {
             $layoutTemplate = $config['layout_template'];
