@@ -1,7 +1,6 @@
 <?php
 namespace WizardTest;
 
-use Wizard\StepOptions;
 use Wizard\WizardFactory;
 use Zend\Form\Form;
 use Zend\ServiceManager\ServiceManager;
