@@ -36,6 +36,11 @@ class WizardFactory implements ServiceManagerAwareInterface
      * @var array
      */
     protected $config = array();
+    
+    /**
+     * @var array
+     */
+    protected $instances = array();
 
     /**
      * @param array $config
@@ -82,7 +87,11 @@ class WizardFactory implements ServiceManagerAwareInterface
      * @return WizardInterface
      */
     public function create($name)
-    {
+    {        
+        if (array_key_exists($name, $this->instances)) {
+            return $this->instances[$name];
+        }
+        
         if (!isset($this->config['wizards'][$name])) {
             throw new Exception\RuntimeException(sprintf(
                 'The wizard "%s" does not exists.',
@@ -127,6 +136,15 @@ class WizardFactory implements ServiceManagerAwareInterface
         if (isset($config['steps']) && is_array($config['steps'])) {
             $this->addSteps($config['steps'], $wizard);
         }
+        
+        if (isset($config['listeners']) && is_array($config['listeners'])) {
+            foreach ($config['listeners'] as $listener) {
+                $instance = $this->serviceManager->get($listener);
+                $wizard->getEventManager()->attach($instance);
+            }
+        }
+        
+        $this->instances[$name] = $wizard;
 
         return $wizard;
     }

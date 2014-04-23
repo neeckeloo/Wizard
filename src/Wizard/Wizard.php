@@ -6,8 +6,8 @@ use Wizard\Form\FormFactory;
 use Wizard\WizardEvent;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
-use Zend\Http\Request as HttpRequest;
-use Zend\Http\Response as HttpResponse;
+use Zend\Http\Request;
+use Zend\Http\Response;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 
@@ -27,12 +27,12 @@ class Wizard implements WizardInterface
     protected $sessionContainer;
 
     /**
-     * @var HttpRequest
+     * @var Request
      */
     protected $request;
 
     /**
-     * @var HttpResponse
+     * @var Response
      */
     protected $response;
 
@@ -75,7 +75,7 @@ class Wizard implements WizardInterface
      * {@inheritDoc}
      */
 
-    public function setRequest(HttpRequest $request)
+    public function setRequest(Request $request)
     {
         $this->request = $request;
         return $this;
@@ -84,7 +84,7 @@ class Wizard implements WizardInterface
     /**
      * {@inheritDoc}
      */
-    public function setResponse(HttpResponse $response)
+    public function setResponse(Response $response)
     {
         $this->response = $response;
         return $this;
@@ -324,7 +324,7 @@ class Wizard implements WizardInterface
 
     /**
      * @throws Exception\RuntimeException
-     * @return HttpResponse
+     * @return void
      */
     protected function doRedirect()
     {
@@ -338,7 +338,7 @@ class Wizard implements WizardInterface
 
     /**
      * @throws Exception\RuntimeException
-     * @return HttpResponse
+     * @return void
      */
     protected function doCancel()
     {
@@ -352,7 +352,7 @@ class Wizard implements WizardInterface
 
     /**
      * @param  string $url
-     * @return HttpResponse
+     * @return void
      */
     protected function redirect($url)
     {
@@ -368,7 +368,7 @@ class Wizard implements WizardInterface
     public function process()
     {
         if ($this->processed || !$this->request->isPost()) {
-            return $this->getViewModel();
+            return;
         }
 
         $this->processed = true;
@@ -380,9 +380,8 @@ class Wizard implements WizardInterface
         $values = $post->getArrayCopy();
         if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
-            $this->setCurrentStep($previousStep);
-            
-            return $this->getViewModel();
+            $this->setCurrentStep($previousStep);            
+            return;
         }
         
         if (isset($values['cancel'])) {
@@ -414,8 +413,6 @@ class Wizard implements WizardInterface
             $nextStep = $steps->getNext($currentStep);
             $this->setCurrentStep($nextStep);
         }
-        
-        return $this->getViewModel();
     }
 
     /**
