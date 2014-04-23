@@ -36,6 +36,12 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
         $wizardFactory = $this->getWizardFactory($config);
 
+        $stepPluginManager = new ServiceManager();
+        $stepPluginManager
+            ->setService('WizardTest\TestAsset\Step\Foo', new \WizardTest\TestAsset\Step\Foo())
+            ->setService('WizardTest\TestAsset\Step\Bar', new \WizardTest\TestAsset\Step\Bar())
+            ->setService('WizardTest\TestAsset\Step\Baz', new \WizardTest\TestAsset\Step\Baz());
+
         $formElementManager = new ServiceManager();
         $formElementManager->setService(
             'WizardTest\TestAsset\Step\FooForm',
@@ -44,12 +50,13 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
         $serviceManager = new ServiceManager();
         $serviceManager
+            ->setService('Wizard\Step\StepPluginManager', $stepPluginManager)
             ->setService('FormElementManager', $formElementManager)
             ->setService('WizardTest\TestAsset\Step\Foo', $this->getMockForAbstractClass('Wizard\AbstractStep'))
             ->setService('WizardTest\TestAsset\Step\Bar', $this->getMockForAbstractClass('Wizard\AbstractStep'))
             ->setService('WizardTest\TestAsset\Step\Baz', $this->getMockForAbstractClass('Wizard\AbstractStep'));
         $wizardFactory->setServiceManager($serviceManager);
-        
+
         $wizard = $wizardFactory->create('Wizard\Foo');
         $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
 
@@ -99,7 +106,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $wizardFactory = $this->getWizardFactory(array());
         $wizardFactory->create('invalid');
     }
-    
+
     /**
      * @param  array $config
      * @return WizardFactory
