@@ -5,25 +5,24 @@ use Wizard\Form\FormFactory;
 use Wizard\StepInterface;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
-use Zend\Http\Request;
-use Zend\Http\Response;
+use Zend\Http\Request as HttpRequest;
+use Zend\Http\Response as HttpResponse;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
-use Zend\View\Renderer\RendererInterface as Renderer;
 
 interface WizardInterface
 {
     /**
-     * @param  Request $request
+     * @param  HttpRequest $request
      * @return self
      */
-    public function setRequest(Request $request);
+    public function setRequest(HttpRequest $request);
 
     /**
-     * @param  Response $response
+     * @param  HttpResponse $response
      * @return self
      */
-    public function setResponse(Response $response);
+    public function setResponse(HttpResponse $response);
 
     /**
      * @param  FormFactory $factory
@@ -95,7 +94,7 @@ interface WizardInterface
     public function getPercentProgress();
 
     /**
-     * @return void
+     * @return HttpResponse|ViewModel
      */
     public function process();
 

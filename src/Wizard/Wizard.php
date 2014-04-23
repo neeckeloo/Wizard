@@ -6,8 +6,8 @@ use Wizard\Form\FormFactory;
 use Wizard\WizardEvent;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
-use Zend\Http\Request;
-use Zend\Http\Response;
+use Zend\Http\Request as HttpRequest;
+use Zend\Http\Response as HttpResponse;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 
@@ -27,12 +27,12 @@ class Wizard implements WizardInterface
     protected $sessionContainer;
 
     /**
-     * @var Request
+     * @var HttpRequest
      */
     protected $request;
 
     /**
-     * @var Response
+     * @var HttpResponse
      */
     protected $response;
 
@@ -75,7 +75,7 @@ class Wizard implements WizardInterface
      * {@inheritDoc}
      */
 
-    public function setRequest(Request $request)
+    public function setRequest(HttpRequest $request)
     {
         $this->request = $request;
         return $this;
@@ -84,7 +84,7 @@ class Wizard implements WizardInterface
     /**
      * {@inheritDoc}
      */
-    public function setResponse(Response $response)
+    public function setResponse(HttpResponse $response)
     {
         $this->response = $response;
         return $this;
@@ -324,7 +324,7 @@ class Wizard implements WizardInterface
 
     /**
      * @throws Exception\RuntimeException
-     * @return void
+     * @return HttpResponse
      */
     protected function doRedirect()
     {
@@ -333,12 +333,12 @@ class Wizard implements WizardInterface
             throw new Exception\RuntimeException('You must provide url to redirect when wizard is complete.');
         }
 
-        $this->redirect($redirectUrl);
+        return $this->redirect($redirectUrl);
     }
 
     /**
      * @throws Exception\RuntimeException
-     * @return void
+     * @return HttpResponse
      */
     protected function doCancel()
     {
@@ -347,17 +347,19 @@ class Wizard implements WizardInterface
             throw new Exception\RuntimeException('You must provide url to cancel wizard process.');
         }
 
-        $this->redirect($cancelUrl);
+        return $this->redirect($cancelUrl);
     }
 
     /**
      * @param  string $url
-     * @return void
+     * @return HttpResponse
      */
     protected function redirect($url)
     {
         $this->response->getHeaders()->addHeaderLine('Location', $url);
         $this->response->setStatusCode(302);
+        
+        return $this->response;
     }
 
     /**
@@ -366,8 +368,10 @@ class Wizard implements WizardInterface
     public function process()
     {
         if ($this->processed || !$this->request->isPost()) {
-            return;
+            return $this->getViewModel();
         }
+
+        $this->processed = true;
 
         $steps = $this->getSteps();
         $currentStep = $this->getCurrentStep();
@@ -377,36 +381,41 @@ class Wizard implements WizardInterface
         if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
             $this->setCurrentStep($previousStep);
-        } else if (isset($values['cancel'])) {
-            $this->doCancel();
-        } else {
-            $this->getEventManager()->trigger(WizardEvent::EVENT_PRE_PROCESS_STEP, $currentStep, array(
-                'values' => $values,
-            ));
-
-            $complete = $currentStep->process($values);
-            if (null !== $complete) {
-                $currentStep->setComplete($complete);
-            }
-            $currentStep->setData($values);
-
-            $this->getEventManager()->trigger(WizardEvent::EVENT_POST_PROCESS_STEP, $currentStep);
-
-            if ($currentStep->isComplete()) {
-                if ($steps->isLast($currentStep)) {
-                    $wizardEvent = new WizardEvent();
-                    $wizardEvent->setWizard($this);
-                    
-                    $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $wizardEvent);
-                    $this->doRedirect();
-                } else {
-                    $nextStep = $steps->getNext($currentStep);
-                    $this->setCurrentStep($nextStep);
-                }
-            }
+            
+            return $this->getViewModel();
         }
+        
+        if (isset($values['cancel'])) {
+            return $this->doCancel();
+        }        
+        
+        $this->getEventManager()->trigger(WizardEvent::EVENT_PRE_PROCESS_STEP, $currentStep, array(
+            'values' => $values,
+        ));
 
-        $this->processed = true;
+        $complete = $currentStep->process($values);
+        if (null !== $complete) {
+            $currentStep->setComplete($complete);
+        }
+        $currentStep->setData($values);
+
+        $this->getEventManager()->trigger(WizardEvent::EVENT_POST_PROCESS_STEP, $currentStep);
+
+        if ($currentStep->isComplete()) {
+            if ($steps->isLast($currentStep)) {
+                $wizardEvent = new WizardEvent();
+                $wizardEvent->setWizard($this);
+
+                $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $wizardEvent);
+                
+                return $this->doRedirect();
+            }
+
+            $nextStep = $steps->getNext($currentStep);
+            $this->setCurrentStep($nextStep);
+        }
+        
+        return $this->getViewModel();
     }
 
     /**
