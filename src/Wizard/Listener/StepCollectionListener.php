@@ -43,7 +43,7 @@ class StepCollectionListener implements ListenerAggregateInterface
         $wizard = $step->getWizard();
 
         $sessionContainer = $wizard->getSessionContainer();
-        if (!isset($sessionContainer->steps)) {
+        if (empty($sessionContainer->steps)) {
             return;
         }
 

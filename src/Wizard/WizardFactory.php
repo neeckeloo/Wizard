@@ -100,6 +100,13 @@ class WizardFactory implements ServiceManagerAwareInterface
             ->setResponse($this->response)
             ->setFormFactory($this->formFactory);
         
+        $wizardListener = new WizardListener();
+        $wizard->getEventManager()->attachAggregate($wizardListener);
+
+        $stepListener = new StepCollectionListener();
+        $stepCollection = $wizard->getSteps();
+        $stepCollection->getEventManager()->attachAggregate($stepListener);
+        
         $wizardOptions = $wizard->getOptions();
         
         if (isset($config['title'])) {
@@ -120,13 +127,6 @@ class WizardFactory implements ServiceManagerAwareInterface
         if (isset($config['steps']) && is_array($config['steps'])) {
             $this->addSteps($config['steps'], $wizard);
         }
-        
-        $wizardListener = new WizardListener();
-        $wizard->getEventManager()->attachAggregate($wizardListener);
-
-        $stepListener = new StepCollectionListener();
-        $stepCollection = $wizard->getSteps();
-        $stepCollection->getEventManager()->attachAggregate($stepListener);
 
         return $wizard;
     }
