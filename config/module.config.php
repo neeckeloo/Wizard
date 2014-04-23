@@ -17,9 +17,6 @@ return array(
             'Wizard\WizardRenderer'         => 'Wizard\Factory\WizardRendererFactory',
             'Wizard\Step\StepPluginManager' => 'Wizard\Factory\StepPluginManagerFactory',
         ),
-        'abstract_factories' => array(
-            'Wizard\WizardAbstractServiceFactory'
-        ),
     ),
 
     'view_manager' => array(
