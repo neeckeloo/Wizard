@@ -14,7 +14,7 @@ class StepPluginManagerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        $config = $config['wizard']['wizard_steps'];
+        $config = $config['wizard_steps'];
 
         $stepPluginManager = new StepPluginManager(new Config($config));
         $stepPluginManager->setServiceLocator($serviceLocator);
