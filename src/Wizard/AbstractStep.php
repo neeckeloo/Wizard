@@ -199,11 +199,11 @@ abstract class AbstractStep implements StepInterface
     {
         $vars = get_object_vars($this);
 
-        $excluded = array('form', 'wizard');
+        $included = array('name', 'data', 'options');
 
         $options = array();
         foreach ($vars as $key => $value) {
-            if (in_array($key, $excluded)) {
+            if (!in_array($key, $included)) {
                 continue;
             }
 
