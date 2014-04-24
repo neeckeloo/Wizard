@@ -200,7 +200,7 @@ abstract class AbstractStep implements StepInterface
     {
         $vars = get_object_vars($this);
 
-        $included = array('name', 'data', 'options');
+        $included = array('name', 'data', 'options', 'complete');
 
         $options = array();
         foreach ($vars as $key => $value) {

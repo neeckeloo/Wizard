@@ -1,5 +1,5 @@
 <?php
-namespace WizardTest;
+namespace WizardTest\Step;
 
 use Wizard\Step\AbstractStep;
 use Zend\Form\Form;
