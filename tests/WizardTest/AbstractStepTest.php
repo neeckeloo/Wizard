@@ -1,7 +1,7 @@
 <?php
 namespace WizardTest;
 
-use Wizard\AbstractStep;
+use Wizard\Step\AbstractStep;
 use Zend\Form\Form;
 
 class AbstractStepTest extends \PHPUnit_Framework_TestCase
@@ -13,14 +13,14 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->step = $this->getMockForAbstractClass('Wizard\AbstractStep');
+        $this->step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
     }
 
     public function testSetAndGetOptions()
     {
-        $this->assertInstanceOf('Wizard\StepOptions', $this->step->getOptions());
+        $this->assertInstanceOf('Wizard\Step\StepOptions', $this->step->getOptions());
 
-        $options = $this->getMock('Wizard\StepOptions', array(), array(), 'MockOptions');
+        $options = $this->getMock('Wizard\Step\StepOptions', array(), array(), 'MockOptions');
         $this->step->setOptions($options);
         $this->assertInstanceOf('MockOptions', $this->step->getOptions());
     }

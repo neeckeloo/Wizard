@@ -2,7 +2,8 @@
 namespace Wizard;
 
 use Wizard\Form\FormFactory;
-use Wizard\StepInterface;
+use Wizard\Step\StepInterface;
+use Wizard\Step\StepCollection;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
 use Zend\Http\Request as HttpRequest;

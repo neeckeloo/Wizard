@@ -1,5 +1,5 @@
 <?php
-namespace Wizard;
+namespace Wizard\Step;
 
 use ArrayIterator;
 use Countable;

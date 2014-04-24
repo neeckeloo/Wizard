@@ -1,7 +1,7 @@
 <?php
 namespace WizardTest;
 
-use Wizard\StepOptions;
+use Wizard\Step\StepOptions;
 
 class StepOptionsTest extends \PHPUnit_Framework_TestCase
 {

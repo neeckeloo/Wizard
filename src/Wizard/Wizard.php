@@ -3,11 +3,13 @@ namespace Wizard;
 
 use Wizard\Exception;
 use Wizard\Form\FormFactory;
+use Wizard\Step\StepCollection;
+use Wizard\Step\StepInterface;
 use Wizard\WizardEvent;
 use Zend\EventManager\EventManager;
 use Zend\Form\Form;
-use Zend\Http\Request;
-use Zend\Http\Response;
+use Zend\Http\Request as HttpRequest;
+use Zend\Http\Response as HttpResponse;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 
@@ -27,12 +29,12 @@ class Wizard implements WizardInterface
     protected $sessionContainer;
 
     /**
-     * @var Request
+     * @var HttpRequest
      */
     protected $request;
 
     /**
-     * @var Response
+     * @var HttpResponse
      */
     protected $response;
 
@@ -75,7 +77,7 @@ class Wizard implements WizardInterface
      * {@inheritDoc}
      */
 
-    public function setRequest(Request $request)
+    public function setRequest(HttpRequest $request)
     {
         $this->request = $request;
         return $this;
@@ -84,7 +86,7 @@ class Wizard implements WizardInterface
     /**
      * {@inheritDoc}
      */
-    public function setResponse(Response $response)
+    public function setResponse(HttpResponse $response)
     {
         $this->response = $response;
         return $this;

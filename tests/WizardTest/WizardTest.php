@@ -97,12 +97,12 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             $steps->add($step);
         }
 
-        $this->assertInstanceOf('Wizard\StepInterface', $this->wizard->getCurrentStep());
+        $this->assertInstanceOf('Wizard\Step\StepInterface', $this->wizard->getCurrentStep());
     }
 
     public function testGetSteps()
     {
-        $this->assertInstanceOf('Wizard\StepCollection', $this->wizard->getSteps());
+        $this->assertInstanceOf('Wizard\Step\StepCollection', $this->wizard->getSteps());
     }
 
     public function testGetFormWithoutSteps()
@@ -349,7 +349,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testSetAndGetStepCollection()
     {
-        $this->assertInstanceOf('Wizard\StepCollection', $this->wizard->getSteps());
+        $this->assertInstanceOf('Wizard\Step\StepCollection', $this->wizard->getSteps());
     }
 
     public function testGetCollectionWithRestoredSteps()
@@ -443,7 +443,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     protected function getStepMock($name)
     {
         $mock = $this->getMockForAbstractClass(
-            'Wizard\AbstractStep', array(), '', true, true, true, array(
+            'Wizard\Step\AbstractStep', array(), '', true, true, true, array(
                 'getName', 'getForm', 'isComplete'
             )
         );

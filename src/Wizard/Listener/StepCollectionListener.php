@@ -1,7 +1,7 @@
 <?php
 namespace Wizard\Listener;
 
-use Wizard\StepCollection;
+use Wizard\Step\StepCollection;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;

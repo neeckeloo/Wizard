@@ -4,6 +4,7 @@ namespace Wizard;
 use Wizard\Form\FormFactory;
 use Wizard\Listener\StepCollectionListener;
 use Wizard\Listener\WizardListener;
+use Wizard\Step\StepInterface;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
 use Zend\ServiceManager\ServiceLocatorInterface;

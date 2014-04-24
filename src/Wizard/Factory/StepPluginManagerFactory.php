@@ -1,7 +1,7 @@
 <?php
 namespace Wizard\Factory;
 
-use Wizard\StepPluginManager;
+use Wizard\Step\StepPluginManager;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

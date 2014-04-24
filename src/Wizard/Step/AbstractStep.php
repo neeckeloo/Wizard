@@ -1,7 +1,8 @@
 <?php
-namespace Wizard;
+namespace Wizard\Step;
 
 use Traversable;
+use Wizard\Exception;
 use Wizard\Wizard;
 use Zend\Form\FormInterface;
 

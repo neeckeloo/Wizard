@@ -1,7 +1,7 @@
 <?php
 namespace WizardTest;
 
-use Wizard\StepCollection;
+use Wizard\Step\StepCollection;
 
 class StepCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -46,7 +46,7 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
         $step = $this->getStepMock('foo');
         $this->stepCollection->add($step);
 
-        $this->assertInstanceOf('Wizard\StepInterface', $this->stepCollection->get('foo'));
+        $this->assertInstanceOf('Wizard\Step\StepInterface', $this->stepCollection->get('foo'));
         $this->assertNull($this->stepCollection->get('bar'));
     }
 
@@ -137,7 +137,7 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
      */
     protected function getStepMock($name)
     {
-        $mock = $this->getMock('Wizard\StepInterface');
+        $mock = $this->getMock('Wizard\Step\StepInterface');
         $mock
             ->expects($this->any())
             ->method('getName')

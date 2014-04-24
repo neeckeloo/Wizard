@@ -52,9 +52,9 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $serviceManager
             ->setService('Wizard\Step\StepPluginManager', $stepPluginManager)
             ->setService('FormElementManager', $formElementManager)
-            ->setService('WizardTest\TestAsset\Step\Foo', $this->getMockForAbstractClass('Wizard\AbstractStep'))
-            ->setService('WizardTest\TestAsset\Step\Bar', $this->getMockForAbstractClass('Wizard\AbstractStep'))
-            ->setService('WizardTest\TestAsset\Step\Baz', $this->getMockForAbstractClass('Wizard\AbstractStep'));
+            ->setService('WizardTest\TestAsset\Step\Foo', $this->getMockForAbstractClass('Wizard\Step\AbstractStep'))
+            ->setService('WizardTest\TestAsset\Step\Bar', $this->getMockForAbstractClass('Wizard\Step\AbstractStep'))
+            ->setService('WizardTest\TestAsset\Step\Baz', $this->getMockForAbstractClass('Wizard\Step\AbstractStep'));
         $wizardFactory->setServiceManager($serviceManager);
 
         $wizard = $wizardFactory->create('Wizard\Foo');

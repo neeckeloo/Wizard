@@ -39,7 +39,7 @@ class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
             ->method('getSessionContainer')
             ->will($this->returnValue($this->sessionContainer));
 
-        $step = $this->getMock('Wizard\StepInterface');
+        $step = $this->getMock('Wizard\Step\StepInterface');
         $step
             ->expects($this->once())
             ->method('getName')
@@ -66,7 +66,7 @@ class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
             ->method('getSessionContainer')
             ->will($this->returnValue($this->sessionContainer));
         
-        $step = $this->getMock('Wizard\StepInterface');
+        $step = $this->getMock('Wizard\Step\StepInterface');
         $step
             ->expects($this->never())
             ->method('getName');

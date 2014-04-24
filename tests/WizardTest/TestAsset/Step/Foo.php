@@ -1,7 +1,7 @@
 <?php
 namespace WizardTest\TestAsset\Step;
 
-use Wizard\AbstractStep;
+use Wizard\Step\AbstractStep;
 
 class Foo extends AbstractStep
 {
