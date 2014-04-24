@@ -2,6 +2,7 @@
 namespace Wizard\Form;
 
 use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 
@@ -22,7 +23,7 @@ class FormFactory implements ServiceManagerAwareInterface
 
     /**
      * @param  ServiceLocatorInterface $serviceLocator
-     * @return Form
+     * @return FormInterface
      */
     public function create()
     {

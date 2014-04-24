@@ -2,9 +2,9 @@
 namespace Wizard\Listener;
 
 use Wizard\StepCollection;
-use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ListenerAggregateInterface;
 
 class StepCollectionListener implements ListenerAggregateInterface
 {

@@ -1,9 +1,9 @@
 <?php
 namespace Wizard;
 
+use Traversable;
 use Wizard\Wizard;
 use Zend\Form\FormInterface;
-use Traversable;
 
 abstract class AbstractStep implements StepInterface
 {

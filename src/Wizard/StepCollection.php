@@ -2,9 +2,11 @@
 namespace Wizard;
 
 use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use Zend\EventManager\EventManager;
 
-class StepCollection implements \IteratorAggregate, \Countable
+class StepCollection implements IteratorAggregate, Countable
 {
     const EVENT_ADD_STEP = 'add-step';
 

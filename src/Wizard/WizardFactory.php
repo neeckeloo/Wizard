@@ -4,8 +4,8 @@ namespace Wizard;
 use Wizard\Form\FormFactory;
 use Wizard\Listener\StepCollectionListener;
 use Wizard\Listener\WizardListener;
-use Zend\Http\Request;
-use Zend\Http\Response;
+use Zend\Http\Request as HttpRequest;
+use Zend\Http\Response as HttpResponse;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
@@ -18,12 +18,12 @@ class WizardFactory implements ServiceManagerAwareInterface
     protected $serviceManager;
 
     /**
-     * @var Request
+     * @var HttpRequest
      */
     protected $request;
 
     /**
-     * @var Response
+     * @var HttpResponse
      */
     protected $response;
 
@@ -59,17 +59,17 @@ class WizardFactory implements ServiceManagerAwareInterface
     }
 
     /**
-     * @param Request $request
+     * @param HttpRequest $request
      */
-    public function setRequest(Request $request)
+    public function setRequest(HttpRequest $request)
     {
         $this->request = $request;
     }
 
     /**
-     * @param Response $response
+     * @param HttpResponse $response
      */
-    public function setResponse(Response $response)
+    public function setResponse(HttpResponse $response)
     {
         $this->response = $response;
     }

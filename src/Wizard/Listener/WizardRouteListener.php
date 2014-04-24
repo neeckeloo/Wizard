@@ -1,8 +1,8 @@
 <?php
 namespace Wizard\Listener;
 
-use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ListenerAggregateInterface;
 use Zend\Mvc\MvcEvent;
 
 class WizardRouteListener implements ListenerAggregateInterface

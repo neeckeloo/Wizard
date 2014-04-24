@@ -9,14 +9,15 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class StepPluginManagerFactory implements FactoryInterface
 {
     /**
-     * {@inheritDoc}
+     * @param  ServiceLocatorInterface $serviceLocator
+     * @return StepPluginManager
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        $config = $config['wizard_steps'];
+        $configInstance = new Config($config['wizard_steps']);
 
-        $stepPluginManager = new StepPluginManager(new Config($config));
+        $stepPluginManager = new StepPluginManager($configInstance);
         $stepPluginManager->setServiceLocator($serviceLocator);
 
         return $stepPluginManager;

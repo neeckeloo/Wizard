@@ -2,9 +2,9 @@
 namespace Wizard\Listener;
 
 use Wizard\WizardEvent;
-use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ListenerAggregateInterface;
 
 class WizardListener implements ListenerAggregateInterface
 {
