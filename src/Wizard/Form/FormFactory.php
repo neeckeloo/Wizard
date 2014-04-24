@@ -27,12 +27,14 @@ class FormFactory implements ServiceManagerAwareInterface
      */
     public function create()
     {
+        $formElementManager = $this->serviceManager->get('FormElementManager');
+
         $form = new Form();
         $form
-            ->add($this->serviceManager->get('Wizard\Form\Element\Button\Previous'))
-            ->add($this->serviceManager->get('Wizard\Form\Element\Button\Next'))
-            ->add($this->serviceManager->get('Wizard\Form\Element\Button\Valid'))
-            ->add($this->serviceManager->get('Wizard\Form\Element\Button\Cancel'));
+            ->add($formElementManager->get('Wizard\Form\Element\Button\Previous'))
+            ->add($formElementManager->get('Wizard\Form\Element\Button\Next'))
+            ->add($formElementManager->get('Wizard\Form\Element\Button\Valid'))
+            ->add($formElementManager->get('Wizard\Form\Element\Button\Cancel'));
 
         return $form;
     }
