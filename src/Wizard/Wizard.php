@@ -455,10 +455,4 @@ class Wizard implements WizardInterface
 
         return $this->viewModel;
     }
-    
-    public function __destruct()
-    {
-        $this->getSessionContainer()->options = $this->options->toArray();
-        //\Zend\Debug\Debug::dump($this->getSessionContainer()->options);
-    }
 }
