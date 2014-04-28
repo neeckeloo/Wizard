@@ -153,8 +153,9 @@ class Wizard implements WizardInterface
         if (!$options instanceof WizardOptionsInterface) {
             $options = new WizardOptions($options);
         }
-
+        
         $this->options = $options;
+        
         return $this;
     }
 
@@ -363,6 +364,14 @@ class Wizard implements WizardInterface
         
         return $this->response;
     }
+    
+    public function init()
+    {
+        $wizardEvent = new WizardEvent();
+        $wizardEvent->setWizard($this);
+                
+        $this->getEventManager()->trigger(WizardEvent::EVENT_INIT, $wizardEvent);
+    }
 
     /**
      * {@inheritDoc}
@@ -445,5 +454,11 @@ class Wizard implements WizardInterface
         $this->viewModel->setTemplate($template);
 
         return $this->viewModel;
+    }
+    
+    public function __destruct()
+    {
+        $this->getSessionContainer()->options = $this->options->toArray();
+        //\Zend\Debug\Debug::dump($this->getSessionContainer()->options);
     }
 }

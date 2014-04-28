@@ -6,6 +6,7 @@ use Zend\EventManager\Event;
 
 class WizardEvent extends Event
 {
+    const EVENT_INIT = 'wizard-init';
     const EVENT_COMPLETE = 'wizard-complete';
     const EVENT_PRE_PROCESS_STEP = 'step-pre-process';
     const EVENT_POST_PROCESS_STEP = 'step-post-process';

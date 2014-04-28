@@ -43,7 +43,7 @@ class WizardListener implements ListenerAggregateInterface
         $wizard = $step->getWizard();
 
         $sessionContainer = $wizard->getSessionContainer();
-        if (!is_array($sessionContainer->steps)) {
+        if (empty($sessionContainer->steps)) {
             $sessionContainer->steps = array();
         }
 

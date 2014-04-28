@@ -17,7 +17,7 @@ class WizardRouteListener implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'onRoute'));
     }
 
     /**

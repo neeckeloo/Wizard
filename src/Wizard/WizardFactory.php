@@ -145,6 +145,8 @@ class WizardFactory implements ServiceManagerAwareInterface
             }
         }
         
+        $wizard->init();
+        
         $this->instances[$name] = $wizard;
 
         return $wizard;
