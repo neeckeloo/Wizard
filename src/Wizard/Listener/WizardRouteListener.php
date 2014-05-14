@@ -47,7 +47,15 @@ class WizardRouteListener implements ListenerAggregateInterface
         
         $wizard = null;
         foreach ($config['wizards'] as $name => $options) {
-            if (empty($options['route']) || $options['route'] != $matchedRouteName) {
+            if (empty($options['route'])) {
+                continue;
+            }
+            
+            if (is_string($options['route'])) {
+                $options['route'] = array($options['route']);
+            }
+            
+            if (!in_array($matchedRouteName, $options['route'])) {
                 continue;
             }
             
