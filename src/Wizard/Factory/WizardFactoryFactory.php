@@ -16,17 +16,6 @@ class WizardFactoryFactory implements FactoryInterface
         $config = $serviceLocator->get('Wizard\Config');
         $factory = new WizardFactory($config);
 
-        $application = $serviceLocator->get('Application');
-
-        $request = $application->getRequest();
-        $factory->setRequest($request);
-
-        $response = $application->getResponse();
-        $factory->setResponse($response);
-
-        $formFactory = $serviceLocator->get('Wizard\Form\FormFactory');
-        $factory->setFormFactory($formFactory);
-
         return $factory;
     }
 }

@@ -1,12 +1,8 @@
 <?php
 namespace Wizard;
 
-use Wizard\Form\FormFactory;
-use Wizard\Listener\StepCollectionListener;
-use Wizard\Listener\WizardListener;
 use Wizard\Step\StepInterface;
-use Zend\Http\Request as HttpRequest;
-use Zend\Http\Response as HttpResponse;
+use Wizard\WizardInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
@@ -17,21 +13,6 @@ class WizardFactory implements ServiceManagerAwareInterface
      * @var ServiceLocatorInterface
      */
     protected $serviceManager;
-
-    /**
-     * @var HttpRequest
-     */
-    protected $request;
-
-    /**
-     * @var HttpResponse
-     */
-    protected $response;
-
-    /**
-     * @var FormFactory
-     */
-    protected $formFactory;
 
     /**
      * @var array
@@ -60,30 +41,6 @@ class WizardFactory implements ServiceManagerAwareInterface
     }
 
     /**
-     * @param HttpRequest $request
-     */
-    public function setRequest(HttpRequest $request)
-    {
-        $this->request = $request;
-    }
-
-    /**
-     * @param HttpResponse $response
-     */
-    public function setResponse(HttpResponse $response)
-    {
-        $this->response = $response;
-    }
-
-    /**
-     * @param FormFactory $factory
-     */
-    public function setFormFactory(FormFactory $factory)
-    {
-        $this->formFactory = $factory;
-    }
-
-    /**
      * @param  string $name
      * @return WizardInterface
      */
@@ -102,20 +59,7 @@ class WizardFactory implements ServiceManagerAwareInterface
 
         $config = $this->config['wizards'][$name];
 
-        /* @var $wizard \Wizard\WizardInterface */
-        $wizard = new Wizard();
-
-        $wizard
-            ->setRequest($this->request)
-            ->setResponse($this->response)
-            ->setFormFactory($this->formFactory);
-        
-        $wizardListener = new WizardListener();
-        $wizard->getEventManager()->attachAggregate($wizardListener);
-
-        $stepListener = new StepCollectionListener();
-        $stepCollection = $wizard->getSteps();
-        $stepCollection->getEventManager()->attachAggregate($stepListener);
+        $wizard = $this->serviceManager->get('Wizard\Wizard');
         
         $wizardOptions = $wizard->getOptions();
         

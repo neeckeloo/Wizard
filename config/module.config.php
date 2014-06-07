@@ -11,8 +11,12 @@ return array(
         'factories' => array(
             'Wizard\Config'                 => 'Wizard\Factory\ConfigFactory',
             'Wizard\Factory'                => 'Wizard\Factory\WizardFactoryFactory',
+            'Wizard\Wizard'                 => 'Wizard\Factory\WizardFactory',
             'Wizard\WizardRenderer'         => 'Wizard\Factory\WizardRendererFactory',
             'Wizard\Step\StepPluginManager' => 'Wizard\Factory\StepPluginManagerFactory',
+        ),
+        'shared' => array(
+            'Wizard\Wizard' => false,
         ),
     ),
 
