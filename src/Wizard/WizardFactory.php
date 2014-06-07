@@ -59,24 +59,16 @@ class WizardFactory implements ServiceManagerAwareInterface
 
         $config = $this->config['wizards'][$name];
 
+        /* @var $wizard \Wizard\WizardInterface */
         $wizard = $this->serviceManager->get('Wizard\Wizard');
         
         $wizardOptions = $wizard->getOptions();
         
-        if (isset($config['title'])) {
-            $wizardOptions->setTitle($config['title']);
+        if (empty($config['layout_template'])) {
+            $config['layout_template'] = $this->config['default_layout_template'];
         }
         
-        if (isset($config['layout_template'])) {
-            $layoutTemplate = $config['layout_template'];
-        } else {
-            $layoutTemplate = $this->config['default_layout_template'];
-        }
-        $wizardOptions->setLayoutTemplate($layoutTemplate);
-        
-        if (isset($config['redirect_url'])) {
-            $wizardOptions->setRedirectUrl($config['redirect_url']);
-        }
+        $wizardOptions->setFromArray($config);
 
         if (isset($config['steps']) && is_array($config['steps'])) {
             $this->addSteps($config['steps'], $wizard);

@@ -6,6 +6,11 @@ use Zend\Stdlib\AbstractOptions;
 class WizardOptions extends AbstractOptions implements WizardOptionsInterface
 {
     /**
+     * @var bool
+     */
+    protected $__strictMode__ = false;
+    
+    /**
      * @var string 
      */
     protected $title;
