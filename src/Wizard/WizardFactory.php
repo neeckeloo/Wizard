@@ -3,14 +3,13 @@ namespace Wizard;
 
 use Wizard\Step\StepInterface;
 use Wizard\WizardInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 
 class WizardFactory implements ServiceManagerAwareInterface
 {
     /**
-     * @var ServiceLocatorInterface
+     * @var ServiceManager
      */
     protected $serviceManager;
 

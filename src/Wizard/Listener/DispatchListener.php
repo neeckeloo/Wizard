@@ -5,7 +5,7 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\Mvc\MvcEvent;
 
-class WizardRouteListener implements ListenerAggregateInterface
+class DispatchListener implements ListenerAggregateInterface
 {
     /**
      * @var array
@@ -17,7 +17,7 @@ class WizardRouteListener implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'onRoute'));
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'), 10);
     }
 
     /**
@@ -36,7 +36,7 @@ class WizardRouteListener implements ListenerAggregateInterface
      * @param  MvcEvent $e
      * @return void
      */
-    public function onRoute(MvcEvent $e)
+    public function onDispatch(MvcEvent $e)
     {
         $application = $e->getApplication();        
         $serviceManager = $application->getServiceManager();

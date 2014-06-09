@@ -1,7 +1,7 @@
 <?php
 namespace Wizard;
 
-use Wizard\Listener\WizardRouteListener;
+use Wizard\Listener\DispatchListener;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\Mvc\MvcEvent;
@@ -12,8 +12,8 @@ class Module implements ConfigProviderInterface, AutoloaderProviderInterface
     {
         $application = $e->getApplication();
         
-        $wizardRouteListener = new WizardRouteListener();
-        $application->getEventManager()->attach($wizardRouteListener);
+        $dispatchListener = new DispatchListener();
+        $application->getEventManager()->attach($dispatchListener);
     }
     
     public function getConfig()
