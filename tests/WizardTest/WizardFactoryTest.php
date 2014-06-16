@@ -1,8 +1,8 @@
 <?php
 namespace WizardTest;
 
+use Wizard\Wizard;
 use Wizard\WizardFactory;
-use Zend\Form\Form;
 use Zend\ServiceManager\ServiceManager;
 
 class WizardFactoryTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +34,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ),
         );
 
-        $wizardFactory = $this->getWizardFactory($config);
+        $wizardFactory = new WizardFactory($config);
 
         $stepPluginManager = new ServiceManager();
         $stepPluginManager
@@ -50,6 +50,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
         $serviceManager = new ServiceManager();
         $serviceManager
+            ->setService('Wizard\Wizard', new Wizard())
             ->setService('Wizard\Step\StepPluginManager', $stepPluginManager)
             ->setService('FormElementManager', $formElementManager)
             ->setService('WizardTest\TestAsset\Step\Foo', $this->getMockForAbstractClass('Wizard\Step\AbstractStep'))
@@ -91,7 +92,12 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ),
         );
 
-        $wizardFactory = $this->getWizardFactory($config);
+        $wizardFactory = new WizardFactory($config);
+
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService('Wizard\Wizard', new Wizard());
+        $wizardFactory->setServiceManager($serviceManager);
+        
         $wizard = $wizardFactory->create('Wizard\Foo');
 
         $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
@@ -103,31 +109,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInvalidWizard()
     {
-        $wizardFactory = $this->getWizardFactory(array());
+        $wizardFactory = new WizardFactory(array());
         $wizardFactory->create('invalid');
-    }
-
-    /**
-     * @param  array $config
-     * @return WizardFactory
-     */
-    protected function getWizardFactory(array $config)
-    {
-        $wizardFactory = new WizardFactory($config);
-
-        $request = $this->getMock('Zend\Http\Request');
-        $wizardFactory->setRequest($request);
-
-        $response = $this->getMock('Zend\Http\Response');
-        $wizardFactory->setResponse($response);
-
-        $formFactory = $this->getMock('Wizard\Form\FormFactory');
-        $formFactory
-            ->expects($this->any())
-            ->method('create')
-            ->will($this->returnValue(new Form));
-        $wizardFactory->setFormFactory($formFactory);
-
-        return $wizardFactory;
     }
 }
