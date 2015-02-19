@@ -17,6 +17,8 @@ class StepFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('setFromArray')
             ->with($stepOptions);
 
+        $stepOptions['form'] = 'App\Step\FooForm';
+
         $stepMock = $this->getMock('Wizard\Step\StepInterface');
 
         $stepMock
@@ -42,12 +44,10 @@ class StepFactoryTest extends \PHPUnit_Framework_TestCase
         $formElementManagerMock
             ->expects($this->once())
             ->method('get')
-            ->with('WizardTest\TestAsset\Step\FooForm')
+            ->with($stepOptions['form'])
             ->will($this->returnValue($this->getMock('Zend\Form\Form')));
 
         $stepFactory = new StepFactory($stepPluginManagerMock, $formElementManagerMock);
-
-        $stepOptions['form'] = 'WizardTest\TestAsset\Step\FooForm';
 
         $step = $stepFactory->create($stepName, $stepOptions);
         $this->assertInstanceOf('Wizard\Step\StepInterface', $step);

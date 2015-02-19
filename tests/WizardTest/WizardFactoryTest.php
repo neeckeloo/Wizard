@@ -13,16 +13,16 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
                 'layout_template' => 'wizard/custom-layout',
                 'redirect_url'    => '/foo',
                 'steps' => [
-                    'WizardTest\TestAsset\Step\Foo' => [
+                    'App\Step\Foo' => [
                         'title'         => 'foo',
                         'view_template' => 'wizard/foo',
-                        'form'          => 'WizardTest\TestAsset\Step\FooForm',
+                        'form'          => 'App\Step\FooForm',
                     ],
-                    'WizardTest\TestAsset\Step\Bar' => [
+                    'App\Step\Bar' => [
                         'title'         => 'bar',
                         'view_template' => 'wizard/bar',
                     ],
-                    'WizardTest\TestAsset\Step\Baz' => [
+                    'App\Step\Baz' => [
                         'title'         => 'baz',
                         'view_template' => 'wizard/baz',
                     ],
@@ -39,26 +39,15 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
         $wizardConfig = $this->config['wizards']['Wizard\Foo'];
 
+        $returnValueMap = [];
+        foreach ($wizardConfig['steps'] as $name => $config) {
+            $returnValueMap[] = [$name, $config, $this->getStep()];
+        }
+
         $stepFactoryMock
             ->expects($this->any())
             ->method('create')
-            ->will($this->returnValueMap([
-                [
-                    'WizardTest\TestAsset\Step\Foo',
-                    $wizardConfig['steps']['WizardTest\TestAsset\Step\Foo'],
-                    new \WizardTest\TestAsset\Step\Foo()
-                ],
-                [
-                    'WizardTest\TestAsset\Step\Bar',
-                    $wizardConfig['steps']['WizardTest\TestAsset\Step\Bar'],
-                    new \WizardTest\TestAsset\Step\Bar()
-                ],
-                [
-                    'WizardTest\TestAsset\Step\Baz',
-                    $wizardConfig['steps']['WizardTest\TestAsset\Step\Baz'],
-                    new \WizardTest\TestAsset\Step\Baz()
-                ],
-            ]));
+            ->will($this->returnValueMap($returnValueMap));
 
         $wizardFactory->setStepFactory($stepFactoryMock);
 
@@ -109,5 +98,21 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         return $this->getMockBuilder('Wizard\Step\StepFactory')
             ->disableOriginalConstructor()
             ->getMock();
+    }
+
+    private function getStep()
+    {
+        $stepMock = $this->getMock('Wizard\Step\StepInterface');
+
+        $stepMock
+            ->expects($this->once())
+            ->method('setWizard')
+            ->will($this->returnSelf());
+
+        $stepMock
+            ->expects($this->once())
+            ->method('init');
+
+        return $stepMock;
     }
 }
