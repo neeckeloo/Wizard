@@ -114,7 +114,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     {
         $formFactory = $this->getFormFactory();
         $this->wizard->setFormFactory($formFactory);
-        
+
         $steps = $this->wizard->getSteps();
         $steps->add($this->getStepMock('foo'));
         $steps->add($this->getStepMock('bar'));
@@ -192,7 +192,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->request
             ->setMethod(Request::METHOD_POST)
             ->setPost($params);
-        
+
         $this->sessionContainer->currentStep = 'foo';
 
         $fooStep = $this->getStepMock('foo');
@@ -365,7 +365,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
                 ),
             ),
         );
-        
+
         $stepCollection = $this->wizard->getSteps();
 
         $step = $this->getStepMock('foo');
@@ -386,7 +386,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $formFactory = $this->getFormFactory();
         $this->wizard->setFormFactory($formFactory);
 
-        $renderer = new PhpRenderer;        
+        $renderer = new PhpRenderer;
         $resolver = new TemplateMapResolver(array(
             'wizard/layout'   => __DIR__ . '/_files/layout.phtml',
             'wizard/header'   => __DIR__ . '/_files/header.phtml',
@@ -394,9 +394,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             'wizard/step/foo' => __DIR__ . '/_files/steps/foo.phtml',
         ));
         $renderer->setResolver($resolver);
-        
+
         $stepCollection = $this->wizard->getSteps();
-        
+
         $step = $this->getStepMock('foo');
         $step
             ->expects($this->any())
@@ -404,7 +404,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new \Zend\Form\Form));
 
         $step->getOptions()->setViewTemplate('wizard/step/foo');
-        
+
         $stepCollection->add($step);
 
         $this->wizard->getOptions()->setLayoutTemplate('wizard/layout');

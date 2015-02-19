@@ -97,7 +97,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $serviceManager = new ServiceManager();
         $serviceManager->setService('Wizard\Wizard', new Wizard());
         $wizardFactory->setServiceManager($serviceManager);
-        
+
         $wizard = $wizardFactory->create('Wizard\Foo');
 
         $this->assertInstanceOf('Wizard\WizardInterface', $wizard);

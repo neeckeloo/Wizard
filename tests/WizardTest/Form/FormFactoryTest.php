@@ -17,7 +17,7 @@ class FormFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($formElementManager));
 
         $formFactory = new FormFactory();
-        
+
         $previousButton = new ButtonElement\Previous('previous');
         $formElementManager
             ->expects($this->at(0))
@@ -50,7 +50,7 @@ class FormFactoryTest extends \PHPUnit_Framework_TestCase
 
         /* @var $form \Zend\Form\Form */
         $form = $formFactory->create();
-        
+
         $this->assertInstanceOf('Zend\Form\Form', $form);
         $this->assertCount(4, $form->getElements());
     }
