@@ -4,12 +4,12 @@ namespace Wizard\Listener;
 use Wizard\Step\StepCollection;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManagerAwareTrait;
+use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\ListenerAggregateTrait;
 
-class StepCollectionListener implements EventManagerAwareInterface
+class StepCollectionListener implements ListenerAggregateInterface
 {
-    use EventManagerAwareTrait;
+    use ListenerAggregateTrait;
 
     /**
      * @param EventManagerInterface $events

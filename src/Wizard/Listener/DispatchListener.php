@@ -4,13 +4,13 @@ namespace Wizard\Listener;
 use Wizard\WizardFactory;
 use Wizard\WizardResolver;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManagerAwareTrait;
+use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\ListenerAggregateTrait;
 use Zend\Mvc\MvcEvent;
 
-class DispatchListener implements EventManagerAwareInterface
+class DispatchListener implements ListenerAggregateInterface
 {
-    use EventManagerAwareTrait;
+    use ListenerAggregateTrait;
 
     /**
      * @var WizardResolver

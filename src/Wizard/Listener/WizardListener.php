@@ -4,12 +4,12 @@ namespace Wizard\Listener;
 use Wizard\WizardEvent;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManagerAwareTrait;
+use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\ListenerAggregateTrait;
 
-class WizardListener implements EventManagerAwareInterface
+class WizardListener implements ListenerAggregateInterface
 {
-    use EventManagerAwareTrait;
+    use ListenerAggregateTrait;
 
     /**
      * @param EventManagerInterface $events
