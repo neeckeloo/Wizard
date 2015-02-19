@@ -9,11 +9,13 @@ return array(
             'Wizard\Form\FormFactory' => 'Wizard\Form\FormFactory',
         ),
         'factories' => array(
-            'Wizard\Config'                 => 'Wizard\Factory\ConfigFactory',
-            'Wizard\Factory'                => 'Wizard\Factory\WizardFactoryFactory',
-            'Wizard\Wizard'                 => 'Wizard\Factory\WizardFactory',
-            'Wizard\WizardRenderer'         => 'Wizard\Factory\WizardRendererFactory',
-            'Wizard\Step\StepPluginManager' => 'Wizard\Factory\StepPluginManagerFactory',
+            'Wizard\Config'                    => 'Wizard\Factory\ConfigFactory',
+            'Wizard\WizardFactory'             => 'Wizard\Factory\WizardFactoryFactory',
+            'Wizard\Listener\DispatchListener' => 'Wizard\Factory\DispatchListenerFactory',
+            'Wizard\Wizard'                    => 'Wizard\Factory\WizardFactory',
+            'Wizard\WizardRenderer'            => 'Wizard\Factory\WizardRendererFactory',
+            'Wizard\WizardResolver'            => 'Wizard\Factory\WizardResolverFactory',
+            'Wizard\Step\StepPluginManager'    => 'Wizard\Factory\StepPluginManagerFactory',
         ),
         'shared' => array(
             'Wizard\Wizard' => false,

@@ -1,77 +1,56 @@
 <?php
 namespace Wizard\Listener;
 
+use Wizard\WizardFactory;
+use Wizard\WizardResolver;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Mvc\MvcEvent;
 
-class DispatchListener implements ListenerAggregateInterface
+class DispatchListener implements EventManagerAwareInterface
 {
+    use EventManagerAwareTrait;
+
     /**
-     * @var array
+     * @var WizardResolver
      */
-    protected $listeners = array();
+    protected $resolver;
+
+    /**
+     * @var WizardFactory
+     */
+    protected $factory;
+
+    /**
+     * @param WizardResolver $resolver
+     * @param WizardFactory $factory
+     */
+    public function __construct(WizardResolver $resolver, WizardFactory $factory)
+    {
+        $this->resolver = $resolver;
+        $this->factory  = $factory;
+    }
 
     /**
      * @param EventManagerInterface $events
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'), 10);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'process'), 10);
     }
 
     /**
-     * @param EventManagerInterface $events
-     */
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
-    }
-    
-    /**
      * @param  MvcEvent $e
-     * @return void
      */
-    public function onDispatch(MvcEvent $e)
+    public function process(MvcEvent $e)
     {
-        $application = $e->getApplication();        
-        $serviceManager = $application->getServiceManager();
-        
-        $matchedRouteName = $e->getRouteMatch()->getMatchedRouteName();
-        
-        $config = $serviceManager->get('Wizard\Config');
-        
-        $wizard = null;
-        foreach ($config['wizards'] as $name => $options) {
-            if (empty($options['route'])) {
-                continue;
-            }
-            
-            if (is_string($options['route'])) {
-                $options['route'] = array($options['route']);
-            }
-            
-            if (!in_array($matchedRouteName, $options['route'])) {
-                continue;
-            }
-            
-            $wizard = $name;
-        }
-        
+        $wizard = $this->resolver->resolve();
         if (!$wizard) {
             return;
         }
-        
-        /* @var $wizardFactory \Wizard\WizardFactory */
-        $wizardFactory = $serviceManager->get('Wizard\Factory');
-        
-        /* @var $wizard \Wizard\WizardInterface */
-        $instance = $wizardFactory->create($wizard);
-        
-        return $instance->process();
+
+        $instance = $this->factory->create($wizard);
+        $instance->process();
     }
 }
