@@ -4,33 +4,19 @@ namespace Wizard\Step;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerAwareTrait;
 
-class StepCollection implements IteratorAggregate, Countable
+class StepCollection implements IteratorAggregate, Countable, EventManagerAwareInterface
 {
+    use EventManagerAwareTrait;
+
     const EVENT_ADD_STEP = 'add-step';
 
     /**
      * @var array
      */
     protected $steps = [];
-    
-    /**
-     * @var EventManager
-     */
-    protected $eventManager;
-
-    /**
-     * @return EventManager
-     */
-    public function getEventManager()
-    {
-        if (null === $this->eventManager) {
-            $this->eventManager = new EventManager();
-        }
-
-        return $this->eventManager;
-    }
 
     /**
      * @param  StepInterface $step

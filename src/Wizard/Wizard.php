@@ -6,15 +6,18 @@ use Wizard\Form\FormFactory;
 use Wizard\Step\StepCollection;
 use Wizard\Step\StepInterface;
 use Wizard\WizardEvent;
-use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Form\Form;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
 use Zend\Session\Container as SessionContainer;
 use Zend\View\Model\ViewModel;
 
-class Wizard implements WizardInterface
+class Wizard implements EventManagerAwareInterface, WizardInterface
 {
+    use EventManagerAwareTrait;
+
     const STEP_FORM_NAME = 'step';
     const SESSION_CONTAINER_PREFIX = 'wizard';
 
@@ -37,11 +40,6 @@ class Wizard implements WizardInterface
      * @var HttpResponse
      */
     protected $response;
-
-    /**
-     * @var EventManager
-     */
-    protected $eventManager;
 
     /**
      * @var WizardOptionsInterface
@@ -99,18 +97,6 @@ class Wizard implements WizardInterface
     {
         $this->formFactory = $factory;
         return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getEventManager()
-    {
-        if (null === $this->eventManager) {
-            $this->eventManager = new EventManager();
-        }
-
-        return $this->eventManager;
     }
 
     /**
