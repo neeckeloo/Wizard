@@ -4,14 +4,12 @@ namespace Wizard\Listener;
 use Wizard\WizardEvent;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerAwareTrait;
 
-class WizardListener implements ListenerAggregateInterface
+class WizardListener implements EventManagerAwareInterface
 {
-    /**
-     * @var array
-     */
-    protected $listeners = array();
+    use EventManagerAwareTrait;
 
     /**
      * @param EventManagerInterface $events
@@ -22,24 +20,12 @@ class WizardListener implements ListenerAggregateInterface
     }
 
     /**
-     * @param EventManagerInterface $events
-     */
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
-    }
-
-    /**
      * @param  EventInterface $e
      * @return string
      */
     public function persistStep(EventInterface $e)
     {
-        $step = $e->getTarget();
+        $step   = $e->getTarget();
         $wizard = $step->getWizard();
 
         $sessionContainer = $wizard->getSessionContainer();
