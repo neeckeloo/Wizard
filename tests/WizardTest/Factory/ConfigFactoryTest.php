@@ -19,9 +19,9 @@ class ConfigFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateConfig()
     {
         $serviceManager = new ServiceManager();
-        $serviceManager->setService('Config', array(
-            'wizard' => array(),
-        ));
+        $serviceManager->setService('Config', [
+            'wizard' => [],
+        ]);
 
         $config = $this->configFactory->createService($serviceManager);
         $this->assertInternalType('array', $config);

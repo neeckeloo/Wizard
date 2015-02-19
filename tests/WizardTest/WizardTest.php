@@ -36,7 +36,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request;
         $this->response = new Response;
 
-        $this->wizard = $this->getMock('Wizard\Wizard', array('getSessionContainer'));
+        $this->wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
         $this->wizard
             ->setRequest($this->request)
             ->setResponse($this->response);
@@ -59,12 +59,12 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
         $form = new Form();
 
-        $buttons = array(
+        $buttons = [
             'Wizard\Form\Element\Button\Previous',
             'Wizard\Form\Element\Button\Next',
             'Wizard\Form\Element\Button\Valid',
             'Wizard\Form\Element\Button\Cancel',
-        );
+        ];
         foreach ($buttons as $class) {
             $button = new $class();
             $form->add($button);
@@ -185,10 +185,10 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testSetStepDataDuringProcess()
     {
-        $params = new \Zend\Stdlib\Parameters(array(
+        $params = new \Zend\Stdlib\Parameters([
             'foo' => 123,
             'bar' => 456,
-        ));
+        ]);
         $this->request
             ->setMethod(Request::METHOD_POST)
             ->setPost($params);
@@ -214,7 +214,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testCanGoToPreviousStep()
     {
-        $params = new \Zend\Stdlib\Parameters(array('previous' => true));
+        $params = new \Zend\Stdlib\Parameters(['previous' => true]);
         $this->request
             ->setMethod(Request::METHOD_POST)
             ->setPost($params);
@@ -232,7 +232,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testCanGoToNextStep()
     {
-        $params = new \Zend\Stdlib\Parameters(array('step' => array()));
+        $params = new \Zend\Stdlib\Parameters(['step' => []]);
         $this->request
             ->setMethod(Request::METHOD_POST)
             ->setPost($params);
@@ -256,7 +256,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testCanRedirectAfterLastStep()
     {
-        $params = new \Zend\Stdlib\Parameters(array('step' => array()));
+        $params = new \Zend\Stdlib\Parameters(['step' => []]);
         $this->request
             ->setMethod(Request::METHOD_POST)
             ->setPost($params);
@@ -286,7 +286,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testCanRedirectAfterCancel()
     {
-        $params = new \Zend\Stdlib\Parameters(array('cancel' => true));
+        $params = new \Zend\Stdlib\Parameters(['cancel' => true]);
         $this->request
             ->setMethod(Request::METHOD_POST)
             ->setPost($params);
@@ -354,17 +354,17 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCollectionWithRestoredSteps()
     {
-        $this->sessionContainer->steps = array(
-            'foo' => array(
-                'options' => array(
+        $this->sessionContainer->steps = [
+            'foo' => [
+                'options' => [
                     'title' => 'Foo',
-                ),
-                'data'  => array(
+                ],
+                'data'  => [
                     'foo' => 123,
                     'bar' => 456,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $stepCollection = $this->wizard->getSteps();
 
@@ -387,12 +387,12 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->wizard->setFormFactory($formFactory);
 
         $renderer = new PhpRenderer;
-        $resolver = new TemplateMapResolver(array(
+        $resolver = new TemplateMapResolver([
             'wizard/layout'   => __DIR__ . '/_files/layout.phtml',
             'wizard/header'   => __DIR__ . '/_files/header.phtml',
             'wizard/buttons'  => __DIR__ . '/_files/buttons.phtml',
             'wizard/step/foo' => __DIR__ . '/_files/steps/foo.phtml',
-        ));
+        ]);
         $renderer->setResolver($resolver);
 
         $stepCollection = $this->wizard->getSteps();
@@ -443,9 +443,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     protected function getStepMock($name)
     {
         $mock = $this->getMockForAbstractClass(
-            'Wizard\Step\AbstractStep', array(), '', true, true, true, array(
+            'Wizard\Step\AbstractStep', [], '', true, true, true, [
                 'getName', 'getForm', 'isComplete'
-            )
+            ]
         );
         $mock
             ->expects($this->any())

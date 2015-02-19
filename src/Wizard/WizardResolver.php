@@ -38,7 +38,7 @@ class WizardResolver
             }
 
             if (is_string($options['route'])) {
-                $options['route'] = array($options['route']);
+                $options['route'] = [$options['route']];
             }
 
             if (!in_array($matchedRouteName, $options['route'])) {

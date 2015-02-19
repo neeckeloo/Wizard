@@ -9,30 +9,30 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateWizard()
     {
-        $config = array(
+        $config = [
             'default_layout_template' => 'wizard/layout',
-            'wizards' => array(
-                'Wizard\Foo' => array(
+            'wizards' => [
+                'Wizard\Foo' => [
                     'layout_template' => 'wizard/custom-layout',
                     'redirect_url'    => '/foo',
-                    'steps' => array(
-                        'WizardTest\TestAsset\Step\Foo' => array(
+                    'steps' => [
+                        'WizardTest\TestAsset\Step\Foo' => [
                             'title'         => 'foo',
                             'view_template' => 'wizard/foo',
                             'form'          => 'WizardTest\TestAsset\Step\FooForm',
-                        ),
-                        'WizardTest\TestAsset\Step\Bar' => array(
+                        ],
+                        'WizardTest\TestAsset\Step\Bar' => [
                             'title'         => 'bar',
                             'view_template' => 'wizard/bar',
-                        ),
-                        'WizardTest\TestAsset\Step\Baz' => array(
+                        ],
+                        'WizardTest\TestAsset\Step\Baz' => [
                             'title'         => 'baz',
                             'view_template' => 'wizard/baz',
-                        ),
-                    ),
-                ),
-            ),
-        );
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
         $wizardFactory = new WizardFactory($config);
 
@@ -85,12 +85,12 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateWizardWithDefaultOptions()
     {
-        $config = array(
+        $config = [
             'default_layout_template' => 'wizard/layout',
-            'wizards' => array(
-                'Wizard\Foo' => array(),
-            ),
-        );
+            'wizards' => [
+                'Wizard\Foo' => [],
+            ],
+        ];
 
         $wizardFactory = new WizardFactory($config);
 
@@ -109,7 +109,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInvalidWizard()
     {
-        $wizardFactory = new WizardFactory(array());
+        $wizardFactory = new WizardFactory([]);
         $wizardFactory->create('invalid');
     }
 }

@@ -8,10 +8,10 @@ class Cancel extends BaseButton
     /**
      * @var array
      */
-    protected $attributes = array(
+    protected $attributes = [
         'name' => 'cancel',
         'type' => 'submit',
-    );
+    ];
 
     /**
      * @var string

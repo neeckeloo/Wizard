@@ -20,7 +20,7 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Wizard\Step\StepOptions', $this->step->getOptions());
 
-        $options = $this->getMock('Wizard\Step\StepOptions', array(), array(), 'MockOptions');
+        $options = $this->getMock('Wizard\Step\StepOptions', [], [], 'MockOptions');
         $this->step->setOptions($options);
         $this->assertInstanceOf('MockOptions', $this->step->getOptions());
     }
@@ -46,10 +46,10 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertCount(0, $this->step->getData());
 
-        $this->step->setData(array(
+        $this->step->setData([
             'foo' => 123,
             'bar' => 456,
-        ));
+        ]);
 
         $data = $this->step->getData();
         $this->assertCount(2, $data);
@@ -71,12 +71,12 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
     public function testSetFromArray()
     {
-        $this->step->setFromArray(array(
+        $this->step->setFromArray([
             'complete' => true,
-            'data'        => array(
+            'data' => [
                 'foo' => 132,
-            ),
-        ));
+            ],
+        ]);
 
         $this->assertTrue($this->step->isComplete());
         $this->assertCount(1, $this->step->getData());

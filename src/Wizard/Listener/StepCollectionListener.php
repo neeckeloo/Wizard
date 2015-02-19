@@ -16,7 +16,7 @@ class StepCollectionListener implements EventManagerAwareInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(StepCollection::EVENT_ADD_STEP, array($this, 'restore'), 100);
+        $this->listeners[] = $events->attach(StepCollection::EVENT_ADD_STEP, [$this, 'restore'], 100);
     }
 
     /**

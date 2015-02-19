@@ -13,7 +13,7 @@ class StepCollection implements IteratorAggregate, Countable
     /**
      * @var array
      */
-    protected $steps = array();
+    protected $steps = [];
     
     /**
      * @var EventManager

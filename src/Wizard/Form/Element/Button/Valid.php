@@ -8,11 +8,11 @@ class Valid extends BaseButton
     /**
      * @var array
      */
-    protected $attributes = array(
+    protected $attributes = [
         'name' => 'valid',
         'type' => 'submit',
-    );
-    
+    ];
+
     /**
      * @var string
      */

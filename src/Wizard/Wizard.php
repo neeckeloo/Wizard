@@ -153,9 +153,9 @@ class Wizard implements WizardInterface
         if (!$options instanceof WizardOptionsInterface) {
             $options = new WizardOptions($options);
         }
-        
+
         $this->options = $options;
-        
+
         return $this;
     }
 
@@ -361,15 +361,15 @@ class Wizard implements WizardInterface
     {
         $this->response->getHeaders()->addHeaderLine('Location', $url);
         $this->response->setStatusCode(302);
-        
+
         return $this->response;
     }
-    
+
     public function init()
     {
         $wizardEvent = new WizardEvent();
         $wizardEvent->setWizard($this);
-                
+
         $this->getEventManager()->trigger(WizardEvent::EVENT_INIT, $wizardEvent);
     }
 
@@ -391,17 +391,17 @@ class Wizard implements WizardInterface
         $values = $post->getArrayCopy();
         if (isset($values['previous']) && !$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
-            $this->setCurrentStep($previousStep);            
+            $this->setCurrentStep($previousStep);
             return;
         }
-        
+
         if (isset($values['cancel'])) {
             return $this->doCancel();
-        }        
-        
-        $this->getEventManager()->trigger(WizardEvent::EVENT_PRE_PROCESS_STEP, $currentStep, array(
+        }
+
+        $this->getEventManager()->trigger(WizardEvent::EVENT_PRE_PROCESS_STEP, $currentStep, [
             'values' => $values,
-        ));
+        ]);
 
         $complete = $currentStep->process($values);
         if (null !== $complete) {
@@ -417,7 +417,7 @@ class Wizard implements WizardInterface
                 $wizardEvent->setWizard($this);
 
                 $this->getEventManager()->trigger(WizardEvent::EVENT_COMPLETE, $wizardEvent);
-                
+
                 return $this->doRedirect();
             }
 
@@ -435,9 +435,9 @@ class Wizard implements WizardInterface
             return;
         }
 
-        $this->viewModel->setVariables(array(
+        $this->viewModel->setVariables([
             'wizard' => $this,
-        ), true);
+        ], true);
     }
 
     /**

@@ -37,7 +37,7 @@ class DispatchListener implements EventManagerAwareInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'process'), 10);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'process'], 10);
     }
 
     /**

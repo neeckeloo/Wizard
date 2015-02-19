@@ -29,9 +29,9 @@ class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testRestoreStep()
     {
-        $this->sessionContainer->steps = array(
-            'foo' => array(),
-        );
+        $this->sessionContainer->steps = [
+            'foo' => [],
+        ];
 
         $wizard = $this->getMock('Wizard\WizardInterface');
         $wizard

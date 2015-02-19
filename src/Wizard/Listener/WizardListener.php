@@ -16,7 +16,7 @@ class WizardListener implements EventManagerAwareInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(WizardEvent::EVENT_POST_PROCESS_STEP, array($this, 'persistStep'), 100);
+        $this->listeners[] = $events->attach(WizardEvent::EVENT_POST_PROCESS_STEP, [$this, 'persistStep'], 100);
     }
 
     /**
@@ -30,7 +30,7 @@ class WizardListener implements EventManagerAwareInterface
 
         $sessionContainer = $wizard->getSessionContainer();
         if (empty($sessionContainer->steps)) {
-            $sessionContainer->steps = array();
+            $sessionContainer->steps = [];
         }
 
         $stepName = $step->getName();

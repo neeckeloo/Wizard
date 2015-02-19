@@ -6,12 +6,12 @@ use Zend\Form\Element\Button as BaseButton;
 class Previous extends BaseButton
 {
     /**
-     * @var array 
+     * @var array
      */
-    protected $attributes = array(
+    protected $attributes = [
         'name' => 'previous',
         'type' => 'submit',
-    );
+    ];
 
     /**
      * @var string

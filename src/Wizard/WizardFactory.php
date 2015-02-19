@@ -16,12 +16,12 @@ class WizardFactory implements ServiceManagerAwareInterface
     /**
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
     
     /**
      * @var array
      */
-    protected $instances = array();
+    protected $instances = [];
 
     /**
      * @param array $config

@@ -8,11 +8,11 @@ class Next extends BaseButton
     /**
      * @var array
      */
-    protected $attributes = array(
+    protected $attributes = [
         'name' => 'next',
         'type' => 'submit',
-    );
-    
+    ];
+
     /**
      * @var string
      */

@@ -31,7 +31,7 @@ abstract class AbstractStep implements StepInterface
     /**
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * @var bool
@@ -68,7 +68,7 @@ abstract class AbstractStep implements StepInterface
         if (!$options instanceof StepOptionsInterface) {
             $options = new StepOptions($options);
         }
-        
+
         $this->options = $options;
         return $this;
     }
@@ -200,9 +200,9 @@ abstract class AbstractStep implements StepInterface
     {
         $vars = get_object_vars($this);
 
-        $included = array('name', 'data', 'options', 'complete');
+        $included = ['name', 'data', 'options', 'complete'];
 
-        $options = array();
+        $options = [];
         foreach ($vars as $key => $value) {
             if (!in_array($key, $included)) {
                 continue;
