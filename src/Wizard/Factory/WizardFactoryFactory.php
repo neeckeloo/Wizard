@@ -14,8 +14,12 @@ class WizardFactoryFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Wizard\Config');
-        $factory = new WizardFactory($config);
 
-        return $factory;
+        $wizardFactory = new WizardFactory($config);
+
+        $stepFactory = $serviceLocator->get('Wizard\Step\StepFactory');
+        $wizardFactory->setStepFactory($stepFactory);
+
+        return $wizardFactory;
     }
 }

@@ -12,6 +12,7 @@ return [
         ],
         'factories' => [
             'Wizard\Config'                    => 'Wizard\Factory\ConfigFactory',
+            'Wizard\Step\StepFactory'          => 'Wizard\Factory\StepFactoryFactory',
             'Wizard\WizardFactory'             => 'Wizard\Factory\WizardFactoryFactory',
             'Wizard\Listener\DispatchListener' => 'Wizard\Factory\DispatchListenerFactory',
             'Wizard\Wizard'                    => 'Wizard\Factory\WizardFactory',
