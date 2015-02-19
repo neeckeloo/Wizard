@@ -6,7 +6,9 @@ return [
 
     'service_manager' => [
         'invokables' => [
-            'Wizard\Form\FormFactory' => 'Wizard\Form\FormFactory',
+            'Wizard\Form\FormFactory'                => 'Wizard\Form\FormFactory',
+            'Wizard\Listener\StepCollectionListener' => 'Wizard\Listener\StepCollectionListener',
+            'Wizard\Listener\WizardListener'         => 'Wizard\Listener\WizardListener',
         ],
         'factories' => [
             'Wizard\Config'                    => 'Wizard\Factory\ConfigFactory',

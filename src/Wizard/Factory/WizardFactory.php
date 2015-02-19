@@ -1,8 +1,6 @@
 <?php
 namespace Wizard\Factory;
 
-use Wizard\Listener\StepCollectionListener;
-use Wizard\Listener\WizardListener;
 use Wizard\Wizard;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -28,14 +26,15 @@ class WizardFactory implements FactoryInterface
 
         $formFactory = $serviceLocator->get('Wizard\Form\FormFactory');
         $wizard->setFormFactory($formFactory);
-        
-        $wizardListener = new WizardListener();
+
+        $wizardListener = $serviceLocator->get('Wizard\Listener\WizardListener');
         $wizard->getEventManager()->attachAggregate($wizardListener);
 
-        $stepListener = new StepCollectionListener();
         $stepCollection = $wizard->getSteps();
-        $stepCollection->getEventManager()->attachAggregate($stepListener);
-        
+
+        $stepCollectionListener = $serviceLocator->get('Wizard\Listener\StepCollectionListener');
+        $stepCollection->getEventManager()->attachAggregate($stepCollectionListener);
+
         return $wizard;
     }
 }
