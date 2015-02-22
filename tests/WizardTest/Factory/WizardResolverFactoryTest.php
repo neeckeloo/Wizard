@@ -8,12 +8,21 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateInstance()
     {
-        $applicationMock = $this->getApplication();
+        $request = $this->getRequest();
+        $router  = $this->getRouter();
+
+        $routeMatch = $this->getRouteMatch();
+
+        $router
+            ->expects($this->any())
+            ->method('match')
+            ->will($this->returnValue($routeMatch));
 
         $serviceManager = new ServiceManager();
         $serviceManager
             ->setService('Wizard\Config', ['wizard' => []])
-            ->setService('Application', $applicationMock);
+            ->setService('Request', $request)
+            ->setService('Router', $router);
 
         $factory = new WizardResolverFactory();
 
@@ -21,27 +30,24 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Wizard\WizardResolver', $resolver);
     }
 
-    private function getApplication()
+    private function getRequest()
     {
-        $routeMatchMock = $this->getMockBuilder('Zend\Mvc\Router\RouteMatch')
+        return $this->getMockBuilder('Zend\Http\Request')
             ->disableOriginalConstructor()
             ->getMock();
+    }
 
-        $mvcEventMock = $this->getMock('Zend\Mvc\MvcEvent');
-        $mvcEventMock
-            ->expects($this->once())
-            ->method('getRouteMatch')
-            ->will($this->returnValue($routeMatchMock));
-
-        $applicationMock = $this->getMockBuilder('Zend\Mvc\Application')
+    private function getRouter()
+    {
+        return $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
             ->disableOriginalConstructor()
             ->getMock();
+    }
 
-        $applicationMock
-            ->expects($this->once())
-            ->method('getMvcEvent')
-            ->will($this->returnValue($mvcEventMock));
-
-        return $applicationMock;
+    private function getRouteMatch()
+    {
+        return $this->getMockBuilder('Zend\Mvc\Router\RouteMatch')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }
