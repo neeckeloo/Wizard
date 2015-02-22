@@ -13,10 +13,12 @@ class WizardResolverFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $application = $serviceLocator->get('Application');
-        $routeMatch  = $application->getMvcEvent()->getRouteMatch();
+        $config  = $serviceLocator->get('Wizard\Config');
 
-        $config = $serviceLocator->get('Wizard\Config');
+        $request = $serviceLocator->get('Request');
+        $router  = $serviceLocator->get('Router');
+
+        $routeMatch = $router->match($request);
 
         return new WizardResolver($routeMatch, $config);
     }
