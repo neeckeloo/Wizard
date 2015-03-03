@@ -12,6 +12,7 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             'Wizard\Foo' => [
                 'layout_template' => 'wizard/custom-layout',
                 'redirect_url'    => '/foo',
+                'cancel_url'      => '/bar',
                 'steps' => [
                     'App\Step\Foo' => [
                         'title'         => 'foo',
@@ -61,13 +62,12 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
         $wizardOptionsMock
             ->expects($this->once())
-            ->method('setFromArray')
-            ->with($wizardConfig);
+            ->method('setFromArray');
 
         $wizardMock = $this->getMock('Wizard\Wizard');
 
         $wizardMock
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('getOptions')
             ->will($this->returnValue($wizardOptionsMock));
 
@@ -75,6 +75,17 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getSteps')
             ->will($this->returnValue($stepCollectionMock));
+
+        $viewModelMock = $this->getMock('Zend\View\Model\ViewModel');
+
+        $viewModelMock
+            ->expects($this->once())
+            ->method('setTemplate');
+
+        $wizardMock
+            ->expects($this->any())
+            ->method('getViewModel')
+            ->will($this->returnValue($viewModelMock));
 
         $serviceManager = new ServiceManager();
         $serviceManager->setService('Wizard\Wizard', $wizardMock);

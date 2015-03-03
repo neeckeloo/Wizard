@@ -16,8 +16,10 @@ return [
             'Wizard\WizardFactory'             => 'Wizard\Factory\WizardFactoryFactory',
             'Wizard\Listener\DispatchListener' => 'Wizard\Factory\DispatchListenerFactory',
             'Wizard\Wizard'                    => 'Wizard\Factory\WizardFactory',
+            'Wizard\WizardProcessor'           => 'Wizard\Factory\WizardProcessorFactory',
             'Wizard\WizardRenderer'            => 'Wizard\Factory\WizardRendererFactory',
             'Wizard\WizardResolver'            => 'Wizard\Factory\WizardResolverFactory',
+            'Wizard\Wizard\IdentifierAccessor' => 'Wizard\Factory\IdentifierAccessorFactory',
             'Wizard\Step\StepPluginManager'    => 'Wizard\Factory\StepPluginManagerFactory',
         ],
         'shared' => [

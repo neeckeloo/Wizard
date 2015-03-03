@@ -143,7 +143,7 @@ abstract class AbstractStep implements StepInterface
     {
         $form = $this->getForm();
         if (!($form instanceof FormInterface)) {
-            return null;
+            return;
         }
 
         $form->setData($data);

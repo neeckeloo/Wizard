@@ -4,27 +4,11 @@ namespace Wizard;
 use Wizard\Form\FormFactory;
 use Wizard\Step\StepInterface;
 use Wizard\Step\StepCollection;
-use Zend\EventManager\EventManager;
-use Zend\Form\Form;
-use Zend\Http\Request as HttpRequest;
-use Zend\Http\Response as HttpResponse;
-use Zend\Session\Container as SessionContainer;
+use Wizard\Wizard\IdentifierAccessor;
 use Zend\View\Model\ViewModel;
 
 interface WizardInterface
 {
-    /**
-     * @param  HttpRequest $request
-     * @return self
-     */
-    public function setRequest(HttpRequest $request);
-
-    /**
-     * @param  HttpResponse $response
-     * @return self
-     */
-    public function setResponse(HttpResponse $response);
-
     /**
      * @param  FormFactory $factory
      * @return self
@@ -32,12 +16,24 @@ interface WizardInterface
     public function setFormFactory(FormFactory $factory);
 
     /**
-     * @return EventManager
+     * @param  WizardProcessor $processor
+     * @return self
+     */
+    public function setWizardProcessor(WizardProcessor $processor);
+
+    /**
+     * @param  IdentifierAccessor $accessor
+     * @return self
+     */
+    public function setIdentifierAccessor(IdentifierAccessor $accessor);
+
+    /**
+     * @return \Zend\EventManager\EventManager
      */
     public function getEventManager();
 
     /**
-     * @return SessionContainer
+     * @return \Zend\Session\Container
      */
     public function getSessionContainer();
 
@@ -51,6 +47,10 @@ interface WizardInterface
      * @return WizardOptionsInterface
      */
     public function getOptions();
+
+    public function previousStep();
+
+    public function nextStep();
 
     /**
      * @param  string|StepInterface $step
@@ -69,7 +69,7 @@ interface WizardInterface
     public function getCurrentStepNumber();
 
     /**
-     * @return Form
+     * @return \Zend\Form\Form
      */
     public function getForm();
 
@@ -95,9 +95,14 @@ interface WizardInterface
     public function getPercentProgress();
 
     /**
-     * @return HttpResponse|ViewModel
+     * @return \Zend\Http\Response
      */
     public function process();
+
+    /**
+     * @param ViewModel $model
+     */
+    public function setViewModel(ViewModel $model);
 
     /**
      * @return ViewModel

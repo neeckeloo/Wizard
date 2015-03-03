@@ -16,16 +16,14 @@ class WizardFactory implements FactoryInterface
         /* @var $wizard \Wizard\WizardInterface */
         $wizard = new Wizard();
 
-        $application = $serviceLocator->get('Application');
-
-        $request = $application->getRequest();
-        $wizard->setRequest($request);
-
-        $response = $application->getResponse();
-        $wizard->setResponse($response);
-
         $formFactory = $serviceLocator->get('Wizard\Form\FormFactory');
         $wizard->setFormFactory($formFactory);
+
+        $wizardProcessor = $serviceLocator->get('Wizard\WizardProcessor');
+        $wizard->setWizardProcessor($wizardProcessor);
+
+        $identifierAccessor = $serviceLocator->get('Wizard\Wizard\IdentifierAccessor');
+        $wizard->setIdentifierAccessor($identifierAccessor);
 
         $wizardListener = $serviceLocator->get('Wizard\Listener\WizardListener');
         $wizard->getEventManager()->attachAggregate($wizardListener);
