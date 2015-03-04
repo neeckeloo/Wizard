@@ -76,12 +76,12 @@ class StepCollection implements IteratorAggregate, Countable, EventManagerAwareI
     }
 
     /**
-     * @return StepInterface
+     * @return StepInterface|null
      */
     public function getFirst()
     {
         if (!$this->steps) {
-            return null;
+            return;
         }
 
         $values = array_values($this->steps);
@@ -105,12 +105,12 @@ class StepCollection implements IteratorAggregate, Countable, EventManagerAwareI
     }
 
     /**
-     * @return StepInterface
+     * @return StepInterface|null
      */
     public function getLast()
     {
         if (!$this->steps) {
-            return null;
+            return;
         }
 
         $values = array_values($this->steps);

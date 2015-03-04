@@ -199,7 +199,7 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
     {
         $steps = $this->getSteps();
         if (count($steps) == 0) {
-            return null;
+            return;
         }
 
         $sessionContainer = $this->getSessionContainer();
@@ -236,7 +236,7 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
     {
         $currentStep = $this->getCurrentStep();
         if (!$currentStep) {
-            return null;
+            return;
         }
 
         if (null === $this->form) {

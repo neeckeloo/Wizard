@@ -47,7 +47,5 @@ class WizardResolver
 
             return $name;
         }
-
-        return null;
     }
 }

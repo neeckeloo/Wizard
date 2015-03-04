@@ -59,7 +59,7 @@ interface WizardInterface
     public function setCurrentStep($step);
 
     /**
-     * @return StepInterface
+     * @return StepInterface|null
      */
     public function getCurrentStep();
 
@@ -69,7 +69,7 @@ interface WizardInterface
     public function getCurrentStepNumber();
 
     /**
-     * @return \Zend\Form\Form
+     * @return \Zend\Form\Form|null
      */
     public function getForm();
 
