@@ -35,7 +35,6 @@ class StepFactory
      */
     public function create($name, array $options = [])
     {
-        /* @var $step \Wizard\StepInterface */
         $step = $this->stepPluginManager->get($name);
 
         if (isset($options['form'])) {

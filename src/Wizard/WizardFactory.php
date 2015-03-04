@@ -1,6 +1,7 @@
 <?php
 namespace Wizard;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Wizard\Step\StepFactory;
 use Wizard\WizardInterface;
 use Zend\ServiceManager\ServiceManager;
@@ -54,6 +55,42 @@ class WizardFactory implements ServiceManagerAwareInterface
 
     /**
      * @param  string $name
+     * @return array
+     * @throws Exception\RuntimeException
+     */
+    protected function getWizardOptions($name)
+    {
+        if (!isset($this->config['wizards'][$name])) {
+            throw new Exception\RuntimeException(sprintf(
+                'The wizard "%s" does not exists.',
+                $name
+            ));
+        }
+
+        return $this->prepareWizardOptions($this->config['wizards'][$name]);
+    }
+
+    /**
+     * @param  array $options
+     * @return array
+     */
+    protected function prepareWizardOptions(array $options)
+    {
+        $resolver = new OptionsResolver();
+
+        $resolver
+            ->setDefined(['redirect_url', 'cancel_url', 'steps', 'listeners'])
+            ->setRequired(['redirect_url', 'cancel_url'])
+            ->setAllowedTypes('steps', 'array')
+            ->setAllowedTypes('listeners', 'array')
+            ->setDefault('layout_template', $this->config['default_layout_template'])
+            ->setDefault('listeners', []);
+
+        return $resolver->resolve($options);
+    }
+
+    /**
+     * @param  string $name
      * @return WizardInterface
      */
     public function create($name)
@@ -62,34 +99,23 @@ class WizardFactory implements ServiceManagerAwareInterface
             return $this->instances[$name];
         }
 
-        if (!isset($this->config['wizards'][$name])) {
-            throw new Exception\RuntimeException(sprintf(
-                'The wizard "%s" does not exists.',
-                $name
-            ));
-        }
-
-        $config = $this->config['wizards'][$name];
+        $options = $this->getWizardOptions($name);
 
         /* @var $wizard \Wizard\WizardInterface */
         $wizard = $this->serviceManager->get('Wizard\Wizard');
 
-        if (empty($config['layout_template'])) {
-            $config['layout_template'] = $this->config['default_layout_template'];
+        $wizard->getOptions()->setFromArray($options);
+
+        if (!empty($options['steps'])) {
+            $this->addSteps($options['steps'], $wizard);
         }
 
-        $wizard->getOptions()->setFromArray($config);
-
-        if (isset($config['steps']) && is_array($config['steps'])) {
-            $this->addSteps($config['steps'], $wizard);
+        foreach ($options['listeners'] as $listener) {
+            $instance = $this->serviceManager->get($listener);
+            $wizard->getEventManager()->attach($instance);
         }
 
-        if (isset($config['listeners']) && is_array($config['listeners'])) {
-            foreach ($config['listeners'] as $listener) {
-                $instance = $this->serviceManager->get($listener);
-                $wizard->getEventManager()->attach($instance);
-            }
-        }
+        $wizard->getViewModel()->setTemplate($options['layout_template']);
 
         $wizard->init();
 

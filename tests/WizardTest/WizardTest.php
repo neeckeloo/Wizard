@@ -2,359 +2,232 @@
 namespace WizardTest;
 
 use Wizard\Wizard;
-use Zend\Form\Form;
-use Zend\Http\Request;
-use Zend\Http\Response;
-use Zend\Session\Container as SessionContainer;
-use Zend\View\Renderer\PhpRenderer;
-use Zend\View\Resolver\TemplateMapResolver;
 
 class WizardTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var Wizard
-     */
-    protected $wizard;
-
-    /**
-     * @var SessionContainer
-     */
-    protected $sessionContainer;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * @var Response
-     */
-    protected $response;
-
-    public function setUp()
-    {
-        $this->request = new Request;
-        $this->response = new Response;
-
-        $this->wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
-        $this->wizard
-            ->setRequest($this->request)
-            ->setResponse($this->response);
-
-        $this->sessionContainer = new SessionContainer('foo');
-        $this->sessionContainer->getManager()->getStorage()->clear('foo');
-
-        $this->wizard
-            ->expects($this->any())
-            ->method('getSessionContainer')
-            ->will($this->returnValue($this->sessionContainer));
-    }
-
-    /**
-     * @return FormFactory
-     */
-    protected function getFormFactory()
-    {
-        $formFactory = $this->getMock('Wizard\Form\FormFactory');
-
-        $form = new Form();
-
-        $buttons = [
-            'Wizard\Form\Element\Button\Previous',
-            'Wizard\Form\Element\Button\Next',
-            'Wizard\Form\Element\Button\Valid',
-            'Wizard\Form\Element\Button\Cancel',
-        ];
-        foreach ($buttons as $class) {
-            $button = new $class();
-            $form->add($button);
-        }
-
-        $formFactory
-            ->expects($this->any())
-            ->method('create')
-            ->will($this->returnValue($form));
-
-        return $formFactory;
-    }
-
     public function testSetAndGetOptions()
     {
-        $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
+        $wizard = new Wizard();
+        $this->assertInstanceOf('Wizard\WizardOptions', $wizard->getOptions());
 
         $options = $this->getMock('Wizard\WizardOptions');
-        $this->wizard->setOptions($options);
-        $this->assertInstanceOf('Wizard\WizardOptions', $this->wizard->getOptions());
+        $wizard->setOptions($options);
+        $this->assertInstanceOf('Wizard\WizardOptions', $wizard->getOptions());
     }
 
     public function testGetCurrentStep()
     {
-        $this->assertNull($this->wizard->getCurrentStep());
+        $wizard = new Wizard();
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $steps = $this->wizard->getSteps();
+        $this->assertNull($wizard->getCurrentStep());
+
+        $steps = $wizard->getSteps();
         for ($i = 1; $i <= 3; $i++) {
-            $step = $this->getStepMock('step' . $i);
+            $step = $this->getStep('step' . $i);
             $steps->add($step);
         }
 
-        $this->assertInstanceOf('Wizard\Step\StepInterface', $this->wizard->getCurrentStep());
+        $this->assertInstanceOf('Wizard\Step\StepInterface', $wizard->getCurrentStep());
     }
 
     public function testGetSteps()
     {
-        $this->assertInstanceOf('Wizard\Step\StepCollection', $this->wizard->getSteps());
+        $wizard = new Wizard();
+        $this->assertInstanceOf('Wizard\Step\StepCollection', $wizard->getSteps());
     }
 
-    public function testGetFormWithoutSteps()
+    public function testGetFormWithoutStepsShouldNotReturnNull()
     {
-        $this->assertNull($this->wizard->getForm());
+        $wizard = new Wizard();
+        $this->assertNull($wizard->getForm());
     }
 
-    public function testGetFormOfFirstStep()
+    public function testGetFormWithStepsShouldReturnFormInstance()
     {
-        $formFactory = $this->getFormFactory();
-        $this->wizard->setFormFactory($formFactory);
+        $wizard = new Wizard();
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
+        $formStub = $this->getMock('Zend\Form\Form');
 
-        $form = $this->wizard->getForm();
+        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub
+            ->method('create')
+            ->will($this->returnValue($formStub));
+        $wizard->setFormFactory($formFactoryStub);
+
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+
+        $form = $wizard->getForm();
         $this->assertInstanceOf('Zend\Form\Form', $form);
-
-        $this->assertFalse($form->has('previous'));
-        $this->assertTrue($form->has('next'));
-        $this->assertFalse($form->has('valid'));
-        $this->assertTrue($form->has('cancel'));
     }
 
-    public function testGetFormOfMiddleStep()
+    public function testGetFormWhenCurrentStepIsTheFirstShouldRemovePreviousAndValidButton()
     {
-        $formFactory = $this->getFormFactory();
-        $this->wizard->setFormFactory($formFactory);
+        $wizard = new Wizard();
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $this->sessionContainer->currentStep = 'bar';
+        $formMock = $this->getMock('Zend\Form\Form');
+        $formMock
+            ->expects($this->exactly(2))
+            ->method('remove')
+            ->with($this->logicalOr($this->equalTo('previous'), $this->equalTo('valid')));
 
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
-        $steps->add($this->getStepMock('baz'));
+        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub
+            ->method('create')
+            ->will($this->returnValue($formMock));
+        $wizard->setFormFactory($formFactoryStub);
 
-        $form = $this->wizard->getForm();
-        $this->assertInstanceOf('Zend\Form\Form', $form);
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
 
-        $this->assertTrue($form->has('previous'));
-        $this->assertTrue($form->has('next'));
-        $this->assertFalse($form->has('valid'));
-        $this->assertTrue($form->has('cancel'));
+        $wizard->getForm();
     }
 
-    public function testGetFormOfLastStep()
+    public function testGetFormWhenCurrentStepIsAtTheMiddleShouldRemoveValidButton()
     {
-        $formFactory = $this->getFormFactory();
-        $this->wizard->setFormFactory($formFactory);
+        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $this->sessionContainer->currentStep = 'bar';
+        $sessionContainer = new \stdClass();
+        $sessionContainer->currentStep = 'bar';
 
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
+        $wizard
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainer));
 
-        $form = $this->wizard->getForm();
-        $this->assertInstanceOf('Zend\Form\Form', $form);
+        $formMock = $this->getMock('Zend\Form\Form');
+        $formMock
+            ->expects($this->once())
+            ->method('remove')
+            ->with('valid');
 
-        $this->assertTrue($form->has('previous'));
-        $this->assertFalse($form->has('next'));
-        $this->assertTrue($form->has('valid'));
-        $this->assertTrue($form->has('cancel'));
+        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub
+            ->method('create')
+            ->will($this->returnValue($formMock));
+        $wizard->setFormFactory($formFactoryStub);
+
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
+        $steps->add($this->getStep('baz'));
+
+        $wizard->getForm();
     }
 
-    public function testFormActionAttribute()
+    public function testGetFormWhenCurrentStepIsTheLastShouldRemoveNextButton()
     {
-        $formFactory = $this->getFormFactory();
-        $this->wizard->setFormFactory($formFactory);
+        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
+        $sessionContainer = new \stdClass();
+        $sessionContainer->currentStep = 'bar';
 
-        $form = $this->wizard->getForm();
-        $action = $form->getAttribute('action');
-
-        $this->assertStringMatchesFormat('?%s=%s', $action);
-    }
-
-    public function testSetStepDataDuringProcess()
-    {
-        $params = new \Zend\Stdlib\Parameters([
-            'foo' => 123,
-            'bar' => 456,
-        ]);
-        $this->request
-            ->setMethod(Request::METHOD_POST)
-            ->setPost($params);
-
-        $this->sessionContainer->currentStep = 'foo';
-
-        $fooStep = $this->getStepMock('foo');
-        $fooStep
+        $wizard
             ->expects($this->any())
-            ->method('isComplete')
-            ->will($this->returnValue(true));
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainer));
 
-        $steps = $this->wizard->getSteps();
-        $steps->add($fooStep);
-        $steps->add($this->getStepMock('bar'));
+        $formMock = $this->getMock('Zend\Form\Form');
+        $formMock
+            ->expects($this->once())
+            ->method('remove')
+            ->with('next');
 
-        $this->wizard->process();
+        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub
+            ->method('create')
+            ->will($this->returnValue($formMock));
+        $wizard->setFormFactory($formFactoryStub);
 
-        $stepData = $fooStep->getData();
-        $this->assertArrayHasKey('foo', $stepData);
-        $this->assertArrayHasKey('bar', $stepData);
-    }
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
 
-    public function testCanGoToPreviousStep()
-    {
-        $params = new \Zend\Stdlib\Parameters(['previous' => true]);
-        $this->request
-            ->setMethod(Request::METHOD_POST)
-            ->setPost($params);
-
-        $this->sessionContainer->currentStep = 'bar';
-
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
-
-        $this->wizard->process();
-
-        $this->assertEquals('foo', $this->sessionContainer->currentStep);
-    }
-
-    public function testCanGoToNextStep()
-    {
-        $params = new \Zend\Stdlib\Parameters(['step' => []]);
-        $this->request
-            ->setMethod(Request::METHOD_POST)
-            ->setPost($params);
-
-        $this->sessionContainer->currentStep = 'foo';
-
-        $fooStep = $this->getStepMock('foo');
-        $fooStep
-            ->expects($this->any())
-            ->method('isComplete')
-            ->will($this->returnValue(true));
-
-        $steps = $this->wizard->getSteps();
-        $steps->add($fooStep);
-        $steps->add($this->getStepMock('bar'));
-
-        $this->wizard->process();
-
-        $this->assertEquals('bar', $this->sessionContainer->currentStep);
-    }
-
-    public function testCanRedirectAfterLastStep()
-    {
-        $params = new \Zend\Stdlib\Parameters(['step' => []]);
-        $this->request
-            ->setMethod(Request::METHOD_POST)
-            ->setPost($params);
-
-        $uri = '/foo';
-        $this->wizard->getOptions()->setRedirectUrl($uri);
-
-        $fooStep = $this->getStepMock('foo');
-        $fooStep
-            ->expects($this->any())
-            ->method('isComplete')
-            ->will($this->returnValue(true));
-
-        $steps = $this->wizard->getSteps();
-        $steps->add($fooStep);
-
-        $this->wizard->process();
-
-        $this->assertEquals(302, $this->response->getStatusCode());
-
-        $headers = $this->response->getHeaders();
-        /* @var $locationHeader \Zend\Http\Header\Location */
-        $locationHeader = $headers->get('Location');
-
-        $this->assertEquals($uri, $locationHeader->getUri());
-    }
-
-    public function testCanRedirectAfterCancel()
-    {
-        $params = new \Zend\Stdlib\Parameters(['cancel' => true]);
-        $this->request
-            ->setMethod(Request::METHOD_POST)
-            ->setPost($params);
-
-        $uri = '/cancel';
-        $this->wizard->getOptions()->setCancelUrl($uri);
-
-        $this->wizard->process();
-
-        $this->assertEquals(302, $this->response->getStatusCode());
-
-        $headers = $this->response->getHeaders();
-        /* @var $locationHeader \Zend\Http\Header\Location */
-        $locationHeader = $headers->get('Location');
-
-        $this->assertEquals($uri, $locationHeader->getUri());
+        $wizard->getForm();
     }
 
     public function testCurrentStepNumber()
     {
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
-        $this->assertEquals(1, $this->wizard->getCurrentStepNumber());
+        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $this->sessionContainer->currentStep = 'bar';
-        $this->assertEquals(2, $this->wizard->getCurrentStepNumber());
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
+        $this->assertEquals(1, $wizard->getCurrentStepNumber());
+
+        $sessionContainer = new \stdClass();
+        $sessionContainer->currentStep = 'bar';
+
+        $wizard
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainer));
+
+        $this->assertEquals(2, $wizard->getCurrentStepNumber());
     }
 
     public function testGetTotalStepCount()
     {
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
+        $wizard = new Wizard();
 
-        $this->assertEquals(2, $this->wizard->getTotalStepCount());
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
+
+        $this->assertEquals(2, $wizard->getTotalStepCount());
     }
 
     public function testGetTotalStepCountWithoutSteps()
     {
-        $this->assertEquals(0, $this->wizard->getTotalStepCount());
+        $wizard = new Wizard();
+        $this->assertEquals(0, $wizard->getTotalStepCount());
     }
 
     public function testGetPercentProgress()
     {
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
+        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $this->assertEquals(0, $this->wizard->getPercentProgress());
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
 
-        $this->wizard->setCurrentStep('bar');
-        $this->assertEquals(50, $this->wizard->getPercentProgress());
+        $this->assertEquals(0, $wizard->getPercentProgress());
+
+        $sessionContainer = new \stdClass();
+        $sessionContainer->currentStep = 'bar';
+
+        $wizard
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainer));
+
+        $this->assertEquals(50, $wizard->getPercentProgress());
     }
 
     public function testGetPercentProgressWithoutSteps()
     {
-        $this->assertEquals(0, $this->wizard->getPercentProgress());
+        $wizard = new Wizard();
+        $this->assertEquals(0, $wizard->getPercentProgress());
     }
 
     public function testSetAndGetStepCollection()
     {
-        $this->assertInstanceOf('Wizard\Step\StepCollection', $this->wizard->getSteps());
+        $wizard = new Wizard();
+        $this->assertInstanceOf('Wizard\Step\StepCollection', $wizard->getSteps());
     }
 
     public function testGetCollectionWithRestoredSteps()
     {
-        $this->sessionContainer->steps = [
+        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
+
+        $sessionContainer = new \stdClass();
+        $sessionContainer->steps = [
             'foo' => [
                 'options' => [
                     'title' => 'Foo',
@@ -366,13 +239,18 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $stepCollection = $this->wizard->getSteps();
+        $wizard
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainer));
 
-        $step = $this->getStepMock('foo');
+        $stepCollection = $wizard->getSteps();
+
+        $formStub = $this->getMock('Zend\Form\Form');
+
+        $step = $this->getStep('foo');
         $step
-            ->expects($this->any())
             ->method('getForm')
-            ->will($this->returnValue(new \Zend\Form\Form));
+            ->will($this->returnValue($formStub));
         $stepCollection->add($step);
 
         $step->getOptions()->setTitle('Foo');
@@ -381,76 +259,53 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
     }
 
-    public function testRender()
+    public function testResetViewModelVariablesWhenChangeCurrentStep()
     {
-        $formFactory = $this->getFormFactory();
-        $this->wizard->setFormFactory($formFactory);
+        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $renderer = new PhpRenderer;
-        $resolver = new TemplateMapResolver([
-            'wizard/layout'   => __DIR__ . '/_files/layout.phtml',
-            'wizard/header'   => __DIR__ . '/_files/header.phtml',
-            'wizard/buttons'  => __DIR__ . '/_files/buttons.phtml',
-            'wizard/step/foo' => __DIR__ . '/_files/steps/foo.phtml',
-        ]);
-        $renderer->setResolver($resolver);
+        $sessionContainer = new \stdClass();
+        $sessionContainer->currentStep = 'foo';
 
-        $stepCollection = $this->wizard->getSteps();
+        $wizard
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainer));
 
-        $step = $this->getStepMock('foo');
-        $step
-            ->expects($this->any())
-            ->method('getForm')
-            ->will($this->returnValue(new \Zend\Form\Form));
+        $steps = $wizard->getSteps();
+        $steps->add($this->getStep('foo'));
+        $steps->add($this->getStep('bar'));
 
-        $step->getOptions()->setViewTemplate('wizard/step/foo');
-
-        $stepCollection->add($step);
-
-        $this->wizard->getOptions()->setLayoutTemplate('wizard/layout');
-
-        $viewModel = $this->wizard->getViewModel();
-        $this->assertNotEmpty($viewModel->getTemplate());
-
-        $output = $renderer->render($viewModel);
-
-        $this->assertRegExp('/foo-step/', $output);
-    }
-
-    public function testInitViewModelWhenChangeCurrentStep()
-    {
-        $this->sessionContainer->currentStep = 'foo';
-
-        $steps = $this->wizard->getSteps();
-        $steps->add($this->getStepMock('foo'));
-        $steps->add($this->getStepMock('bar'));
-
-        $viewModel = $this->wizard->getViewModel();
+        $viewModel = $wizard->getViewModel();
 
         $viewModel->setVariable('foo', 123);
-        $this->assertNotNull($viewModel->getVariable('wizard'));
+        $this->assertInstanceOf('Wizard\Wizard', $viewModel->getVariable('wizard'));
         $this->assertEquals(123, $viewModel->getVariable('foo'));
 
-        $this->wizard->setCurrentStep('bar');
-        $this->assertNotNull($viewModel->getVariable('wizard'));
+        $wizard->setCurrentStep('bar');
+        $this->assertInstanceOf('Wizard\Wizard', $viewModel->getVariable('wizard'));
         $this->assertNull($viewModel->getVariable('foo', null));
     }
 
-    /**
-     * @param  string $name
-     * @return StepInterface
-     */
-    protected function getStepMock($name)
+    protected function getStep($name)
     {
-        $mock = $this->getMockForAbstractClass(
-            'Wizard\Step\AbstractStep', [], '', true, true, true, [
-                'getName', 'getForm', 'isComplete'
-            ]
-        );
+        $mock = $this->getMockBuilder('Wizard\Step\AbstractStep')
+            ->setMethods(['getName', 'getForm', 'isComplete'])
+            ->getMock();
         $mock
-            ->expects($this->any())
             ->method('getName')
             ->will($this->returnValue($name));
+
+        return $mock;
+    }
+
+    protected function getIdentifierAccessor()
+    {
+        $mock = $this->getMockBuilder('Wizard\Wizard\IdentifierAccessor')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mock
+            ->method('getIdentifier')
+            ->will($this->returnValue('foo'));
 
         return $mock;
     }

@@ -18,13 +18,12 @@ class WizardResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $routeMatchMock = $this->getRouteMatch();
-        $routeMatchMock
-            ->expects($this->once())
+        $routeMatchStub = $this->getRouteMatch();
+        $routeMatchStub
             ->method('getMatchedRouteName')
             ->will($this->returnValue($route));
 
-        $resolver = new WizardResolver($routeMatchMock, $config);
+        $resolver = new WizardResolver($routeMatchStub, $config);
 
         $this->assertEquals($wizard, $resolver->resolve());
     }
@@ -37,13 +36,12 @@ class WizardResolverTest extends \PHPUnit_Framework_TestCase
             'wizards' => [],
         ];
 
-        $routeMatchMock = $this->getRouteMatch();
-        $routeMatchMock
-            ->expects($this->once())
+        $routeMatchStub = $this->getRouteMatch();
+        $routeMatchStub
             ->method('getMatchedRouteName')
             ->will($this->returnValue($route));
 
-        $resolver = new WizardResolver($routeMatchMock, $config);
+        $resolver = new WizardResolver($routeMatchStub, $config);
 
         $this->assertNull($resolver->resolve());
     }

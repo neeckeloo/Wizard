@@ -5,37 +5,30 @@ use Wizard\Step\StepCollection;
 
 class StepCollectionTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var StepCollection
-     */
-    protected $stepCollection;
-
-    public function setUp()
-    {
-        $this->stepCollection = new StepCollection();
-    }
-
     public function testCountable()
     {
+        $stepCollection = new StepCollection();
+
         for ($i = 1; $i <= 3; $i++) {
-            $step = $this->getStepMock('step' . $i);
-            $this->stepCollection->add($step);
+            $stepStub = $this->getStepMock('step' . $i);
+            $stepCollection->add($stepStub);
         }
 
-        $this->assertCount(3, $this->stepCollection);
+        $this->assertCount(3, $stepCollection);
     }
 
     public function testIteratorAggregate()
     {
-        $this->assertInstanceOf('ArrayIterator', $this->stepCollection->getIterator());
+        $stepCollection = new StepCollection();
+        $this->assertInstanceOf('ArrayIterator', $stepCollection->getIterator());
 
         for ($i = 1; $i <= 3; $i++) {
-            $step = $this->getStepMock('step' . $i);
-            $this->stepCollection->add($step);
+            $stepStub = $this->getStepMock('step' . $i);
+            $stepCollection->add($stepStub);
         }
 
         $i = 1;
-        foreach ($this->stepCollection as $step) {
+        foreach ($stepCollection as $step) {
             $this->assertEquals('step' . $i, $step->getName());
             $i++;
         }
@@ -43,92 +36,110 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStep()
     {
-        $step = $this->getStepMock('foo');
-        $this->stepCollection->add($step);
+        $stepCollection = new StepCollection();
 
-        $this->assertInstanceOf('Wizard\Step\StepInterface', $this->stepCollection->get('foo'));
-        $this->assertNull($this->stepCollection->get('bar'));
+        $stepStub = $this->getStepMock('foo');
+        $stepCollection->add($stepStub);
+
+        $this->assertInstanceOf('Wizard\Step\StepInterface', $stepCollection->get('foo'));
+        $this->assertNull($stepCollection->get('bar'));
     }
 
     public function testHasStep()
     {
-        $step = $this->getStepMock('foo');
-        $this->stepCollection->add($step);
+        $stepCollection = new StepCollection();
 
-        $this->assertTrue($this->stepCollection->has('foo'));
-        $this->assertFalse($this->stepCollection->has('bar'));
+        $stepStub = $this->getStepMock('foo');
+        $stepCollection->add($stepStub);
+
+        $this->assertTrue($stepCollection->has('foo'));
+        $this->assertFalse($stepCollection->has('bar'));
     }
 
     public function testRemoveStep()
     {
+        $stepCollection = new StepCollection();
+
         for ($i = 1; $i <= 3; $i++) {
-            $step = $this->getStepMock('step' . $i);
-            $this->stepCollection->add($step);
+            $stepStub = $this->getStepMock('step' . $i);
+            $stepCollection->add($stepStub);
         }
 
-        $this->stepCollection->remove('step2');
+        $stepCollection->remove('step2');
 
-        $this->assertCount(2, $this->stepCollection);
+        $this->assertCount(2, $stepCollection);
     }
 
     public function testGetFirst()
     {
-        $this->stepCollection->add($this->getStepMock('foo'));
-        $this->stepCollection->add($this->getStepMock('bar'));
+        $stepCollection = new StepCollection();
 
-        $firstStep = $this->stepCollection->getFirst();
+        $stepCollection->add($this->getStepMock('foo'));
+        $stepCollection->add($this->getStepMock('bar'));
+
+        $firstStep = $stepCollection->getFirst();
         $this->assertEquals('foo', $firstStep->getName());
     }
 
     public function testIsFirst()
     {
-        $this->stepCollection->add($this->getStepMock('foo'));
-        $this->stepCollection->add($this->getStepMock('bar'));
+        $stepCollection = new StepCollection();
 
-        $this->assertTrue($this->stepCollection->isFirst('foo'));
-        $this->assertFalse($this->stepCollection->isFirst('bar'));
+        $stepCollection->add($this->getStepMock('foo'));
+        $stepCollection->add($this->getStepMock('bar'));
+
+        $this->assertTrue($stepCollection->isFirst('foo'));
+        $this->assertFalse($stepCollection->isFirst('bar'));
     }
 
     public function testGetLast()
     {
-        $this->stepCollection->add($this->getStepMock('foo'));
-        $this->stepCollection->add($this->getStepMock('bar'));
+        $stepCollection = new StepCollection();
 
-        $firstStep = $this->stepCollection->getLast();
+        $stepCollection->add($this->getStepMock('foo'));
+        $stepCollection->add($this->getStepMock('bar'));
+
+        $firstStep = $stepCollection->getLast();
         $this->assertEquals('bar', $firstStep->getName());
     }
 
     public function testIsLast()
     {
-        $this->stepCollection->add($this->getStepMock('foo'));
-        $this->stepCollection->add($this->getStepMock('bar'));
+        $stepCollection = new StepCollection();
 
-        $this->assertFalse($this->stepCollection->isLast('foo'));
-        $this->assertTrue($this->stepCollection->isLast('bar'));
+        $stepCollection->add($this->getStepMock('foo'));
+        $stepCollection->add($this->getStepMock('bar'));
+
+        $this->assertFalse($stepCollection->isLast('foo'));
+        $this->assertTrue($stepCollection->isLast('bar'));
     }
 
     public function testGetPreviousStep()
     {
+        $stepCollection = new StepCollection();
+
         for ($i = 1; $i <= 3; $i++) {
-            $step = $this->getStepMock('step' . $i);
-            $this->stepCollection->add($step);
+            $stepStub = $this->getStepMock('step' . $i);
+            $stepCollection->add($stepStub);
         }
 
-        $this->assertNull($this->stepCollection->getPrevious('step1'));
-        $this->assertNotNull($this->stepCollection->getPrevious('step2'));
-        $this->assertNotNull($this->stepCollection->getPrevious('step3'));
+        $this->assertNull($stepCollection->getPrevious('step1'));
+        $this->assertNotNull($stepCollection->getPrevious('step2'));
+        $this->assertNotNull($stepCollection->getPrevious('step3'));
     }
 
     public function testGetNextStep()
     {
+        $stepCollection = new StepCollection();
+
         for ($i = 1; $i <= 3; $i++) {
-            $step = $this->getStepMock('step' . $i);
-            $this->stepCollection->add($step);
+            $stepStub = $this->getStepMock('step' . $i);
+            $stepCollection->add($stepStub);
         }
 
-        $this->assertNotNull($this->stepCollection->getNext('step1'));
-        $this->assertNotNull($this->stepCollection->getNext('step2'));
-        $this->assertNull($this->stepCollection->getNext('step3'));
+        $this->assertNotNull($stepCollection->getNext('step1'));
+        $this->assertNotNull($stepCollection->getNext('step2'));
+        $this->assertNull($stepCollection->getNext('step3'));
     }
 
     /**
@@ -139,7 +150,6 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('Wizard\Step\StepInterface');
         $mock
-            ->expects($this->any())
             ->method('getName')
             ->will($this->returnValue($name));
 

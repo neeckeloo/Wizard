@@ -2,20 +2,24 @@
 namespace WizardTest\Factory;
 
 use Wizard\Factory\DispatchListenerFactory;
-use Zend\ServiceManager\ServiceManager;
 
 class DispatchListenerFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateInstance()
+    public function testCreateDispatchListenerInstance()
     {
-        $serviceManager = new ServiceManager();
-        $serviceManager
-            ->setService('Wizard\WizardFactory',  $this->getWizardFactory())
-            ->setService('Wizard\WizardResolver', $this->getWizardResolver());
+        $returnValueMap = [
+            ['Wizard\WizardFactory',  $this->getWizardFactory()],
+            ['Wizard\WizardResolver', $this->getWizardResolver()],
+        ];
+
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub
+            ->method('get')
+            ->will($this->returnValueMap($returnValueMap));
 
         $factory = new DispatchListenerFactory();
 
-        $listener = $factory->createService($serviceManager);
+        $listener = $factory->createService($serviceManagerStub);
         $this->assertInstanceOf('Wizard\Listener\DispatchListener', $listener);
     }
 

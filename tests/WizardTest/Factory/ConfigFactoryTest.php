@@ -2,20 +2,24 @@
 namespace WizardTest\Factory;
 
 use Wizard\Factory\ConfigFactory;
-use Zend\ServiceManager\ServiceManager;
 
 class ConfigFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateConfig()
+    public function testRetrieveConfigAsArray()
     {
-        $serviceManager = new ServiceManager();
-        $serviceManager->setService('Config', [
+        $config = [
             'wizard' => [],
-        ]);
+        ];
+
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub
+            ->method('get')
+            ->with('Config')
+            ->will($this->returnValue($config));
 
         $factory = new ConfigFactory();
 
-        $config = $factory->createService($serviceManager);
-        $this->assertInternalType('array', $config);
+        $service = $factory->createService($serviceManagerStub);
+        $this->assertInternalType('array', $service);
     }
 }

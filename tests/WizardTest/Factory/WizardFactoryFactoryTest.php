@@ -2,22 +2,24 @@
 namespace WizardTest\Factory;
 
 use Wizard\Factory\WizardFactoryFactory;
-use Zend\ServiceManager\ServiceManager;
 
 class WizardFactoryFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateInstance()
+    public function testCreateWizardFactoryInstance()
     {
-        $stepFactoryMock = $this->getStepFactory();
+        $returnValueMap = [
+            ['Wizard\Config',           []],
+            ['Wizard\Step\StepFactory', $this->getStepFactory()],
+        ];
 
-        $serviceManager = new ServiceManager();
-        $serviceManager
-            ->setService('Wizard\Config', [])
-            ->setService('Wizard\Step\StepFactory', $stepFactoryMock);
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub
+            ->method('get')
+            ->will($this->returnValueMap($returnValueMap));
 
         $factory = new WizardFactoryFactory();
 
-        $service = $factory->createService($serviceManager);
+        $service = $factory->createService($serviceManagerStub);
         $this->assertInstanceOf('Wizard\WizardFactory', $service);
     }
 

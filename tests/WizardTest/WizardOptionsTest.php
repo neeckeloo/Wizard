@@ -5,45 +5,39 @@ use Wizard\WizardOptions;
 
 class WizardOptionsTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var WizardOptions
-     */
-    protected $options;
-
-    public function setUp()
-    {
-        $this->options = new WizardOptions();
-    }
-
     public function testSetAndGetTokenParamName()
     {
-        $this->assertEquals('uid', $this->options->getTokenParamName());
+        $options = new WizardOptions();
+        $this->assertEquals('uid', $options->getTokenParamName());
 
-        $this->options->setTokenParamName('foo');
-        $this->assertEquals('foo', $this->options->getTokenParamName());
+        $options->setTokenParamName('foo');
+        $this->assertEquals('foo', $options->getTokenParamName());
     }
 
     public function testSetAndGetLayoutTemplate()
     {
-        $this->assertNull($this->options->getLayoutTemplate());
+        $options = new WizardOptions();
+        $this->assertNull($options->getLayoutTemplate());
 
-        $this->options->setLayoutTemplate('foo');
-        $this->assertEquals('foo', $this->options->getLayoutTemplate());
+        $options->setLayoutTemplate('foo');
+        $this->assertEquals('foo', $options->getLayoutTemplate());
     }
 
     public function testSetAndGetRedirectUrl()
     {
-        $this->assertNull($this->options->getRedirectUrl());
+        $options = new WizardOptions();
+        $this->assertNull($options->getRedirectUrl());
 
-        $this->options->setRedirectUrl('/foo');
-        $this->assertEquals('/foo', $this->options->getRedirectUrl());
+        $options->setRedirectUrl('/foo');
+        $this->assertEquals('/foo', $options->getRedirectUrl());
     }
 
     public function testSetAndGetCancelUrl()
     {
-        $this->assertNull($this->options->getCancelUrl());
+        $options = new WizardOptions();
+        $this->assertNull($options->getCancelUrl());
 
-        $this->options->setCancelUrl('/foo');
-        $this->assertEquals('/foo', $this->options->getCancelUrl());
+        $options->setCancelUrl('/foo');
+        $this->assertEquals('/foo', $options->getCancelUrl());
     }
 }
