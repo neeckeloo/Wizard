@@ -5,25 +5,24 @@ use Wizard\Factory\WizardProcessorFactory;
 
 class WizardProcessorFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateConfig()
+    public function testCreateWizardProcessorInstance()
     {
-        $requestMock  = $this->getMock('Zend\Http\Request');
-        $responseMock = $this->getMock('Zend\Http\Response');
+        $requestStub  = $this->getMock('Zend\Http\Request');
+        $responseStub = $this->getMock('Zend\Http\Response');
 
         $returnValueMap = [
-            ['Request', $requestMock],
-            ['Response', $responseMock],
+            ['Request',  $requestStub],
+            ['Response', $responseStub],
         ];
 
-        $serviceManagerMock = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
-        $serviceManagerMock
-            ->expects($this->any())
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub
             ->method('get')
             ->will($this->returnValueMap($returnValueMap));
 
         $factory = new WizardProcessorFactory();
 
-        $service = $factory->createService($serviceManagerMock);
+        $service = $factory->createService($serviceManagerStub);
         $this->assertInstanceOf('Wizard\WizardProcessor', $service);
     }
 }

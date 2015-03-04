@@ -8,45 +8,32 @@ class FormFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateForm()
     {
-        $formElementManager = $this->getMock('Zend\ServiceManager\ServiceManager');
-
-        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
-        $serviceManager
-            ->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($formElementManager));
-
         $formFactory = new FormFactory();
 
         $previousButton = new ButtonElement\Previous('previous');
-        $formElementManager
-            ->expects($this->at(0))
-            ->method('get')
-            ->with($this->equalTo('Wizard\Form\Element\Button\Previous'))
-            ->will($this->returnValue($previousButton));
+        $nextButton     = new ButtonElement\Next('next');
+        $validButton    = new ButtonElement\Valid('valid');
+        $cancelButton   = new ButtonElement\Cancel('cancel');
 
-        $nextButton = new ButtonElement\Next('next');
-        $formElementManager
-            ->expects($this->at(1))
-            ->method('get')
-            ->with($this->equalTo('Wizard\Form\Element\Button\Next'))
-            ->will($this->returnValue($nextButton));
+        $returnValueMap = [
+            ['Wizard\Form\Element\Button\Previous', $previousButton],
+            ['Wizard\Form\Element\Button\Next',     $nextButton],
+            ['Wizard\Form\Element\Button\Valid',    $validButton],
+            ['Wizard\Form\Element\Button\Cancel',   $cancelButton],
+        ];
 
-        $validButton = new ButtonElement\Valid('valid');
-        $formElementManager
-            ->expects($this->at(2))
+        $formElementManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $formElementManagerStub
+            ->expects($this->any())
             ->method('get')
-            ->with($this->equalTo('Wizard\Form\Element\Button\Valid'))
-            ->will($this->returnValue($validButton));
+            ->will($this->returnValueMap($returnValueMap));
 
-        $cancelButton = new ButtonElement\Cancel('cancel');
-        $formElementManager
-            ->expects($this->at(3))
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManagerStub
             ->method('get')
-            ->with($this->equalTo('Wizard\Form\Element\Button\Cancel'))
-            ->will($this->returnValue($cancelButton));
+            ->will($this->returnValue($formElementManagerStub));
 
-        $formFactory->setServiceManager($serviceManager);
+        $formFactory->setServiceManager($serviceManagerStub);
 
         /* @var $form \Zend\Form\Form */
         $form = $formFactory->create();

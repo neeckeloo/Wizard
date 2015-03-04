@@ -5,20 +5,19 @@ use Wizard\Factory\IdentifierAccessorFactory;
 
 class IdentifierAccessorFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateConfig()
+    public function testCreateIdentifierAccessorInstance()
     {
-        $requestMock = $this->getMock('Zend\Http\Request');
+        $requestStub = $this->getMock('Zend\Http\Request');
 
-        $serviceManagerMock = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
-        $serviceManagerMock
-            ->expects($this->any())
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub
             ->method('get')
             ->with('Request')
-            ->will($this->returnValue($requestMock));
+            ->will($this->returnValue($requestStub));
 
         $factory = new IdentifierAccessorFactory();
 
-        $service = $factory->createService($serviceManagerMock);
+        $service = $factory->createService($serviceManagerStub);
         $this->assertInstanceOf('Wizard\Wizard\IdentifierAccessor', $service);
     }
 }

@@ -3,95 +3,64 @@ namespace WizardTest\Listener;
 
 use Wizard\Listener\StepCollectionListener;
 use Zend\Mvc\MvcEvent;
-use Zend\Session\Container as SessionContainer;
-use Zend\Session\SessionManager;
-use Zend\Session\Storage\ArrayStorage as SessionStorage;
 
 class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var StepListener
-     */
-    protected $listener;
-
-    /**
-     * @var MvcEvent
-     */
-    protected $event;
-
-    public function setUp()
-    {
-        $this->sessionContainer = $this->getSessionContainer();
-
-        $this->listener = new StepCollectionListener($this->sessionContainer);
-        $this->event    = new MvcEvent();
-    }
-
     public function testRestoreStep()
     {
-        $this->sessionContainer->steps = [
+        $listener = new StepCollectionListener();
+        $event    = new MvcEvent();
+
+        $wizardStub = $this->getWizard();
+
+        $sessionContainer = $wizardStub->getSessionContainer();
+        $sessionContainer->steps = [
             'foo' => [],
         ];
 
-        $wizard = $this->getMock('Wizard\WizardInterface');
-        $wizard
-            ->expects($this->once())
-            ->method('getSessionContainer')
-            ->will($this->returnValue($this->sessionContainer));
-
-        $step = $this->getMock('Wizard\Step\StepInterface');
-        $step
-            ->expects($this->once())
+        $stepMock = $this->getMock('Wizard\Step\StepInterface');
+        $stepMock
             ->method('getName')
             ->will($this->returnValue('foo'));
-        $step
-            ->expects($this->once())
+        $stepMock
             ->method('getWizard')
-            ->will($this->returnValue($wizard));
-        $step
+            ->will($this->returnValue($wizardStub));
+        $stepMock
             ->expects($this->once())
             ->method('setFromArray');
 
-        $this->event
-            ->setTarget($step);
+        $event->setTarget($stepMock);
 
-        $this->listener->restore($this->event);
+        $listener->restore($event);
     }
 
     public function testNotRestoreWithoutSessionSteps()
     {
-        $wizard = $this->getMock('Wizard\WizardInterface');
-        $wizard
-            ->expects($this->once())
-            ->method('getSessionContainer')
-            ->will($this->returnValue($this->sessionContainer));
+        $listener = new StepCollectionListener();
+        $event    = new MvcEvent();
 
-        $step = $this->getMock('Wizard\Step\StepInterface');
-        $step
-            ->expects($this->never())
-            ->method('getName');
-        $step
-            ->expects($this->once())
+        $stepMock = $this->getMock('Wizard\Step\StepInterface');
+        $stepMock
             ->method('getWizard')
-            ->will($this->returnValue($wizard));
-        $step
+            ->will($this->returnValue($this->getWizard()));
+        $stepMock
             ->expects($this->never())
             ->method('setFromArray');
 
-        $this->event
-            ->setTarget($step);
+        $event->setTarget($stepMock);
 
-        $this->listener->restore($this->event);
+        $listener->restore($event);
     }
 
-    /**
-     * @return SessionContainer
-     */
-    public function getSessionContainer()
+    private function getWizard()
     {
-        $sessionStorage = new SessionStorage;
-        $sessionManager = new SessionManager(null, $sessionStorage);
+        $sessionContainerFake = new \stdClass();
 
-        return new SessionContainer('foo', $sessionManager);
+        $wizardMock = $this->getMock('Wizard\WizardInterface');
+        $wizardMock
+            ->method('getSessionContainer')
+            ->will($this->returnValue($sessionContainerFake));
+
+        return $wizardMock;
     }
 }

@@ -1,97 +1,93 @@
 <?php
 namespace WizardTest\Step;
 
-use Wizard\Step\AbstractStep;
 use Zend\Form\Form;
 
 class AbstractStepTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var AbstractStep
-     */
-    protected $step;
-
-    public function setUp()
-    {
-        $this->step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
-    }
-
     public function testSetAndGetOptions()
     {
-        $this->assertInstanceOf('Wizard\Step\StepOptions', $this->step->getOptions());
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $this->assertInstanceOf('Wizard\Step\StepOptions', $step->getOptions());
 
         $options = $this->getMock('Wizard\Step\StepOptions', [], [], 'MockOptions');
-        $this->step->setOptions($options);
-        $this->assertInstanceOf('MockOptions', $this->step->getOptions());
+        $step->setOptions($options);
+        $this->assertInstanceOf('MockOptions', $step->getOptions());
     }
 
     public function testSetAndGetWizard()
     {
-        $this->assertNull($this->step->getForm());
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $this->assertNull($step->getForm());
 
         $wizard = $this->getMock('Wizard\Wizard');
-        $this->step->setWizard($wizard);
-        $this->assertInstanceOf('Wizard\Wizard', $this->step->getWizard());
+        $step->setWizard($wizard);
+        $this->assertInstanceOf('Wizard\Wizard', $step->getWizard());
     }
 
     public function testSetAndGetForm()
     {
-        $this->assertNull($this->step->getForm());
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $this->assertNull($step->getForm());
 
-        $this->step->setForm(new Form);
-        $this->assertInstanceOf('Zend\Form\Form', $this->step->getForm());
+        $step->setForm(new Form);
+        $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
     }
 
     public function testSetAndGetData()
     {
-        $this->assertCount(0, $this->step->getData());
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $this->assertCount(0, $step->getData());
 
-        $this->step->setData([
+        $step->setData([
             'foo' => 123,
             'bar' => 456,
         ]);
 
-        $data = $this->step->getData();
+        $data = $step->getData();
         $this->assertCount(2, $data);
     }
 
     public function testSetAndGetComplete()
     {
-        $this->assertFalse($this->step->isComplete());
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $this->assertFalse($step->isComplete());
 
-        $this->step->setComplete(true);
-        $this->assertTrue($this->step->isComplete());
+        $step->setComplete(true);
+        $this->assertTrue($step->isComplete());
 
-        $this->step->setComplete(false);
-        $this->assertFalse($this->step->isComplete());
+        $step->setComplete(false);
+        $this->assertFalse($step->isComplete());
 
-        $this->step->setComplete();
-        $this->assertTrue($this->step->isComplete());
+        $step->setComplete();
+        $this->assertTrue($step->isComplete());
     }
 
     public function testSetFromArray()
     {
-        $this->step->setFromArray([
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step->setFromArray([
             'complete' => true,
             'data' => [
                 'foo' => 132,
             ],
         ]);
 
-        $this->assertTrue($this->step->isComplete());
-        $this->assertCount(1, $this->step->getData());
+        $this->assertTrue($step->isComplete());
+        $this->assertCount(1, $step->getData());
     }
 
     public function testToArray()
     {
-        $this->step->setName('name');
+        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step->setName('name');
 
-        $options = $this->step->getOptions();
+        $options = $step->getOptions();
         $options
             ->setTitle('title')
             ->setViewTemplate('view_template');
 
-        $data = $this->step->toArray();
+        $data = $step->toArray();
 
         $this->assertArrayHasKey('name', $data);
         $this->assertEquals('name', $data['name']);

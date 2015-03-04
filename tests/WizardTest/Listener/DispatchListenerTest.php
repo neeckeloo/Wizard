@@ -15,20 +15,18 @@ class DispatchListenerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('process');
 
-        $wizardResolverMock = $this->getWizardResolver();
-        $wizardResolverMock
-            ->expects($this->once())
+        $wizardResolverStub = $this->getWizardResolver();
+        $wizardResolverStub
             ->method('resolve')
             ->will($this->returnValue($wizard));
 
-        $wizardFactoryMock = $this->getWizardFactory();
-        $wizardFactoryMock
-            ->expects($this->once())
+        $wizardFactoryStub = $this->getWizardFactory();
+        $wizardFactoryStub
             ->method('create')
             ->with($wizard)
             ->will($this->returnValue($wizardMock));
 
-        $listener = new DispatchListener($wizardResolverMock, $wizardFactoryMock);
+        $listener = new DispatchListener($wizardResolverStub, $wizardFactoryStub);
         $event    = new MvcEvent();
 
         $listener->process($event);
@@ -41,18 +39,14 @@ class DispatchListenerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->never())
             ->method('process');
 
-        $wizardResolverMock = $this->getWizardResolver();
-        $wizardResolverMock
-            ->expects($this->once())
+        $wizardResolverStub = $this->getWizardResolver();
+        $wizardResolverStub
             ->method('resolve')
             ->will($this->returnValue(null));
 
-        $wizardFactoryMock = $this->getWizardFactory();
-        $wizardFactoryMock
-            ->expects($this->never())
-            ->method('create');
+        $wizardFactoryStub = $this->getWizardFactory();
 
-        $listener = new DispatchListener($wizardResolverMock, $wizardFactoryMock);
+        $listener = new DispatchListener($wizardResolverStub, $wizardFactoryStub);
         $event    = new MvcEvent();
 
         $listener->process($event);

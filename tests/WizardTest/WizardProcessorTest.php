@@ -4,32 +4,29 @@ namespace WizardTest;
 use Wizard\WizardProcessor;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
+use Zend\Stdlib\Parameters;
 
 class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 {
     public function testSetStepDataDuringProcess()
     {
-        $data = [
+        $request = $this->getHttpRequest();
+
+        $params = new Parameters([
             'foo' => 123,
             'bar' => 456,
-        ];
-        $params = new \Zend\Stdlib\Parameters($data);
-
-        $request = new HttpRequest;
-        $request
-            ->setMethod(HttpRequest::METHOD_POST)
-            ->setPost($params);
+        ]);
+        $request->setPost($params);
 
         $response = new HttpResponse;
 
         $wizardProcessor = new WizardProcessor($request, $response);
 
-        $wizardMock = $this->getWizardMock();
-        $wizardProcessor->setWizard($wizardMock);
+        $wizardStub = $this->getWizard();
+        $wizardProcessor->setWizard($wizardStub);
 
-        $fooStepMock = $this->getMock('Wizard\Step\AbstractStep');
+        $fooStepMock = $wizardStub->getCurrentStep();
         $fooStepMock
-            ->expects($this->any())
             ->method('isComplete')
             ->will($this->returnValue(false));
         $fooStepMock
@@ -38,38 +35,23 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
         $fooStepMock
             ->expects($this->once())
             ->method('setData')
-            ->with($data);
-
-        $wizardMock
-            ->expects($this->any())
-            ->method('getCurrentStep')
-            ->will($this->returnValue($fooStepMock));
-
-        $stepCollectionMock = $this->getMock('Wizard\Step\StepCollection');
-
-        $wizardMock
-            ->expects($this->any())
-            ->method('getSteps')
-            ->will($this->returnValue($stepCollectionMock));
+            ->with($params->toArray());
 
         $wizardProcessor->process();
     }
 
     public function testCanGoToPreviousStep()
     {
-        $data = ['previous' => true];
-        $params = new \Zend\Stdlib\Parameters($data);
+        $request = $this->getHttpRequest();
 
-        $request = new HttpRequest;
-        $request
-            ->setMethod(HttpRequest::METHOD_POST)
-            ->setPost($params);
+        $params = new Parameters(['previous' => true]);
+        $request->setPost($params);
 
         $response = new HttpResponse;
 
         $wizardProcessor = new WizardProcessor($request, $response);
 
-        $wizardMock = $this->getWizardMock();
+        $wizardMock = $this->getWizard();
         $wizardProcessor->setWizard($wizardMock);
 
         $wizardMock
@@ -81,26 +63,18 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testCanGoToNextStep()
     {
-        $request = new HttpRequest;
-        $request->setMethod(HttpRequest::METHOD_POST);
-
+        $request  = $this->getHttpRequest();
         $response = new HttpResponse;
 
         $wizardProcessor = new WizardProcessor($request, $response);
 
-        $wizardMock = $this->getWizardMock();
+        $wizardMock = $this->getWizard();
         $wizardProcessor->setWizard($wizardMock);
 
-        $fooStepMock = $this->getMock('Wizard\Step\AbstractStep');
-        $fooStepMock
-            ->expects($this->any())
+        $fooStepStub = $wizardMock->getCurrentStep();
+        $fooStepStub
             ->method('isComplete')
             ->will($this->returnValue(false));
-
-        $wizardMock
-            ->expects($this->any())
-            ->method('getCurrentStep')
-            ->will($this->returnValue($fooStepMock));
 
         $wizardMock
             ->expects($this->once())
@@ -113,50 +87,29 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $redirectUrl = '/foo';
 
-        $request = new HttpRequest;
-        $request->setMethod(HttpRequest::METHOD_POST);
-
+        $request  = $this->getHttpRequest();
         $response = new HttpResponse;
 
         $wizardProcessor = new WizardProcessor($request, $response);
 
-        $wizardMock = $this->getWizardMock();
-        $wizardProcessor->setWizard($wizardMock);
+        $wizardStub = $this->getWizard();
+        $wizardProcessor->setWizard($wizardStub);
 
-        $wizardOptionsMock = $this->getMock('Wizard\WizardOptions');
-        $wizardOptionsMock
-            ->expects($this->any())
+        $wizardOptionsStub = $wizardStub->getOptions();
+        $wizardOptionsStub
             ->method('getRedirectUrl')
             ->will($this->returnValue($redirectUrl));
 
-        $wizardMock
-            ->expects($this->any())
-            ->method('getOptions')
-            ->will($this->returnValue($wizardOptionsMock));
-
-        $fooStepMock = $this->getMock('Wizard\Step\AbstractStep');
-        $fooStepMock
-            ->expects($this->any())
+        $fooStepStub = $wizardStub->getCurrentStep();
+        $fooStepStub
             ->method('isComplete')
             ->will($this->returnValue(true));
 
-        $wizardMock
-            ->expects($this->any())
-            ->method('getCurrentStep')
-            ->will($this->returnValue($fooStepMock));
-
-        $stepCollectionMock = $this->getMock('Wizard\Step\StepCollection');
-
-        $stepCollectionMock
-            ->expects($this->any())
+        $stepCollectionStub = $wizardStub->getSteps();
+        $stepCollectionStub
             ->method('isLast')
-            ->with($fooStepMock)
+            ->with($fooStepStub)
             ->will($this->returnValue(true));
-
-        $wizardMock
-            ->expects($this->any())
-            ->method('getSteps')
-            ->will($this->returnValue($stepCollectionMock));
 
         $output = $wizardProcessor->process();
 
@@ -171,31 +124,22 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $redirectUrl = '/foo';
 
-        $data = ['cancel' => true];
-        $params = new \Zend\Stdlib\Parameters($data);
+        $request = $this->getHttpRequest();
 
-        $request = new HttpRequest;
-        $request
-            ->setMethod(HttpRequest::METHOD_POST)
-            ->setPost($params);
+        $params = new Parameters(['cancel' => true]);
+        $request->setPost($params);
 
         $response = new HttpResponse;
 
         $wizardProcessor = new WizardProcessor($request, $response);
 
-        $wizardMock = $this->getWizardMock();
-        $wizardProcessor->setWizard($wizardMock);
+        $wizardStub = $this->getWizard();
+        $wizardProcessor->setWizard($wizardStub);
 
-        $wizardOptionsMock = $this->getMock('Wizard\WizardOptions');
-        $wizardOptionsMock
-            ->expects($this->any())
+        $wizardOptionsStub = $wizardStub->getOptions();
+        $wizardOptionsStub
             ->method('getCancelUrl')
             ->will($this->returnValue($redirectUrl));
-
-        $wizardMock
-            ->expects($this->any())
-            ->method('getOptions')
-            ->will($this->returnValue($wizardOptionsMock));
 
         $output = $wizardProcessor->process();
 
@@ -206,26 +150,45 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($redirectUrl, $headers->get('Location')->getUri());
     }
 
-    private function getWizardMock()
+    private function getWizard()
     {
-        $wizardMock = $this->getMock('Wizard\Wizard');
+        $wizard = $this->getMock('Wizard\Wizard');
 
-        $eventManagerMock = $this->getEventManagerMock();
-        $wizardMock
-            ->expects($this->any())
+        $wizardOptions = $this->getMock('Wizard\WizardOptions');
+        $wizard
+            ->method('getOptions')
+            ->will($this->returnValue($wizardOptions));
+
+        $eventManager = $this->getEventManager();
+        $wizard
             ->method('getEventManager')
-            ->will($this->returnValue($eventManagerMock));
+            ->will($this->returnValue($eventManager));
 
-        return $wizardMock;
+        $stepCollection = $this->getMock('Wizard\Step\StepCollection');
+
+        $wizard
+            ->method('getSteps')
+            ->will($this->returnValue($stepCollection));
+
+        $step = $this->getMock('Wizard\Step\AbstractStep');
+
+        $wizard
+            ->method('getCurrentStep')
+            ->will($this->returnValue($step));
+
+        return $wizard;
     }
 
-    private function getEventManagerMock()
+    private function getEventManager()
     {
-        $eventManagerMock = $this->getMock('Zend\EventManager\EventManagerInterface');
-        $eventManagerMock
-            ->expects($this->any())
-            ->method('trigger');
+        return $this->getMock('Zend\EventManager\EventManagerInterface');
+    }
 
-        return $eventManagerMock;
+    private function getHttpRequest()
+    {
+        $request = new HttpRequest;
+        $request->setMethod(HttpRequest::METHOD_POST);
+
+        return $request;
     }
 }

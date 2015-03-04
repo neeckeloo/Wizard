@@ -5,29 +5,21 @@ use Wizard\Step\StepOptions;
 
 class StepOptionsTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var StepOptions
-     */
-    protected $options;
-
-    public function setUp()
-    {
-        $this->options = new StepOptions();
-    }
-
     public function testSetAndGetTitle()
     {
-        $this->assertNull($this->options->getTitle());
+        $options = new StepOptions();
+        $this->assertNull($options->getTitle());
 
-        $this->options->setTitle('foo');
-        $this->assertEquals('foo', $this->options->getTitle());
+        $options->setTitle('foo');
+        $this->assertEquals('foo', $options->getTitle());
     }
 
     public function testSetAndGetViewTemplate()
     {
-        $this->assertNull($this->options->getViewTemplate());
+        $options = new StepOptions();
+        $this->assertNull($options->getViewTemplate());
 
-        $this->options->setViewTemplate('foo');
-        $this->assertEquals('foo', $this->options->getViewTemplate());
+        $options->setViewTemplate('foo');
+        $this->assertEquals('foo', $options->getViewTemplate());
     }
 }

@@ -5,52 +5,71 @@ use Wizard\Step\StepFactory;
 
 class StepFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateStep()
+    public function testCreateStepShouldReturnSameInstanceTypeAsReturnedByStepPluginManager()
     {
-        $stepName    = 'foo';
-        $stepOptions = [];
+        $stepStub = $this->getStep();
 
-        $stepOptionsMock = $this->getMock('Wizard\Step\StepOptions');
+        $stepPluginManagerStub = $this->getStepPluginManager();
+        $stepPluginManagerStub
+            ->method('get')
+            ->will($this->returnValue($stepStub));
 
-        $stepOptionsMock
-            ->expects($this->once())
-            ->method('setFromArray')
-            ->with($stepOptions);
+        $formElementManagerDummy = $this->getFormPluginManager();
 
-        $stepOptions['form'] = 'App\Step\FooForm';
+        $stepFactory = new StepFactory($stepPluginManagerStub, $formElementManagerDummy);
 
-        $stepMock = $this->getMock('Wizard\Step\StepInterface');
+        $step = $stepFactory->create('foo', []);
+        $this->assertInstanceOf('Wizard\Step\StepInterface', $step);
+    }
 
+    public function testCreateStepShouldSetStepName()
+    {
+        $stepName = 'foo';
+
+        $stepMock = $this->getStep();
         $stepMock
             ->expects($this->once())
             ->method('setName')
             ->with($stepName);
 
-        $stepMock
-            ->expects($this->once())
-            ->method('getOptions')
-            ->will($this->returnValue($stepOptionsMock));
-
-        $stepPluginManagerMock = $this->getStepPluginManager();
-
-        $stepPluginManagerMock
-            ->expects($this->once())
+        $stepPluginManagerStub = $this->getStepPluginManager();
+        $stepPluginManagerStub
             ->method('get')
-            ->with($stepName)
             ->will($this->returnValue($stepMock));
 
-        $formElementManagerMock = $this->getFormPluginManager();
+        $formElementManagerDummy = $this->getFormPluginManager();
 
-        $formElementManagerMock
+        $stepFactory = new StepFactory($stepPluginManagerStub, $formElementManagerDummy);
+
+        $stepFactory->create($stepName, []);
+    }
+
+    public function testCreateStepWithFormOptionShouldSetFormInstance()
+    {
+        $stepOptions = ['form' => 'App\Step\FooForm'];
+
+        $formStub = $this->getMock('Zend\Form\Form');
+
+        $stepMock = $this->getStep();
+        $stepMock
             ->expects($this->once())
+            ->method('setForm')
+            ->with($formStub);
+
+        $stepPluginManagerStub = $this->getStepPluginManager();
+        $stepPluginManagerStub
+            ->method('get')
+            ->will($this->returnValue($stepMock));
+
+        $formElementManagerStub = $this->getFormPluginManager();
+        $formElementManagerStub
             ->method('get')
             ->with($stepOptions['form'])
-            ->will($this->returnValue($this->getMock('Zend\Form\Form')));
+            ->will($this->returnValue($formStub));
 
-        $stepFactory = new StepFactory($stepPluginManagerMock, $formElementManagerMock);
+        $stepFactory = new StepFactory($stepPluginManagerStub, $formElementManagerStub);
 
-        $step = $stepFactory->create($stepName, $stepOptions);
-        $this->assertInstanceOf('Wizard\Step\StepInterface', $step);
+        $stepFactory->create('foo', $stepOptions);
     }
 
     public function getStepPluginManager()
@@ -61,5 +80,18 @@ class StepFactoryTest extends \PHPUnit_Framework_TestCase
     public function getFormPluginManager()
     {
         return $this->getMock('Zend\Form\FormElementManager');
+    }
+
+    public function getStep()
+    {
+        $step = $this->getMock('Wizard\Step\StepInterface');
+
+        $stepOptionsStub = $this->getMock('Wizard\Step\StepOptions');
+
+        $step
+            ->method('getOptions')
+            ->will($this->returnValue($stepOptionsStub));
+
+        return $step;
     }
 }

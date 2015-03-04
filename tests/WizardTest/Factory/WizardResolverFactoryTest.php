@@ -2,31 +2,25 @@
 namespace WizardTest\Factory;
 
 use Wizard\Factory\WizardResolverFactory;
-use Zend\ServiceManager\ServiceManager;
 
 class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateInstance()
+    public function testCreateWizardResolverInstance()
     {
-        $request = $this->getRequest();
-        $router  = $this->getRouter();
+        $returnValueMap = [
+            ['Wizard\Config', []],
+            ['Request',       $this->getRequest()],
+            ['Router',        $this->getRouter()],
+        ];
 
-        $routeMatch = $this->getRouteMatch();
-
-        $router
-            ->expects($this->any())
-            ->method('match')
-            ->will($this->returnValue($routeMatch));
-
-        $serviceManager = new ServiceManager();
-        $serviceManager
-            ->setService('Wizard\Config', ['wizard' => []])
-            ->setService('Request', $request)
-            ->setService('Router', $router);
+        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub
+            ->method('get')
+            ->will($this->returnValueMap($returnValueMap));
 
         $factory = new WizardResolverFactory();
 
-        $resolver = $factory->createService($serviceManager);
+        $resolver = $factory->createService($serviceManagerStub);
         $this->assertInstanceOf('Wizard\WizardResolver', $resolver);
     }
 
@@ -39,9 +33,15 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
 
     private function getRouter()
     {
-        return $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
+        $router = $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $router
+            ->method('match')
+            ->will($this->returnValue($this->getRouteMatch()));
+
+        return $router;
     }
 
     private function getRouteMatch()
