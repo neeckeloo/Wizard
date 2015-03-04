@@ -216,7 +216,7 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
     public function getCurrentStepNumber()
     {
         $currentStep = $this->getCurrentStep();
-        $steps = $this->getSteps();
+        $steps       = $this->getSteps();
 
         $i = 1;
         foreach ($steps as $step) {
