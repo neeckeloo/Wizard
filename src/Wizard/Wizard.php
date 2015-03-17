@@ -155,7 +155,7 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
         $currentStep = $this->getCurrentStep();
         if (!$steps->isFirst($currentStep)) {
             $previousStep = $steps->getPrevious($currentStep);
-            $this->wizard->setCurrentStep($previousStep);
+            $this->setCurrentStep($previousStep);
         }
     }
 
@@ -165,7 +165,7 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
         $currentStep = $this->getCurrentStep();
         if (!$steps->isLast($currentStep)) {
             $nextStep = $steps->getNext($currentStep);
-            $this->wizard->setCurrentStep($nextStep);
+            $this->setCurrentStep($nextStep);
         }
     }
 
