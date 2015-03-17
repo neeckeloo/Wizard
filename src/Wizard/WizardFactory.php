@@ -79,7 +79,10 @@ class WizardFactory implements ServiceManagerAwareInterface
         $resolver = new OptionsResolver();
 
         $resolver
-            ->setDefined(['redirect_url', 'cancel_url', 'steps', 'listeners'])
+            ->setDefined([
+                'class', 'route', 'title', 'redirect_url',
+                'cancel_url', 'steps', 'listeners',
+            ])
             ->setAllowedTypes('steps', 'array')
             ->setAllowedTypes('listeners', 'array')
             ->setDefault('layout_template', $this->config['default_layout_template'])
