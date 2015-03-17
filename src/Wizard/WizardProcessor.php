@@ -32,11 +32,13 @@ class WizardProcessor
     }
 
     /**
-     * @param Wizard $wizard
+     * @param  Wizard $wizard
+     * @return self
      */
     public function setWizard(Wizard $wizard)
     {
         $this->wizard = $wizard;
+        return $this;
     }
 
     public function process()
