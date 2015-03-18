@@ -1,14 +1,21 @@
 <?php
 namespace Wizard;
 
-use Zend\Mvc\Router\RouteMatch;
+use Zend\Http\Request as HttpRequest;
+use Zend\Mvc\Router\RouteInterface;
+use Zend\Stdlib\RequestInterface;
 
 class WizardResolver
 {
     /**
-     * @var RouteMatch
+     * @var RequestInterface
      */
-    protected $routeMatch;
+    protected $request;
+
+    /**
+     * @var RouteInterface
+     */
+    protected $router;
 
     /**
      * @var array
@@ -16,13 +23,15 @@ class WizardResolver
     protected $config;
 
     /**
-     * @param RouteMatch $routeMatch
+     * @param RequestInterface $request
+     * @param RouteInterface $router
      * @param array $config
      */
-    public function __construct(RouteMatch $routeMatch, array $config)
+    public function __construct(RequestInterface $request, RouteInterface $router, array $config)
     {
-        $this->routeMatch = $routeMatch;
-        $this->config     = $config;
+        $this->request = $request;
+        $this->router  = $router;
+        $this->config  = $config;
     }
 
     /**
@@ -30,7 +39,16 @@ class WizardResolver
      */
     public function resolve()
     {
-        $matchedRouteName = $this->routeMatch->getMatchedRouteName();
+        if (!$this->request instanceof HttpRequest) {
+            return;
+        }
+
+        $routeMatch = $this->router->match($this->request);
+        if (!$routeMatch) {
+            return;
+        }
+
+        $matchedRouteName = $routeMatch->getMatchedRouteName();
 
         foreach ($this->config['wizards'] as $name => $options) {
             if (empty($options['route'])) {

@@ -33,20 +33,7 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
 
     private function getRouter()
     {
-        $router = $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $router
-            ->method('match')
-            ->will($this->returnValue($this->getRouteMatch()));
-
-        return $router;
-    }
-
-    private function getRouteMatch()
-    {
-        return $this->getMockBuilder('Zend\Mvc\Router\RouteMatch')
+        return $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }

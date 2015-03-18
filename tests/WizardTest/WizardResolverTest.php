@@ -23,7 +23,15 @@ class WizardResolverTest extends \PHPUnit_Framework_TestCase
             ->method('getMatchedRouteName')
             ->will($this->returnValue($route));
 
-        $resolver = new WizardResolver($routeMatchStub, $config);
+        $requestStub = $this->getRequest();
+
+        $routerStub = $this->getRouter();
+        $routerStub
+            ->method('match')
+            ->with($requestStub)
+            ->will($this->returnValue($routeMatchStub));
+
+        $resolver = new WizardResolver($requestStub, $routerStub, $config);
 
         $this->assertEquals($wizard, $resolver->resolve());
     }
@@ -41,7 +49,15 @@ class WizardResolverTest extends \PHPUnit_Framework_TestCase
             ->method('getMatchedRouteName')
             ->will($this->returnValue($route));
 
-        $resolver = new WizardResolver($routeMatchStub, $config);
+        $requestStub = $this->getRequest();
+
+        $routerStub = $this->getRouter();
+        $routerStub
+            ->method('match')
+            ->with($requestStub)
+            ->will($this->returnValue($routeMatchStub));
+
+        $resolver = new WizardResolver($requestStub, $routerStub, $config);
 
         $this->assertNull($resolver->resolve());
     }
@@ -49,6 +65,20 @@ class WizardResolverTest extends \PHPUnit_Framework_TestCase
     private function getRouteMatch()
     {
         return $this->getMockBuilder('Zend\Mvc\Router\RouteMatch')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    private function getRequest()
+    {
+        return $this->getMockBuilder('Zend\Http\Request')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    private function getRouter()
+    {
+        return $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }
