@@ -74,10 +74,32 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
         $fooStepStub = $wizardMock->getCurrentStep();
         $fooStepStub
             ->method('isComplete')
-            ->will($this->returnValue(false));
+            ->will($this->returnValue(true));
 
         $wizardMock
             ->expects($this->once())
+            ->method('nextStep');
+
+        $wizardProcessor->process();
+    }
+
+    public function testCanNotGoToNextStepWhenStepIsNotComplete()
+    {
+        $request  = $this->getHttpRequest();
+        $response = new HttpResponse;
+
+        $wizardProcessor = new WizardProcessor($request, $response);
+
+        $wizardMock = $this->getWizard();
+        $wizardProcessor->setWizard($wizardMock);
+
+        $fooStepStub = $wizardMock->getCurrentStep();
+        $fooStepStub
+            ->method('isComplete')
+            ->will($this->returnValue(false));
+
+        $wizardMock
+            ->expects($this->never())
             ->method('nextStep');
 
         $wizardProcessor->process();

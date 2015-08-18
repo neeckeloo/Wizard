@@ -63,6 +63,10 @@ class WizardProcessor
         $steps       = $this->wizard->getSteps();
         $currentStep = $this->wizard->getCurrentStep();
 
+        if (!$currentStep->isComplete()) {
+            return;
+        }
+
         if ($currentStep->isComplete() && $steps->isLast($currentStep)) {
             return $this->completeWizard();
         }

@@ -337,11 +337,17 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
             return;
         }
 
-        $this->wizardProcessor
-            ->setWizard($this)
-            ->process();
+        $this->wizardProcessor->setWizard($this);
+
+        $output = $this->wizardProcessor->process();
 
         $this->processed = true;
+
+        if (!$output) {
+            return $this->getViewModel();
+        }
+
+        return $output;
     }
 
     protected function resetViewModelVariables()
