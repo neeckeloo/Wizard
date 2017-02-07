@@ -10,7 +10,7 @@ class StepPluginManagerFactory
      * @param  ContainerInterface $container
      * @return StepPluginManager
      */
-    public function createService(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
 

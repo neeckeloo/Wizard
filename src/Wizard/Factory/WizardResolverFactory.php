@@ -10,7 +10,7 @@ class WizardResolverFactory
      * @param  ContainerInterface $container
      * @return WizardResolver
      */
-    public function createService(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container)
     {
         $request = $container->get('Request');
         $router  = $container->get('Router');

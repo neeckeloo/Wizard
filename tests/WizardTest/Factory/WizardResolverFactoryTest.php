@@ -24,7 +24,7 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
 
         $factory = new WizardResolverFactory();
 
-        $resolver = $factory->createService($serviceManagerStub);
+        $resolver = $factory($serviceManagerStub);
         $this->assertInstanceOf(WizardResolver::class, $resolver);
     }
 
