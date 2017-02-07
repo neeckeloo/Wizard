@@ -13,8 +13,9 @@ class StepCollectionListener implements ListenerAggregateInterface
 
     /**
      * @param EventManagerInterface $events
+     * @param int $priority
      */
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(StepCollection::EVENT_ADD_STEP, [$this, 'restore'], 100);
     }

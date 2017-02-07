@@ -14,29 +14,33 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "symfony/options-resolver": "~2.6"
+        "php": "^5.6 || ^7.0",
+        "symfony/options-resolver": "^2.6 || ^3.0",
+        "container-interop/container-interop": "^1.1.0",
+        "zendframework/zend-form": "^2.7",
+        "zendframework/zend-eventmanager": "^3.0",
+        "zendframework/zend-filter": "^2.6",
+        "zendframework/zend-http": "^2.5.4",
+        "zendframework/zend-modulemanager": "^2.7.1",
+        "zendframework/zend-mvc": "^3.0",
+        "zendframework/zend-router": "^3.0.1",
+        "zendframework/zend-servicemanager": "^3.0.3",
+        "zendframework/zend-session": "^2.6.0",
+        "zendframework/zend-stdlib": "^3.0",
+        "zendframework/zend-view": "^2.6.7"
     },
     "require-dev": {
-        "zendframework/zend-eventmanager": "~2.3",
-        "zendframework/zend-filter": "~2.3",
-        "zendframework/zend-form": "~2.3",
-        "zendframework/zend-http": "~2.3",
-        "zendframework/zend-modulemanager": "~2.3",
-        "zendframework/zend-mvc": "~2.3",
-        "zendframework/zend-servicemanager": "~2.3",
-        "zendframework/zend-session": "~2.3",
-        "zendframework/zend-stdlib": "~2.3",
-        "zendframework/zend-view": "~2.3",
-        "phpunit/phpunit": "~4.5",
-        "satooshi/php-coveralls": "dev-master"
+        "phpunit/phpunit": "^5.4",
+        "satooshi/php-coveralls": "^1.0"
     },
     "autoload": {
-        "psr-0": {
-            "Wizard": "src/"
-        },
-        "classmap": [
-            "./"
-        ]
+        "psr-4": {
+            "Wizard\\": "src/Wizard/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WizardTest\\": "tests/WizardTest/"
+        }
     }
 }

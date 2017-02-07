@@ -1,25 +1,19 @@
 <?php
 namespace Wizard\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Step\StepPluginManager;
-use Zend\ServiceManager\Config;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class StepPluginManagerFactory implements FactoryInterface
+class StepPluginManagerFactory
 {
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
      * @return StepPluginManager
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container)
     {
-        $config = $serviceLocator->get('Config');
-        $configInstance = new Config($config['wizard_steps']);
+        $config = $container->get('config');
 
-        $stepPluginManager = new StepPluginManager($configInstance);
-        $stepPluginManager->setServiceLocator($serviceLocator);
-
-        return $stepPluginManager;
+        return new StepPluginManager($container, $config['wizard_steps']);
     }
 }

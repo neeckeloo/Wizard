@@ -1,7 +1,10 @@
 <?php
 namespace WizardTest\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Factory\WizardFactoryFactory;
+use Wizard\Step\StepFactory;
+use Wizard\WizardFactory;
 
 class WizardFactoryFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -9,23 +12,24 @@ class WizardFactoryFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $returnValueMap = [
             ['Wizard\Config',           []],
-            ['Wizard\Step\StepFactory', $this->getStepFactory()],
+            [StepFactory::class, $this->getStepFactory()],
         ];
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
             ->will($this->returnValueMap($returnValueMap));
 
         $factory = new WizardFactoryFactory();
 
-        $service = $factory->createService($serviceManagerStub);
-        $this->assertInstanceOf('Wizard\WizardFactory', $service);
+        $service = $factory($serviceManagerStub);
+        $this->assertInstanceOf(WizardFactory::class, $service);
     }
 
     private function getStepFactory()
     {
-        return $this->getMockBuilder('Wizard\Step\StepFactory')
+        return $this->getMockBuilder(StepFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

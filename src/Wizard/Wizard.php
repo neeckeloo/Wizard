@@ -4,7 +4,6 @@ namespace Wizard;
 use Wizard\Form\FormFactory;
 use Wizard\Step\StepCollection;
 use Wizard\Step\StepInterface;
-use Wizard\WizardEvent;
 use Wizard\Wizard\IdentifierAccessor;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerAwareTrait;
@@ -324,8 +323,9 @@ class Wizard implements EventManagerAwareInterface, WizardInterface
     {
         $wizardEvent = new WizardEvent();
         $wizardEvent->setWizard($this);
+        $wizardEvent->setName(WizardEvent::EVENT_INIT);
 
-        $this->getEventManager()->trigger(WizardEvent::EVENT_INIT, $wizardEvent);
+        $this->getEventManager()->triggerEvent($wizardEvent);
     }
 
     /**

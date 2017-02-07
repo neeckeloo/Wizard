@@ -1,44 +1,51 @@
 <?php
 namespace WizardTest\Form;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Form\FormFactory;
 use Wizard\Form\Element\Button as ButtonElement;
+use Zend\Form\Form;
+use Zend\ServiceManager\ServiceManager;
+use Wizard\Form\Element\Button\Cancel;
+use Wizard\Form\Element\Button\Valid;
+use Wizard\Form\Element\Button\Next;
+use Wizard\Form\Element\Button\Previous;
 
 class FormFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateForm()
     {
-        $formFactory = new FormFactory();
-
         $previousButton = new ButtonElement\Previous('previous');
         $nextButton     = new ButtonElement\Next('next');
         $validButton    = new ButtonElement\Valid('valid');
         $cancelButton   = new ButtonElement\Cancel('cancel');
 
         $returnValueMap = [
-            ['Wizard\Form\Element\Button\Previous', $previousButton],
-            ['Wizard\Form\Element\Button\Next',     $nextButton],
-            ['Wizard\Form\Element\Button\Valid',    $validButton],
-            ['Wizard\Form\Element\Button\Cancel',   $cancelButton],
+            [Previous::class, $previousButton],
+            [Next::class,     $nextButton],
+            [Valid::class,    $validButton],
+            [Cancel::class,   $cancelButton],
         ];
 
-        $formElementManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $formElementManagerStub = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $formElementManagerStub
             ->expects($this->any())
             ->method('get')
             ->will($this->returnValueMap($returnValueMap));
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManagerStub = $this->getMockBuilder(ServiceManager::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
             ->will($this->returnValue($formElementManagerStub));
 
-        $formFactory->setServiceManager($serviceManagerStub);
+        $formFactory = new FormFactory($serviceManagerStub);
 
         /* @var $form \Zend\Form\Form */
         $form = $formFactory->create();
 
-        $this->assertInstanceOf('Zend\Form\Form', $form);
+        $this->assertInstanceOf(Form::class, $form);
         $this->assertCount(4, $form->getElements());
     }
 }

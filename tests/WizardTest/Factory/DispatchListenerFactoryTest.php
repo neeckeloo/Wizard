@@ -1,38 +1,43 @@
 <?php
 namespace WizardTest\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Factory\DispatchListenerFactory;
+use Wizard\WizardFactory;
+use Wizard\WizardResolver;
+use Wizard\Listener\DispatchListener;
 
 class DispatchListenerFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateDispatchListenerInstance()
     {
         $returnValueMap = [
-            ['Wizard\WizardFactory',  $this->getWizardFactory()],
-            ['Wizard\WizardResolver', $this->getWizardResolver()],
+            [WizardFactory::class,  $this->getWizardFactory()],
+            [WizardResolver::class, $this->getWizardResolver()],
         ];
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
             ->will($this->returnValueMap($returnValueMap));
 
         $factory = new DispatchListenerFactory();
 
-        $listener = $factory->createService($serviceManagerStub);
-        $this->assertInstanceOf('Wizard\Listener\DispatchListener', $listener);
+        $listener = $factory($serviceManagerStub);
+        $this->assertInstanceOf(DispatchListener::class, $listener);
     }
 
     private function getWizardResolver()
     {
-        return $this->getMockBuilder('Wizard\WizardResolver')
+        return $this->getMockBuilder(WizardResolver::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getWizardFactory()
     {
-        return $this->getMockBuilder('Wizard\WizardFactory')
+        return $this->getMockBuilder(WizardFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

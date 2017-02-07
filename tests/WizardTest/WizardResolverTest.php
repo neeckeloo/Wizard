@@ -2,6 +2,9 @@
 namespace WizardTest;
 
 use Wizard\WizardResolver;
+use Zend\Router\RouteInterface;
+use Zend\Http\Request;
+use Zend\Router\RouteMatch;
 
 class WizardResolverTest extends \PHPUnit_Framework_TestCase
 {
@@ -64,21 +67,21 @@ class WizardResolverTest extends \PHPUnit_Framework_TestCase
 
     private function getRouteMatch()
     {
-        return $this->getMockBuilder('Zend\Mvc\Router\RouteMatch')
+        return $this->getMockBuilder(RouteMatch::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getRequest()
     {
-        return $this->getMockBuilder('Zend\Http\Request')
+        return $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getRouter()
     {
-        return $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
+        return $this->getMockBuilder(RouteInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

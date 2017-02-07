@@ -1,20 +1,21 @@
 <?php
 namespace Wizard\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Listener\DispatchListener;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Wizard\WizardResolver;
+use Wizard\WizardFactory;
 
-class DispatchListenerFactory implements FactoryInterface
+class DispatchListenerFactory
 {
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
      * @return DispatchListener
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container)
     {
-        $resolver = $serviceLocator->get('Wizard\WizardResolver');
-        $factory  = $serviceLocator->get('Wizard\WizardFactory');
+        $resolver = $container->get(WizardResolver::class);
+        $factory  = $container->get(WizardFactory::class);
 
         return new DispatchListener($resolver, $factory);
     }

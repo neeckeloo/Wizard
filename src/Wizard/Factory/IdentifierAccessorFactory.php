@@ -1,19 +1,18 @@
 <?php
 namespace Wizard\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Wizard\IdentifierAccessor;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class IdentifierAccessorFactory implements FactoryInterface
+class IdentifierAccessorFactory
 {
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
      * @return IdentifierAccessor
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container)
     {
-        $request = $serviceLocator->get('Request');
+        $request = $container->get('Request');
 
         return new IdentifierAccessor($request);
     }

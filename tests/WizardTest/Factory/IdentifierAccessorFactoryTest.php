@@ -1,15 +1,20 @@
 <?php
 namespace WizardTest\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Factory\IdentifierAccessorFactory;
+use Wizard\Wizard\IdentifierAccessor;
+use Zend\Http\Request;
 
 class IdentifierAccessorFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateIdentifierAccessorInstance()
     {
-        $requestStub = $this->getMock('Zend\Http\Request');
+        $requestStub = $this->getMockBuilder(Request::class)
+            ->getMock();
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
             ->with('Request')
@@ -17,7 +22,7 @@ class IdentifierAccessorFactoryTest extends \PHPUnit_Framework_TestCase
 
         $factory = new IdentifierAccessorFactory();
 
-        $service = $factory->createService($serviceManagerStub);
-        $this->assertInstanceOf('Wizard\Wizard\IdentifierAccessor', $service);
+        $service = $factory($serviceManagerStub);
+        $this->assertInstanceOf(IdentifierAccessor::class, $service);
     }
 }

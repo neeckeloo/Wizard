@@ -1,6 +1,7 @@
 <?php
 namespace WizardTest\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Factory\ConfigFactory;
 
 class ConfigFactoryTest extends \PHPUnit_Framework_TestCase
@@ -11,15 +12,16 @@ class ConfigFactoryTest extends \PHPUnit_Framework_TestCase
             'wizard' => [],
         ];
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
-            ->with('Config')
+            ->with('config')
             ->will($this->returnValue($config));
 
         $factory = new ConfigFactory();
 
-        $service = $factory->createService($serviceManagerStub);
+        $service = $factory($serviceManagerStub);
         $this->assertInternalType('array', $service);
     }
 }

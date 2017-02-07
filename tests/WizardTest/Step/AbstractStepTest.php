@@ -2,41 +2,47 @@
 namespace WizardTest\Step;
 
 use Zend\Form\Form;
+use Wizard\Step\AbstractStep;
+use Wizard\Wizard;
+use Wizard\Step\StepOptions;
 
 class AbstractStepTest extends \PHPUnit_Framework_TestCase
 {
     public function testSetAndGetOptions()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
-        $this->assertInstanceOf('Wizard\Step\StepOptions', $step->getOptions());
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
+        $this->assertInstanceOf(StepOptions::class, $step->getOptions());
 
-        $options = $this->getMock('Wizard\Step\StepOptions', [], [], 'MockOptions');
+        $options = $this->getMockBuilder(StepOptions::class)
+            ->setMockClassName('MockOptions')
+            ->getMock();
         $step->setOptions($options);
         $this->assertInstanceOf('MockOptions', $step->getOptions());
     }
 
     public function testSetAndGetWizard()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
         $this->assertNull($step->getForm());
 
-        $wizard = $this->getMock('Wizard\Wizard');
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->getMock();
         $step->setWizard($wizard);
-        $this->assertInstanceOf('Wizard\Wizard', $step->getWizard());
+        $this->assertInstanceOf(Wizard::class, $step->getWizard());
     }
 
     public function testSetAndGetForm()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
         $this->assertNull($step->getForm());
 
         $step->setForm(new Form);
-        $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
+        $this->assertInstanceOf(Form::class, $step->getForm());
     }
 
     public function testSetAndGetData()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
         $this->assertCount(0, $step->getData());
 
         $step->setData([
@@ -50,7 +56,7 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
     public function testSetAndGetComplete()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
         $this->assertFalse($step->isComplete());
 
         $step->setComplete(true);
@@ -65,7 +71,7 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
     public function testSetFromArray()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
         $step->setFromArray([
             'complete' => true,
             'data' => [
@@ -79,7 +85,7 @@ class AbstractStepTest extends \PHPUnit_Framework_TestCase
 
     public function testToArray()
     {
-        $step = $this->getMockForAbstractClass('Wizard\Step\AbstractStep');
+        $step = $this->getMockForAbstractClass(AbstractStep::class);
         $step->setName('name');
 
         $options = $step->getOptions();

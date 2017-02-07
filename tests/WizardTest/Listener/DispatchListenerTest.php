@@ -3,6 +3,9 @@ namespace WizardTest\Listener;
 
 use Wizard\Listener\DispatchListener;
 use Zend\Mvc\MvcEvent;
+use Wizard\Wizard;
+use Wizard\WizardFactory;
+use Wizard\WizardResolver;
 
 class DispatchListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -54,20 +57,21 @@ class DispatchListenerTest extends \PHPUnit_Framework_TestCase
 
     private function getWizardResolver()
     {
-        return $this->getMockBuilder('Wizard\WizardResolver')
+        return $this->getMockBuilder(WizardResolver::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getWizardFactory()
     {
-        return $this->getMockBuilder('Wizard\WizardFactory')
+        return $this->getMockBuilder(WizardFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getWizard()
     {
-        return $this->getMock('Wizard\Wizard');
+        return $this->getMockBuilder(Wizard::class)
+            ->getMock();
     }
 }

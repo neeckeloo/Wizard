@@ -2,17 +2,25 @@
 namespace WizardTest;
 
 use Wizard\Wizard;
+use Wizard\Wizard\IdentifierAccessor;
+use Wizard\Step\AbstractStep;
+use Zend\Form\Form;
+use Wizard\Step\StepCollection;
+use Wizard\Form\FormFactory;
+use Wizard\Step\StepInterface;
+use Wizard\WizardOptions;
 
 class WizardTest extends \PHPUnit_Framework_TestCase
 {
     public function testSetAndGetOptions()
     {
         $wizard = new Wizard();
-        $this->assertInstanceOf('Wizard\WizardOptions', $wizard->getOptions());
+        $this->assertInstanceOf(WizardOptions::class, $wizard->getOptions());
 
-        $options = $this->getMock('Wizard\WizardOptions');
+        $options = $this->getMockBuilder(WizardOptions::class)
+            ->getMock();
         $wizard->setOptions($options);
-        $this->assertInstanceOf('Wizard\WizardOptions', $wizard->getOptions());
+        $this->assertInstanceOf(WizardOptions::class, $wizard->getOptions());
     }
 
     public function testGetCurrentStep()
@@ -28,13 +36,13 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             $steps->add($step);
         }
 
-        $this->assertInstanceOf('Wizard\Step\StepInterface', $wizard->getCurrentStep());
+        $this->assertInstanceOf(StepInterface::class, $wizard->getCurrentStep());
     }
 
     public function testGetSteps()
     {
         $wizard = new Wizard();
-        $this->assertInstanceOf('Wizard\Step\StepCollection', $wizard->getSteps());
+        $this->assertInstanceOf(StepCollection::class, $wizard->getSteps());
     }
 
     public function testGetFormWithoutStepsShouldNotReturnNull()
@@ -48,9 +56,12 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $wizard = new Wizard();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $formStub = $this->getMock('Zend\Form\Form');
+        $formStub = $this->getMockBuilder(Form::class)
+            ->getMock();
 
-        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub = $this->getMockBuilder(FormFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $formFactoryStub
             ->method('create')
             ->will($this->returnValue($formStub));
@@ -60,7 +71,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $steps->add($this->getStep('foo'));
 
         $form = $wizard->getForm();
-        $this->assertInstanceOf('Zend\Form\Form', $form);
+        $this->assertInstanceOf(Form::class, $form);
     }
 
     public function testGetFormWhenCurrentStepIsTheFirstShouldRemovePreviousAndValidButton()
@@ -68,13 +79,16 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $wizard = new Wizard();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
-        $formMock = $this->getMock('Zend\Form\Form');
+        $formMock = $this->getMockBuilder(Form::class)
+            ->getMock();
         $formMock
             ->expects($this->exactly(2))
             ->method('remove')
             ->with($this->logicalOr($this->equalTo('previous'), $this->equalTo('valid')));
 
-        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub = $this->getMockBuilder(FormFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $formFactoryStub
             ->method('create')
             ->will($this->returnValue($formMock));
@@ -89,7 +103,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormWhenCurrentStepIsAtTheMiddleShouldRemoveValidButton()
     {
-        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->setMethods(['getSessionContainer'])
+            ->getMock();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
         $sessionContainer = new \stdClass();
@@ -99,13 +115,16 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->method('getSessionContainer')
             ->will($this->returnValue($sessionContainer));
 
-        $formMock = $this->getMock('Zend\Form\Form');
+        $formMock = $this->getMockBuilder(Form::class)
+            ->getMock();
         $formMock
             ->expects($this->once())
             ->method('remove')
             ->with('valid');
 
-        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub = $this->getMockBuilder(FormFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $formFactoryStub
             ->method('create')
             ->will($this->returnValue($formMock));
@@ -121,7 +140,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormWhenCurrentStepIsTheLastShouldRemoveNextButton()
     {
-        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->setMethods(['getSessionContainer'])
+            ->getMock();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
         $sessionContainer = new \stdClass();
@@ -132,13 +153,16 @@ class WizardTest extends \PHPUnit_Framework_TestCase
             ->method('getSessionContainer')
             ->will($this->returnValue($sessionContainer));
 
-        $formMock = $this->getMock('Zend\Form\Form');
+        $formMock = $this->getMockBuilder(Form::class)
+            ->getMock();
         $formMock
             ->expects($this->once())
             ->method('remove')
             ->with('next');
 
-        $formFactoryStub = $this->getMock('Wizard\Form\FormFactory');
+        $formFactoryStub = $this->getMockBuilder(FormFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $formFactoryStub
             ->method('create')
             ->will($this->returnValue($formMock));
@@ -153,7 +177,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testCurrentStepNumber()
     {
-        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->setMethods(['getSessionContainer'])
+            ->getMock();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
         $steps = $wizard->getSteps();
@@ -190,7 +216,9 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPercentProgress()
     {
-        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->setMethods(['getSessionContainer'])
+            ->getMock();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
         $steps = $wizard->getSteps();
@@ -218,12 +246,14 @@ class WizardTest extends \PHPUnit_Framework_TestCase
     public function testSetAndGetStepCollection()
     {
         $wizard = new Wizard();
-        $this->assertInstanceOf('Wizard\Step\StepCollection', $wizard->getSteps());
+        $this->assertInstanceOf(StepCollection::class, $wizard->getSteps());
     }
 
     public function testGetCollectionWithRestoredSteps()
     {
-        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->setMethods(['getSessionContainer'])
+            ->getMock();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
         $sessionContainer = new \stdClass();
@@ -245,7 +275,8 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
         $stepCollection = $wizard->getSteps();
 
-        $formStub = $this->getMock('Zend\Form\Form');
+        $formStub = $this->getMockBuilder(Form::class)
+            ->getMock();
 
         $step = $this->getStep('foo');
         $step
@@ -256,12 +287,14 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $step->getOptions()->setTitle('Foo');
 
         $this->assertEquals('Foo', $step->getOptions()->getTitle());
-        $this->assertInstanceOf('Zend\Form\Form', $step->getForm());
+        $this->assertInstanceOf(Form::class, $step->getForm());
     }
 
     public function testResetViewModelVariablesWhenChangeCurrentStep()
     {
-        $wizard = $this->getMock('Wizard\Wizard', ['getSessionContainer']);
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->setMethods(['getSessionContainer'])
+            ->getMock();
         $wizard->setIdentifierAccessor($this->getIdentifierAccessor());
 
         $sessionContainer = new \stdClass();
@@ -278,17 +311,17 @@ class WizardTest extends \PHPUnit_Framework_TestCase
         $viewModel = $wizard->getViewModel();
 
         $viewModel->setVariable('foo', 123);
-        $this->assertInstanceOf('Wizard\Wizard', $viewModel->getVariable('wizard'));
+        $this->assertInstanceOf(Wizard::class, $viewModel->getVariable('wizard'));
         $this->assertEquals(123, $viewModel->getVariable('foo'));
 
         $wizard->setCurrentStep('bar');
-        $this->assertInstanceOf('Wizard\Wizard', $viewModel->getVariable('wizard'));
+        $this->assertInstanceOf(Wizard::class, $viewModel->getVariable('wizard'));
         $this->assertNull($viewModel->getVariable('foo', null));
     }
 
     protected function getStep($name)
     {
-        $mock = $this->getMockBuilder('Wizard\Step\AbstractStep')
+        $mock = $this->getMockBuilder(AbstractStep::class)
             ->setMethods(['getName', 'getForm', 'isComplete'])
             ->getMock();
         $mock
@@ -300,7 +333,7 @@ class WizardTest extends \PHPUnit_Framework_TestCase
 
     protected function getIdentifierAccessor()
     {
-        $mock = $this->getMockBuilder('Wizard\Wizard\IdentifierAccessor')
+        $mock = $this->getMockBuilder(IdentifierAccessor::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mock

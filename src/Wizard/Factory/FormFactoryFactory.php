@@ -2,16 +2,17 @@
 namespace Wizard\Factory;
 
 use Interop\Container\ContainerInterface;
+use Wizard\Form\FormFactory;
 
-class ConfigFactory
+class FormFactoryFactory
 {
+
     /**
      * @param ContainerInterface $container
-     * @return array
+     * @return FormFactory
      */
     public function __invoke(ContainerInterface $container)
     {
-        $config = $container->get('config');
-        return $config['wizard'];
+        return new FormFactory($container);
     }
 }

@@ -2,7 +2,7 @@
 namespace Wizard;
 
 use Zend\Http\Request as HttpRequest;
-use Zend\Mvc\Router\RouteInterface;
+use Zend\Router\RouteInterface;
 use Zend\Stdlib\RequestInterface;
 
 class WizardResolver

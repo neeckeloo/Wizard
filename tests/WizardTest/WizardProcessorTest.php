@@ -5,6 +5,11 @@ use Wizard\WizardProcessor;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
 use Zend\Stdlib\Parameters;
+use Zend\EventManager\EventManagerInterface;
+use Wizard\Step\AbstractStep;
+use Wizard\Step\StepCollection;
+use Wizard\WizardOptions;
+use Wizard\Wizard;
 
 class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -135,7 +140,7 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 
         $output = $wizardProcessor->process();
 
-        $this->assertInstanceOf('Zend\Http\Response', $output);
+        $this->assertInstanceOf(HttpResponse::class, $output);
         $this->assertEquals(302, $output->getStatusCode());
 
         $headers = $output->getHeaders();
@@ -165,7 +170,7 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 
         $output = $wizardProcessor->process();
 
-        $this->assertInstanceOf('Zend\Http\Response', $output);
+        $this->assertInstanceOf(HttpResponse::class, $output);
         $this->assertEquals(302, $output->getStatusCode());
 
         $headers = $output->getHeaders();
@@ -174,9 +179,11 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 
     private function getWizard()
     {
-        $wizard = $this->getMock('Wizard\Wizard');
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->getMock();
 
-        $wizardOptions = $this->getMock('Wizard\WizardOptions');
+        $wizardOptions = $this->getMockBuilder(WizardOptions::class)
+            ->getMock();
         $wizard
             ->method('getOptions')
             ->will($this->returnValue($wizardOptions));
@@ -186,13 +193,15 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
             ->method('getEventManager')
             ->will($this->returnValue($eventManager));
 
-        $stepCollection = $this->getMock('Wizard\Step\StepCollection');
+        $stepCollection = $this->getMockBuilder(StepCollection::class)
+            ->getMock();
 
         $wizard
             ->method('getSteps')
             ->will($this->returnValue($stepCollection));
 
-        $step = $this->getMock('Wizard\Step\AbstractStep');
+        $step = $this->getMockBuilder(AbstractStep::class)
+            ->getMock();
 
         $wizard
             ->method('getCurrentStep')
@@ -203,7 +212,8 @@ class WizardProcessorTest extends \PHPUnit_Framework_TestCase
 
     private function getEventManager()
     {
-        return $this->getMock('Zend\EventManager\EventManagerInterface');
+        return $this->getMockBuilder(EventManagerInterface::class)
+            ->getMock();
     }
 
     private function getHttpRequest()
