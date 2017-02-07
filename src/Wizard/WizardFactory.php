@@ -3,14 +3,12 @@ namespace Wizard;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Wizard\Step\StepFactory;
-use Wizard\WizardInterface;
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Interop\Container\ContainerInterface;
 
-class WizardFactory implements ServiceManagerAwareInterface
+class WizardFactory
 {
     /**
-     * @var ServiceManager
+     * @var ContainerInterface
      */
     protected $serviceManager;
 
@@ -38,9 +36,9 @@ class WizardFactory implements ServiceManagerAwareInterface
     }
 
     /**
-     * @param ServiceManager $serviceManager
+     * @param ContainerInterface $serviceManager
      */
-    public function setServiceManager(ServiceManager $serviceManager)
+    public function setServiceManager(ContainerInterface $serviceManager)
     {
         $this->serviceManager = $serviceManager;
     }
@@ -104,7 +102,7 @@ class WizardFactory implements ServiceManagerAwareInterface
         $options = $this->getWizardOptions($name);
 
         /* @var $wizard \Wizard\WizardInterface */
-        $wizard = $this->serviceManager->get('Wizard\Wizard');
+        $wizard = $this->serviceManager->get(Wizard::class);
 
         $wizard->getOptions()->setFromArray($options);
 
@@ -114,7 +112,7 @@ class WizardFactory implements ServiceManagerAwareInterface
 
         foreach ($options['listeners'] as $listener) {
             $instance = $this->serviceManager->get($listener);
-            $wizard->getEventManager()->attach($instance);
+            $instance->attach($wizard->getEventManager());
         }
 
         $wizard->getViewModel()->setTemplate($options['layout_template']);

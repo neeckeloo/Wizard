@@ -2,6 +2,7 @@
 namespace WizardTest\Step;
 
 use Wizard\Step\StepCollection;
+use Wizard\Step\StepInterface;
 
 class StepCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +21,7 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
     public function testIteratorAggregate()
     {
         $stepCollection = new StepCollection();
-        $this->assertInstanceOf('ArrayIterator', $stepCollection->getIterator());
+        $this->assertInstanceOf(\ArrayIterator::class, $stepCollection->getIterator());
 
         for ($i = 1; $i <= 3; $i++) {
             $stepStub = $this->getStepMock('step' . $i);
@@ -41,7 +42,7 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
         $stepStub = $this->getStepMock('foo');
         $stepCollection->add($stepStub);
 
-        $this->assertInstanceOf('Wizard\Step\StepInterface', $stepCollection->get('foo'));
+        $this->assertInstanceOf(StepInterface::class, $stepCollection->get('foo'));
         $this->assertNull($stepCollection->get('bar'));
     }
 
@@ -148,7 +149,8 @@ class StepCollectionTest extends \PHPUnit_Framework_TestCase
      */
     protected function getStepMock($name)
     {
-        $mock = $this->getMock('Wizard\Step\StepInterface');
+        $mock = $this->getMockBuilder(StepInterface::class)
+            ->getMock();
         $mock
             ->method('getName')
             ->will($this->returnValue($name));

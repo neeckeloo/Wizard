@@ -102,9 +102,10 @@ class WizardProcessor
     {
         $wizardEvent = new WizardEvent();
         $wizardEvent->setWizard($this->wizard);
+        $wizardEvent->setName(WizardEvent::EVENT_COMPLETE);
 
         $wizardEventManager = $this->wizard->getEventManager();
-        $wizardEventManager->trigger(WizardEvent::EVENT_COMPLETE, $wizardEvent);
+        $wizardEventManager->triggerEvent($wizardEvent);
 
         return $this->doRedirect();
     }

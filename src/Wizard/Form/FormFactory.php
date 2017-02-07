@@ -1,40 +1,39 @@
 <?php
 namespace Wizard\Form;
 
+use Interop\Container\ContainerInterface;
 use Zend\Form\Form;
 use Zend\Form\FormInterface;
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
 
-class FormFactory implements ServiceManagerAwareInterface
+class FormFactory
 {
     /**
-     * @var ServiceManager
+     * @var ContainerInterface
      */
-    protected $serviceManager;
+    protected $container;
 
     /**
-     * @param ServiceManager $serviceManager
+     * FormFactory constructor.
+     * @param ContainerInterface $container
      */
-    public function setServiceManager(ServiceManager $serviceManager)
+    public function __construct(ContainerInterface $container)
     {
-        $this->serviceManager = $serviceManager;
+        $this->container = $container;
     }
 
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
      * @return FormInterface
      */
     public function create()
     {
-        $formElementManager = $this->serviceManager->get('FormElementManager');
+        $formElementManager = $this->container->get('FormElementManager');
 
         $form = new Form();
         $form
-            ->add($formElementManager->get('Wizard\Form\Element\Button\Previous'))
-            ->add($formElementManager->get('Wizard\Form\Element\Button\Next'))
-            ->add($formElementManager->get('Wizard\Form\Element\Button\Valid'))
-            ->add($formElementManager->get('Wizard\Form\Element\Button\Cancel'));
+            ->add($formElementManager->get(Element\Button\Previous::class))
+            ->add($formElementManager->get(Element\Button\Next::class))
+            ->add($formElementManager->get(Element\Button\Valid::class))
+            ->add($formElementManager->get(Element\Button\Cancel::class));
 
         return $form;
     }

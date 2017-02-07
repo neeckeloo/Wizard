@@ -1,6 +1,7 @@
 <?php
 namespace Wizard\Listener;
 
+use Wizard\Step\StepInterface;
 use Wizard\WizardEvent;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -13,8 +14,9 @@ class WizardListener implements ListenerAggregateInterface
 
     /**
      * @param EventManagerInterface $events
+     * @param int $priority
      */
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(WizardEvent::EVENT_POST_PROCESS_STEP, [$this, 'persistStep'], 100);
     }
@@ -25,6 +27,7 @@ class WizardListener implements ListenerAggregateInterface
      */
     public function persistStep(EventInterface $e)
     {
+        /** @var StepInterface $step */
         $step   = $e->getTarget();
         $wizard = $step->getWizard();
 

@@ -1,23 +1,24 @@
 <?php
 namespace Wizard\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\WizardFactory;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Wizard\Step\StepFactory;
 
-class WizardFactoryFactory implements FactoryInterface
+class WizardFactoryFactory
 {
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
      * @return WizardFactory
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container)
     {
-        $config = $serviceLocator->get('Wizard\Config');
+        $config = $container->get('Wizard\Config');
 
         $wizardFactory = new WizardFactory($config);
+        $wizardFactory->setServiceManager($container);
 
-        $stepFactory = $serviceLocator->get('Wizard\Step\StepFactory');
+        $stepFactory = $container->get(StepFactory::class);
         $wizardFactory->setStepFactory($stepFactory);
 
         return $wizardFactory;

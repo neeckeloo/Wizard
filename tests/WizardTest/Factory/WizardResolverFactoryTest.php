@@ -1,7 +1,11 @@
 <?php
 namespace WizardTest\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\Factory\WizardResolverFactory;
+use Zend\Router\RouteInterface;
+use Zend\Http\Request;
+use Wizard\WizardResolver;
 
 class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +17,7 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
             ['Router',        $this->getRouter()],
         ];
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $serviceManagerStub = $this->getMockBuilder(ContainerInterface::class)->getMock();
         $serviceManagerStub
             ->method('get')
             ->will($this->returnValueMap($returnValueMap));
@@ -21,19 +25,19 @@ class WizardResolverFactoryTest extends \PHPUnit_Framework_TestCase
         $factory = new WizardResolverFactory();
 
         $resolver = $factory->createService($serviceManagerStub);
-        $this->assertInstanceOf('Wizard\WizardResolver', $resolver);
+        $this->assertInstanceOf(WizardResolver::class, $resolver);
     }
 
     private function getRequest()
     {
-        return $this->getMockBuilder('Zend\Http\Request')
+        return $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getRouter()
     {
-        return $this->getMockBuilder('Zend\Mvc\Router\RouteInterface')
+        return $this->getMockBuilder(RouteInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

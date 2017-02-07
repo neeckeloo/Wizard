@@ -2,21 +2,20 @@
 namespace Wizard\Step;
 
 use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 
 class StepPluginManager extends AbstractPluginManager
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function validatePlugin($plugin)
-    {
-        if ($plugin instanceof StepInterface) {
-            return;
-        }
+    protected $instanceOf = StepInterface::class;
 
-        throw new Exception\RuntimeException(sprintf(
-            'Plugin of type %s is invalid; must implement Wizard\StepInterface',
-            (is_object($plugin) ? get_class($plugin) : gettype($plugin))
-        ));
+    public function validate($instance)
+    {
+        if (! $instance instanceof $this->instanceOf) {
+            throw new InvalidServiceException(sprintf(
+                'Invalid plugin "%s" created; not an instance of %s',
+                get_class($instance),
+                $this->instanceOf
+            ));
+        }
     }
 }

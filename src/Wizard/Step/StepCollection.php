@@ -28,7 +28,7 @@ class StepCollection implements IteratorAggregate, Countable, EventManagerAwareI
             return $this;
         }
 
-        $this->getEventManager()->trigger(self::EVENT_ADD_STEP, $step);
+        $this->getEventManager()->trigger(self::EVENT_ADD_STEP, null, $step);
 
         $this->steps[$step->getName()] = $step;
         return $this;

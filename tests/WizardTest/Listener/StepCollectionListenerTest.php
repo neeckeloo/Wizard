@@ -3,6 +3,8 @@ namespace WizardTest\Listener;
 
 use Wizard\Listener\StepCollectionListener;
 use Zend\Mvc\MvcEvent;
+use Wizard\WizardInterface;
+use Wizard\Step\StepInterface;
 
 class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,7 +20,8 @@ class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
             'foo' => [],
         ];
 
-        $stepMock = $this->getMock('Wizard\Step\StepInterface');
+        $stepMock = $this->getMockBuilder(StepInterface::class)
+            ->getMock();
         $stepMock
             ->method('getName')
             ->will($this->returnValue('foo'));
@@ -39,7 +42,8 @@ class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
         $listener = new StepCollectionListener();
         $event    = new MvcEvent();
 
-        $stepMock = $this->getMock('Wizard\Step\StepInterface');
+        $stepMock = $this->getMockBuilder(StepInterface::class)
+            ->getMock();
         $stepMock
             ->method('getWizard')
             ->will($this->returnValue($this->getWizard()));
@@ -56,7 +60,8 @@ class StepCollectionListenerTest extends \PHPUnit_Framework_TestCase
     {
         $sessionContainerFake = new \stdClass();
 
-        $wizardMock = $this->getMock('Wizard\WizardInterface');
+        $wizardMock = $this->getMockBuilder(WizardInterface::class)
+            ->getMock();
         $wizardMock
             ->method('getSessionContainer')
             ->will($this->returnValue($sessionContainerFake));

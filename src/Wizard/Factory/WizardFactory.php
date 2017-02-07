@@ -1,38 +1,63 @@
 <?php
 namespace Wizard\Factory;
 
+use Interop\Container\ContainerInterface;
+use Wizard\Step\StepCollection;
 use Wizard\Wizard;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Wizard\Form\FormFactory;
+use Wizard\WizardProcessor;
+use Wizard\Wizard\IdentifierAccessor;
+use Wizard\Listener\WizardListener;
+use Wizard\Listener\StepCollectionListener;
+use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
 
-class WizardFactory implements FactoryInterface
+class WizardFactory
 {
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
      * @return Wizard
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container)
     {
         /* @var $wizard \Wizard\WizardInterface */
         $wizard = new Wizard();
 
-        $formFactory = $serviceLocator->get('Wizard\Form\FormFactory');
+        $formFactory = $container->get(FormFactory::class);
+        $wizard->setEventManager($this->createEventManager($container));
         $wizard->setFormFactory($formFactory);
 
-        $wizardProcessor = $serviceLocator->get('Wizard\WizardProcessor');
+        $wizardProcessor = $container->get(WizardProcessor::class);
         $wizard->setWizardProcessor($wizardProcessor);
 
-        $identifierAccessor = $serviceLocator->get('Wizard\Wizard\IdentifierAccessor');
+        $identifierAccessor = $container->get(IdentifierAccessor::class);
         $wizard->setIdentifierAccessor($identifierAccessor);
 
-        $wizardListener = $serviceLocator->get('Wizard\Listener\WizardListener');
-        $wizard->getEventManager()->attachAggregate($wizardListener);
+        $wizardListener = $container->get(WizardListener::class);
+        $wizardListener->attach($wizard->getEventManager());
 
-        $stepCollection = $wizard->getSteps();
+        $stepCollection = new StepCollection();
+        $stepCollection->setEventManager($this->createEventManager($container));
+        $wizard->setSteps($stepCollection);
 
-        $stepCollectionListener = $serviceLocator->get('Wizard\Listener\StepCollectionListener');
-        $stepCollection->getEventManager()->attachAggregate($stepCollectionListener);
+        $stepCollectionListener = $container->get(StepCollectionListener::class);
+        $stepCollectionListener->attach($stepCollection->getEventManager());
 
         return $wizard;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @return EventManagerInterface
+     */
+    protected function createEventManager(ContainerInterface $container)
+    {
+        return $container->has('EventManager')
+            ? $container->get('EventManager')
+            : new EventManager(
+                $container->has('SharedEventManager')
+                    ? $container->get('SharedEventManager')
+                    : null
+            );
     }
 }

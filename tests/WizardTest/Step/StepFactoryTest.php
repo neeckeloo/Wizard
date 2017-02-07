@@ -2,6 +2,11 @@
 namespace WizardTest\Step;
 
 use Wizard\Step\StepFactory;
+use Wizard\Step\StepOptions;
+use Wizard\Step\StepInterface;
+use Zend\Form\FormElementManager;
+use Wizard\Step\StepPluginManager;
+use Zend\Form\Form;
 
 class StepFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +24,7 @@ class StepFactoryTest extends \PHPUnit_Framework_TestCase
         $stepFactory = new StepFactory($stepPluginManagerStub, $formElementManagerDummy);
 
         $step = $stepFactory->create('foo', []);
-        $this->assertInstanceOf('Wizard\Step\StepInterface', $step);
+        $this->assertInstanceOf(StepInterface::class, $step);
     }
 
     public function testCreateStepShouldSetStepName()
@@ -48,7 +53,8 @@ class StepFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $stepOptions = ['form' => 'App\Step\FooForm'];
 
-        $formStub = $this->getMock('Zend\Form\Form');
+        $formStub = $this->getMockBuilder(Form::class)
+            ->getMock();
 
         $stepMock = $this->getStep();
         $stepMock
@@ -74,19 +80,25 @@ class StepFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function getStepPluginManager()
     {
-        return $this->getMock('Wizard\Step\StepPluginManager');
+        return $this->getMockBuilder(StepPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function getFormPluginManager()
     {
-        return $this->getMock('Zend\Form\FormElementManager');
+        return $this->getMockBuilder(FormElementManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function getStep()
     {
-        $step = $this->getMock('Wizard\Step\StepInterface');
+        $step = $this->getMockBuilder(StepInterface::class)
+            ->getMock();
 
-        $stepOptionsStub = $this->getMock('Wizard\Step\StepOptions');
+        $stepOptionsStub = $this->getMockBuilder(StepOptions::class)
+            ->getMock();
 
         $step
             ->method('getOptions')

@@ -1,11 +1,9 @@
 <?php
 namespace Wizard;
 
-use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\Mvc\MvcEvent;
 
-class Module implements ConfigProviderInterface, AutoloaderProviderInterface
+class Module
 {
     /**
      * @param MvcEvent $e
@@ -15,23 +13,12 @@ class Module implements ConfigProviderInterface, AutoloaderProviderInterface
         $application    = $e->getApplication();
         $serviceManager = $application->getServiceManager();
 
-        $dispatchListener = $serviceManager->get('Wizard\Listener\DispatchListener');
-        $application->getEventManager()->attach($dispatchListener);
+        $dispatchListener = $serviceManager->get(Listener\DispatchListener::class);
+        $dispatchListener->attach($application->getEventManager());
     }
 
     public function getConfig()
     {
         return include __DIR__ . '/../../config/module.config.php';
-    }
-
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Zend\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
     }
 }

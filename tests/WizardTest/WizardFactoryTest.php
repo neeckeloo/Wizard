@@ -2,6 +2,14 @@
 namespace WizardTest;
 
 use Wizard\WizardFactory;
+use Wizard\WizardOptions;
+use Zend\View\Model\ViewModel;
+use Wizard\Step\StepInterface;
+use Wizard\Step\StepFactory;
+use Wizard\Step\StepCollection;
+use Wizard\Wizard;
+use Zend\ServiceManager\ServiceManager;
+use Wizard\WizardInterface;
 
 class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,15 +46,16 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
         $stepFactoryStub = $this->getStepFactory();
         $wizardFactory->setStepFactory($stepFactoryStub);
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManagerStub = $this->getMockBuilder(ServiceManager::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
-            ->with('Wizard\Wizard')
+            ->with(Wizard::class)
             ->will($this->returnValue($this->getWizard()));
         $wizardFactory->setServiceManager($serviceManagerStub);
 
         $wizard = $wizardFactory->create('Wizard\Foo');
-        $this->assertInstanceOf('Wizard\WizardInterface', $wizard);
+        $this->assertInstanceOf(WizardInterface::class, $wizard);
     }
 
     public function testCreateWizardShouldAddSteps()
@@ -71,10 +80,11 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->exactly(count($returnValueMap)))
             ->method('add');
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManagerStub = $this->getMockBuilder(ServiceManager::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
-            ->with('Wizard\Wizard')
+            ->with(Wizard::class)
             ->will($this->returnValue($wizardStub));
         $wizardFactory->setServiceManager($serviceManagerStub);
 
@@ -96,10 +106,11 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('setFromArray')
             ->with($this->isType('array'));
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManagerStub = $this->getMockBuilder(ServiceManager::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
-            ->with('Wizard\Wizard')
+            ->with(Wizard::class)
             ->will($this->returnValue($wizardStub));
         $wizardFactory->setServiceManager($serviceManagerStub);
 
@@ -121,10 +132,11 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('setTemplate')
             ->with($this->anything());
 
-        $serviceManagerStub = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $serviceManagerStub = $this->getMockBuilder(ServiceManager::class)
+            ->getMock();
         $serviceManagerStub
             ->method('get')
-            ->with('Wizard\Wizard')
+            ->with(Wizard::class)
             ->will($this->returnValue($wizardStub));
         $wizardFactory->setServiceManager($serviceManagerStub);
 
@@ -142,7 +154,8 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
     private function getWizard()
     {
-        $wizard = $this->getMock('Wizard\Wizard');
+        $wizard = $this->getMockBuilder(Wizard::class)
+            ->getMock();
 
         $wizard
             ->method('getOptions')
@@ -152,7 +165,8 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('getViewModel')
             ->will($this->returnValue($this->getViewModel()));
 
-        $stepCollectionMock = $this->getMock('Wizard\Step\StepCollection');
+        $stepCollectionMock = $this->getMockBuilder(StepCollection::class)
+            ->getMock();
 
         $wizard
             ->method('getSteps')
@@ -163,14 +177,15 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
     private function getStepFactory()
     {
-        return $this->getMockBuilder('Wizard\Step\StepFactory')
+        return $this->getMockBuilder(StepFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function getStep()
     {
-        $step = $this->getMock('Wizard\Step\StepInterface');
+        $step = $this->getMockBuilder(StepInterface::class)
+            ->getMock();
         $step->method('setWizard')->will($this->returnSelf());
 
         return $step;
@@ -178,11 +193,13 @@ class WizardFactoryTest extends \PHPUnit_Framework_TestCase
 
     private function getViewModel()
     {
-        return $this->getMock('Zend\View\Model\ViewModel');
+        return $this->getMockBuilder(ViewModel::class)
+            ->getMock();
     }
 
     private function getWizardOptions()
     {
-        return $this->getMock('Wizard\WizardOptions');
+        return $this->getMockBuilder(WizardOptions::class)
+            ->getMock();
     }
 }

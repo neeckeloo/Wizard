@@ -1,21 +1,20 @@
 <?php
 namespace Wizard\Factory;
 
+use Interop\Container\ContainerInterface;
 use Wizard\WizardResolver;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class WizardResolverFactory implements FactoryInterface
+class WizardResolverFactory
 {
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
      * @return WizardResolver
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ContainerInterface $container)
     {
-        $request = $serviceLocator->get('Request');
-        $router  = $serviceLocator->get('Router');
-        $config  = $serviceLocator->get('Wizard\Config');
+        $request = $container->get('Request');
+        $router  = $container->get('Router');
+        $config  = $container->get('Wizard\Config');
 
         return new WizardResolver($request, $router, $config);
     }
